@@ -3,15 +3,18 @@ import { StyleSheet, View } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import { HeaderTitle } from '@react-navigation/elements';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import OverviewScreen from './screens/OverviewScreen';
 import CategoriesScreen from './screens/CategoriesScreen';
 import SavingsScreen from './screens/SavingsScreen';
 import SettingsScreen from './screens/SettingsScreen';
+import SignInScreen from './screens/SignInScreen';
 import Logo from './components/Logo';
 import DrawerContent from './components/DrawerContent';
 import 'react-native-gesture-handler';
 
+const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
 function DrawerNavigator () {
@@ -97,28 +100,6 @@ function DrawerNavigator () {
           ),
         }}
       />
-
-      {/*<Drawer.Screen*/}
-      {/*  name='Log Out'*/}
-      {/*  component={SignInScreen}*/}
-      {/*  options={{*/}
-
-      {/*    title: 'Log Out',*/}
-      {/*    drawerIcon: ({ color }) => (*/}
-      {/*      <AntDesign*/}
-      {/*        name='logout'*/}
-      {/*        color={color}*/}
-      {/*        size={28}*/}
-      {/*      />*/}
-      {/*    ),*/}
-      {/*    drawerItemStyle: {*/}
-      {/*      width: '100%',*/}
-      {/*      position: 'absolute',*/}
-      {/*      bottom: 32,*/}
-      {/*      left: 30,*/}
-      {/*    },*/}
-      {/*  }}*/}
-      {/*/>*/}
     </Drawer.Navigator>
   );
 }
@@ -129,7 +110,30 @@ export default function App() {
       <StatusBar style='light' />
 
       <NavigationContainer>
-        <DrawerNavigator />
+        <Stack.Navigator
+          initialRouteName='Categories'
+          screenOptions={{
+            headerStyle: { backgroundColor: '#fff' },
+            headerTintColor: 'black',
+            contentStyle: { backgroundColor: '#fff' },
+          }}
+        >
+          <Stack.Screen
+            name='Drawer'
+            component={DrawerNavigator}
+            options={{
+              headerShown: false,
+            }}
+          />
+
+          <Stack.Screen
+            name='SignIn'
+            component={SignInScreen}
+            options={{
+              title: 'Sign In',
+            }}
+          />
+        </Stack.Navigator>
       </NavigationContainer>
     </View>
   );
