@@ -23,7 +23,7 @@ export default function Logo (props) {
       <View style={[styles.logoContainer, containerStyle]}>
         <Image
           style={styles.logoImage}
-          source={{ uri: require('../assets/images/logo1x.png') }}
+          source={require('../assets/images/logo1x.png')}
         />
       </View>
     </Pressable>
@@ -41,5 +41,7 @@ const styles = StyleSheet.create({
   },
   logoImage: {
     flexGrow: 1,
+    width: 96,
+    height: 17,
   },
 });

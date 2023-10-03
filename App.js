@@ -334,7 +334,7 @@ function DrawerNavigator () {
 export default function App() {
   return (
     <View style={styles.app}>
-      <StatusBar style='light' />
+      <StatusBar style='dark' />
 
       <NavigationContainer>
         <Stack.Navigator
@@ -372,6 +372,7 @@ const styles = StyleSheet.create({
   },
 
   headerLeft: {
+    flexGrow: 1,
     flexDirection: 'row',
     alignItems: 'center',
   },
