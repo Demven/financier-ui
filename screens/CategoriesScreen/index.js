@@ -1,10 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 
 export default function CategoriesScreen () {
+  const route = useRoute();
+  const overviewType = route.params?.type;
+
   return (
     <View style={styles.categoriesScreen}>
       <Text style={styles.title}>
-        Categories
+        Categories: {overviewType}
       </Text>
     </View>
   );
@@ -12,15 +16,12 @@ export default function CategoriesScreen () {
 
 const styles = StyleSheet.create({
   categoriesScreen: {
-    width: 320,
-    height: 68,
-    marginHorizontal: 20,
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 3,
   },
   title: {
-    color: '#fff',
-    fontSize: 34,
+    color: '#000',
+    fontSize: 14,
   },
 });

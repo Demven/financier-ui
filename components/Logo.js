@@ -36,8 +36,8 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   logoContainer: {
-    width: 102,
-    height: 18,
+    width: 96,
+    height: 17,
   },
   logoImage: {
     flexGrow: 1,
