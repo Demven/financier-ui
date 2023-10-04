@@ -1,4 +1,9 @@
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Pressable, Platform,
+} from 'react-native';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 import Logo from './Logo';
@@ -54,8 +59,8 @@ const styles = StyleSheet.create({
   },
 
   drawerHeader: {
-    paddingLeft: 42,
-    paddingTop: 24,
+    paddingLeft: Platform.select({ web: 42, ios: 54 }),
+    paddingTop: Platform.select({ web: 24, ios: 72 }),
     paddingRight: 0,
     paddingBottom: 16,
   },
@@ -65,10 +70,11 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     position: 'relative',
     padding: 0,
+    marginTop: Platform.select({ ios: -54 }),
   },
 
   drawerFooter: {
-    paddingLeft: 34,
+    paddingLeft: Platform.select({ ios: 54, web: 42 }),
     paddingTop: 8,
     paddingBottom: 32,
     flexDirection: 'row',

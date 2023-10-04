@@ -1,11 +1,11 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { Platform, StyleSheet, View } from 'react-native';
+import { createDrawerNavigator, useDrawerStatus } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import { HeaderTitle } from '@react-navigation/elements';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { StatusBar } from 'expo-status-bar';
 import OverviewScreen from './screens/OverviewScreen';
 import CategoriesScreen from './screens/CategoriesScreen';
 import SavingsScreen from './screens/SavingsScreen';
@@ -241,13 +241,23 @@ function DrawerNavigator () {
     <Drawer.Navigator
       initialRouteName='Overview'
       screenOptions={({ navigation }) => ({
-        headerTitle: (props) => (
-          <View style={styles.headerLeft}>
-            <Logo containerStyle={styles.logo} />
+        headerTitle: ({ children }) => {
+          const isDrawerOpen = useDrawerStatus() === 'open';
 
-            <HeaderTitle>{props.children}</HeaderTitle>
-          </View>
-        ),
+          return (
+            <View style={styles.headerLogoAndTitle}>
+              {!isDrawerOpen && (
+                <Logo containerStyle={styles.logo} />
+              )}
+
+              <HeaderTitle style={styles.headerTitle}>
+                {children}
+              </HeaderTitle>
+            </View>
+          );
+        },
+        headerTitleAlign: 'left',
+        headerTitleContainerStyle: { margin: 0 },
         headerRight: ({ tintColor }) => (
           <IconButton
             iconName='add-circle-outline'
@@ -371,14 +381,17 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
 
-  headerLeft: {
-    flexGrow: 1,
+  headerLogoAndTitle: {
     flexDirection: 'row',
     alignItems: 'center',
+    left: Platform.select({ ios: -16 }),
+  },
+  headerTitle: {
+    marginLeft: 16,
+    fontWeight: 'bold',
   },
 
   logo: {
     marginBottom: 2,
-    left: -16,
   },
 });
