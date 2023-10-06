@@ -5,6 +5,8 @@ export default function OverviewScreen () {
   const route = useRoute();
   const overviewType = route.params?.type;
 
+  console.info('Overview route', route);
+
   return (
     <View style={styles.overviewScreen}>
       <Text style={styles.title}>

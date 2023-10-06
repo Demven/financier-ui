@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { HeaderTitle } from '@react-navigation/elements';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import 'react-native-gesture-handler';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import OverviewScreen from './screens/OverviewScreen';
@@ -14,7 +15,7 @@ import SignInScreen from './screens/SignInScreen';
 import Logo from './components/Logo';
 import DrawerContent from './components/DrawerContent';
 import IconButton from './components/IconButton';
-import 'react-native-gesture-handler';
+import HeaderTabs, { TAB, TAB_NAME } from './components/HeaderTabs';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -36,11 +37,11 @@ function OverviewScreens () {
         name='OverviewWeeks'
         component={OverviewScreen}
         initialParams={{
-          type: 'weeks',
+          type: TAB.WEEKS,
         }}
         options={{
           title: 'Overview',
-          tabBarLabel: 'Weeks',
+          tabBarLabel: TAB_NAME[TAB.WEEKS],
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name='calendar-week'
@@ -55,11 +56,11 @@ function OverviewScreens () {
         name='OverviewMonths'
         component={OverviewScreen}
         initialParams={{
-          type: 'months',
+          type: TAB.MONTHS,
         }}
         options={{
           title: 'Overview',
-          tabBarLabel: 'Months',
+          tabBarLabel: TAB_NAME[TAB.MONTHS],
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name='calendar-text'
@@ -74,11 +75,11 @@ function OverviewScreens () {
         name='OverviewYears'
         component={OverviewScreen}
         initialParams={{
-          type: 'years',
+          type: TAB.YEARS,
         }}
         options={{
           title: 'All Expenses',
-          tabBarLabel: 'Years',
+          tabBarLabel: TAB_NAME[TAB.YEARS],
           tabBarIcon: ({ color, size }) => (
             <Ionicons
               name='calendar-sharp'
@@ -108,11 +109,11 @@ function CategoriesScreens () {
         name='CategoriesWeeks'
         component={CategoriesScreen}
         initialParams={{
-          type: 'weeks',
+          type: TAB.WEEKS,
         }}
         options={{
           title: 'Categories',
-          tabBarLabel: 'Weeks',
+          tabBarLabel: TAB_NAME[TAB.WEEKS],
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name='calendar-week'
@@ -127,11 +128,11 @@ function CategoriesScreens () {
         name='CategoriesMonths'
         component={CategoriesScreen}
         initialParams={{
-          type: 'months',
+          type: TAB.MONTHS,
         }}
         options={{
           title: 'Categories',
-          tabBarLabel: 'Months',
+          tabBarLabel: TAB_NAME[TAB.MONTHS],
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name='calendar-text'
@@ -146,11 +147,11 @@ function CategoriesScreens () {
         name='CategoriesYears'
         component={CategoriesScreen}
         initialParams={{
-          type: 'years',
+          type: TAB.YEARS,
         }}
         options={{
           title: 'Categories',
-          tabBarLabel: 'Years',
+          tabBarLabel: TAB_NAME[TAB.YEARS],
           tabBarIcon: ({ color, size }) => (
             <Ionicons
               name='calendar-sharp'
@@ -180,11 +181,11 @@ function SavingsScreens () {
         name='SavingsWeeks'
         component={SavingsScreen}
         initialParams={{
-          type: 'weeks',
+          type: TAB.WEEKS,
         }}
         options={{
           title: 'Savings',
-          tabBarLabel: 'Weeks',
+          tabBarLabel: TAB_NAME[TAB.WEEKS],
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name='calendar-week'
@@ -199,11 +200,11 @@ function SavingsScreens () {
         name='SavingsMonths'
         component={SavingsScreen}
         initialParams={{
-          type: 'months',
+          type: TAB.MONTHS,
         }}
         options={{
           title: 'Savings',
-          tabBarLabel: 'Months',
+          tabBarLabel: TAB_NAME[TAB.MONTHS],
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name='calendar-text'
@@ -218,11 +219,11 @@ function SavingsScreens () {
         name='SavingsYears'
         component={SavingsScreen}
         initialParams={{
-          type: 'years',
+          type: TAB.YEARS,
         }}
         options={{
           title: 'All Savings',
-          tabBarLabel: 'Years',
+          tabBarLabel: TAB_NAME[TAB.YEARS],
           tabBarIcon: ({ color, size }) => (
             <Ionicons
               name='calendar-sharp'
@@ -259,12 +260,16 @@ function DrawerNavigator () {
         headerTitleAlign: 'left',
         headerTitleContainerStyle: { margin: 0 },
         headerRight: ({ tintColor }) => (
-          <IconButton
-            iconName='add-circle-outline'
-            size={24}
-            color={tintColor}
-            onPress={() => navigation.navigate('SignIn')}
-          />
+          <View style={styles.headerTabsAndActions}>
+            <HeaderTabs style={styles.headerTabs} />
+
+            <IconButton
+              iconName='add-circle-outline'
+              size={24}
+              color={tintColor}
+              onPress={() => navigation.navigate('SignIn')}
+            />
+          </View>
         ),
         headerStyle: { backgroundColor: '#fff' },
         headerTintColor: 'black',
@@ -389,6 +394,14 @@ const styles = StyleSheet.create({
   headerTitle: {
     marginLeft: 16,
     fontWeight: 'bold',
+  },
+
+  headerTabsAndActions: {
+    flexDirection: 'row',
+    alignItems: 'right',
+  },
+  headerTabs: {
+    marginRight: 88,
   },
 
   logo: {
