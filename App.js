@@ -1,9 +1,10 @@
-import { Platform, StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View, Dimensions } from 'react-native';
 import { createDrawerNavigator, useDrawerStatus } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import { HeaderTitle } from '@react-navigation/elements';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Provider } from 'react-redux';
 import 'react-native-gesture-handler';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
@@ -16,10 +17,14 @@ import Logo from './components/Logo';
 import DrawerContent from './components/DrawerContent';
 import IconButton from './components/IconButton';
 import HeaderTabs, { TAB, TAB_NAME } from './components/HeaderTabs';
+import { store } from './redux/store';
+import { MEDIA } from './styles/media';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 const BottomTabs = createBottomTabNavigator();
+
+const deviceWidth = Dimensions.get('window').width;
 
 function OverviewScreens () {
   return (
@@ -28,7 +33,10 @@ function OverviewScreens () {
       screenOptions={() => ({
         headerStyle: { backgroundColor: 'white' },
         headerTintColor: 'black',
-        tabBarStyle: { backgroundColor: 'white' },
+        tabBarStyle: {
+          backgroundColor: 'white',
+          display: deviceWidth >= MEDIA.TABLET ? 'none' : undefined,
+        },
         tabBarActiveTintColor: 'black',
         headerShown: false,
       })}
@@ -100,7 +108,10 @@ function CategoriesScreens () {
       screenOptions={() => ({
         headerStyle: { backgroundColor: 'white' },
         headerTintColor: 'black',
-        tabBarStyle: { backgroundColor: 'white' },
+        tabBarStyle: {
+          backgroundColor: 'white',
+          display: deviceWidth >= MEDIA.TABLET ? 'none' : undefined,
+        },
         tabBarActiveTintColor: 'black',
         headerShown: false,
       })}
@@ -172,7 +183,10 @@ function SavingsScreens () {
       screenOptions={() => ({
         headerStyle: { backgroundColor: 'white' },
         headerTintColor: 'black',
-        tabBarStyle: { backgroundColor: 'white' },
+        tabBarStyle: {
+          backgroundColor: 'white',
+          display: deviceWidth >= MEDIA.TABLET ? 'none' : undefined,
+        },
         tabBarActiveTintColor: 'black',
         headerShown: false,
       })}
@@ -261,7 +275,9 @@ function DrawerNavigator () {
         headerTitleContainerStyle: { margin: 0 },
         headerRight: ({ tintColor }) => (
           <View style={styles.headerTabsAndActions}>
-            <HeaderTabs style={styles.headerTabs} />
+            {deviceWidth >= MEDIA.TABLET && (
+              <HeaderTabs style={styles.headerTabs} />
+            )}
 
             <IconButton
               iconName='add-circle-outline'
@@ -351,32 +367,34 @@ export default function App() {
     <View style={styles.app}>
       <StatusBar style='dark' />
 
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName='Categories'
-          screenOptions={{
-            headerStyle: { backgroundColor: '#fff' },
-            headerTintColor: 'black',
-            contentStyle: { backgroundColor: '#fff' },
-          }}
-        >
-          <Stack.Screen
-            name='Drawer'
-            component={DrawerNavigator}
-            options={{
-              headerShown: false,
+      <Provider store={store}>
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName='Categories'
+            screenOptions={{
+              headerStyle: { backgroundColor: '#fff' },
+              headerTintColor: 'black',
+              contentStyle: { backgroundColor: '#fff' },
             }}
-          />
+          >
+            <Stack.Screen
+              name='Drawer'
+              component={DrawerNavigator}
+              options={{
+                headerShown: false,
+              }}
+            />
 
-          <Stack.Screen
-            name='SignIn'
-            component={SignInScreen}
-            options={{
-              title: 'Sign In',
-            }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
+            <Stack.Screen
+              name='SignIn'
+              component={SignInScreen}
+              options={{
+                title: 'Sign In',
+              }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </Provider>
     </View>
   );
 }

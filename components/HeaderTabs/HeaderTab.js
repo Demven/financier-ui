@@ -42,11 +42,15 @@ const styles = StyleSheet.create({
   },
 
   headerTabTextContainer: {
-    paddingHorizontal: 20,
+    minWidth: 80,
+    paddingHorizontal: 12,
     paddingBottom: 8,
+    boxSizing: 'content-box',
   },
   headerTabText: {
+    width: '100%',
     fontSize: 21,
+    textAlign: 'center',
   },
   headerTabActiveText: {
     fontWeight: 'bold',
