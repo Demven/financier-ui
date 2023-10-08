@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Logo from './Logo';
 import { firstName, lastName } from '../data/settings.json';
 import { COLORS } from '../styles/colors';
+import { FONT } from '../styles/fonts';
 
 // props are passed by react-navigation
 // Read more here https://reactnavigation.org/docs/drawer-navigator/#drawercontent
@@ -82,8 +83,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   userNameText: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: FONT.MERRIWEATHER.BOLD,
+    fontSize: 18,
     color: COLORS.GRAY,
   },
 

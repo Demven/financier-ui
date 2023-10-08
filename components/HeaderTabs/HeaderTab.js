@@ -1,6 +1,7 @@
 import { StyleSheet, View, Text, Pressable } from 'react-native';
 import PropTypes from 'prop-types';
 import { COLORS } from '../../styles/colors';
+import { FONT } from '../../styles/fonts';
 
 HeaderTab.propTypes = {
   active: PropTypes.bool,
@@ -49,10 +50,12 @@ const styles = StyleSheet.create({
   },
   headerTabText: {
     width: '100%',
-    fontSize: 21,
+    fontFamily: FONT.MERRIWEATHER.REGULAR,
+    fontSize: 20,
     textAlign: 'center',
   },
   headerTabActiveText: {
-    fontWeight: 'bold',
+    fontFamily: FONT.MERRIWEATHER.BOLD,
+    paddingBottom: 1,
   },
 });

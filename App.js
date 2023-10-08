@@ -1,4 +1,5 @@
 import { Platform, StyleSheet, View, Dimensions } from 'react-native';
+import { useCallback } from 'react';
 import { createDrawerNavigator, useDrawerStatus } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import { HeaderTitle } from '@react-navigation/elements';
@@ -7,7 +8,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Provider } from 'react-redux';
 import 'react-native-gesture-handler';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
+import * as SplashScreen from 'expo-splash-screen';
 import OverviewScreen from './screens/OverviewScreen';
 import CategoriesScreen from './screens/CategoriesScreen';
 import SavingsScreen from './screens/SavingsScreen';
@@ -19,12 +22,16 @@ import IconButton from './components/IconButton';
 import HeaderTabs, { TAB, TAB_NAME } from './components/HeaderTabs';
 import { store } from './redux/store';
 import { MEDIA } from './styles/media';
+import { FONT } from './styles/fonts';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 const BottomTabs = createBottomTabNavigator();
 
 const deviceWidth = Dimensions.get('window').width;
+
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
 
 function OverviewScreens () {
   return (
@@ -292,7 +299,7 @@ function DrawerNavigator () {
         sceneContainerStyle: { backgroundColor: 'white' },
         drawerContentStyle: { paddingTop: 16, paddingLeft: 16, backgroundColor: 'white' },
         drawerItemStyle: { paddingVertical: 12, paddingLeft: 32, paddingRight: 12, margin: 0 },
-        drawerLabelStyle: { fontSize: 16 },
+        drawerLabelStyle: { fontSize: 16, fontFamily: FONT.MERRIWEATHER.REGULAR },
         drawerActiveTintColor: 'black',
         drawerInactiveTintColor: 'black',
         drawerActiveBackgroundColor: 'white',
@@ -362,9 +369,27 @@ function DrawerNavigator () {
   );
 }
 
-export default function App() {
+export default function App () {
+  const [fontsLoaded] = useFonts({
+    [FONT.MERRIWEATHER.REGULAR]: require('./assets/fonts/Merriweather-Regular.ttf'),
+    [FONT.MERRIWEATHER.BOLD]: require('./assets/fonts/Merriweather-Bold.ttf'),
+  });
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
-    <View style={styles.app}>
+    <View
+      style={styles.app}
+      onLayout={onLayoutRootView}
+    >
       <StatusBar style='dark' />
 
       <Provider store={store}>
@@ -410,8 +435,9 @@ const styles = StyleSheet.create({
     left: Platform.select({ ios: -16 }),
   },
   headerTitle: {
-    marginLeft: 16,
-    fontWeight: 'bold',
+    marginLeft: 34,
+    fontFamily: FONT.MERRIWEATHER.BOLD,
+    fontSize: 18,
   },
 
   headerTabsAndActions: {
