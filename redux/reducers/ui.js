@@ -6,6 +6,7 @@ const uiSlice = createSlice({
 
   initialState: {
     selectedTab: TAB.MONTHS,
+    selectedYear: new Date().getFullYear(),
   },
 
   reducers: {
@@ -13,9 +14,14 @@ const uiSlice = createSlice({
       ...state,
       selectedTab: action.payload.selectedTab,
     }),
+    setSelectedYear: (state, action) => ({
+      ...state,
+      selectedYear: action.payload.selectedYear,
+    }),
   },
 });
 
 export const setSelectedTab = uiSlice.actions.setSelectedTab;
+export const setSelectedYear = uiSlice.actions.setSelectedYear;
 
 export default uiSlice.reducer;

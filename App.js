@@ -5,7 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { HeaderTitle } from '@react-navigation/elements';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Provider } from 'react-redux';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import 'react-native-gesture-handler';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
@@ -20,6 +20,8 @@ import Logo from './components/Logo';
 import DrawerContent from './components/DrawerContent';
 import IconButton from './components/IconButton';
 import HeaderTabs, { TAB, TAB_NAME } from './components/HeaderTabs';
+import HeaderDropdown from './components/HeaderDropdown';
+import { setSelectedYear } from './redux/reducers/ui';
 import { store } from './redux/store';
 import { MEDIA } from './styles/media';
 import { FONT } from './styles/fonts';
@@ -264,6 +266,9 @@ function DrawerNavigator () {
       initialRouteName='Overview'
       screenOptions={({ navigation }) => ({
         headerTitle: ({ children }) => {
+          const selectedYear = useSelector(state => state.ui.selectedYear);
+          const dispatch = useDispatch();
+
           const isDrawerOpen = useDrawerStatus() === 'open';
 
           return (
@@ -275,6 +280,13 @@ function DrawerNavigator () {
               <HeaderTitle style={styles.headerTitle}>
                 {children}
               </HeaderTitle>
+
+              <HeaderDropdown
+                style={styles.headerDropdown}
+                selectedValue={selectedYear}
+                values={[selectedYear, selectedYear - 1, selectedYear - 2, selectedYear - 3]}
+                onSelect={(selectedYear) => dispatch(setSelectedYear({ selectedYear }))}
+              />
             </View>
           );
         },
@@ -299,7 +311,7 @@ function DrawerNavigator () {
         sceneContainerStyle: { backgroundColor: 'white' },
         drawerContentStyle: { paddingTop: 16, paddingLeft: 16, backgroundColor: 'white' },
         drawerItemStyle: { paddingVertical: 12, paddingLeft: 32, paddingRight: 12, margin: 0 },
-        drawerLabelStyle: { fontSize: 16, fontFamily: FONT.MERRIWEATHER.REGULAR },
+        drawerLabelStyle: { fontSize: 18, fontFamily: FONT.SUMANA.REGULAR, lineHeight: 26 },
         drawerActiveTintColor: 'black',
         drawerInactiveTintColor: 'black',
         drawerActiveBackgroundColor: 'white',
@@ -371,9 +383,10 @@ function DrawerNavigator () {
 
 export default function App () {
   const [fontsLoaded] = useFonts({
-    [FONT.MERRIWEATHER.REGULAR]: require('./assets/fonts/Merriweather/Merriweather-Regular.ttf'),
-    [FONT.MERRIWEATHER.BOLD]: require('./assets/fonts/Merriweather/Merriweather-Bold.ttf'),
     [FONT.TIRO_GURMUKHI.REGULAR]: require('./assets/fonts/Tiro Gurmukhi/TiroGurmukhi-Regular.ttf'),
+
+    [FONT.SUMANA.REGULAR]: require('./assets/fonts/Sumana/Sumana-Regular.ttf'),
+    [FONT.SUMANA.BOLD]: require('./assets/fonts/Sumana/Sumana-Bold.ttf'),
   });
 
   const onLayoutRootView = useCallback(async () => {
@@ -437,8 +450,13 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     marginLeft: 34,
-    fontFamily: FONT.MERRIWEATHER.BOLD,
-    fontSize: 18,
+    marginBottom: 3,
+    fontFamily: FONT.SUMANA.REGULAR,
+    fontSize: 20,
+    lineHeight: 20,
+  },
+  headerDropdown: {
+    marginLeft: 24,
   },
 
   headerTabsAndActions: {

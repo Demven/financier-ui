@@ -9,7 +9,7 @@ import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawe
 import { Ionicons } from '@expo/vector-icons';
 import Logo from './Logo';
 import { firstName, lastName } from '../data/settings.json';
-import { COLORS } from '../styles/colors';
+import { COLOR } from '../styles/colors';
 import { FONT } from '../styles/fonts';
 
 // props are passed by react-navigation
@@ -46,7 +46,7 @@ export default function DrawerContent (props) {
           <Ionicons
             style={styles.logOutIcon}
             name='log-out-outline'
-            color={COLORS.BLACK}
+            color={COLOR.BLACK}
             size={36}
           />
         </Pressable>
@@ -84,9 +84,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   userNameText: {
-    fontFamily: FONT.MERRIWEATHER.BOLD,
+    fontFamily: FONT.SUMANA.BOLD,
     fontSize: 18,
-    color: COLORS.GRAY,
+    color: COLOR.GRAY,
   },
 
   logOutIcon: {

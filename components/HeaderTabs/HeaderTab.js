@@ -1,6 +1,6 @@
 import { StyleSheet, View, Text, Pressable } from 'react-native';
 import PropTypes from 'prop-types';
-import { COLORS } from '../../styles/colors';
+import { COLOR } from '../../styles/colors';
 import { FONT } from '../../styles/fonts';
 
 HeaderTab.propTypes = {
@@ -33,13 +33,13 @@ export default function HeaderTab (props) {
 const styles = StyleSheet.create({
   headerTab: {
     borderBottomWidth: 6,
-    borderBottomColor: COLORS.TRANSPARENT,
+    borderBottomColor: COLOR.TRANSPARENT,
   },
 
   headerTabPressed: {},
   headerTabActive: {
     borderBottomWidth: 5,
-    borderBottomColor: COLORS.LIGHT_ORANGE,
+    borderBottomColor: COLOR.LIGHT_ORANGE,
   },
 
   headerTabTextContainer: {
@@ -50,12 +50,13 @@ const styles = StyleSheet.create({
   },
   headerTabText: {
     width: '100%',
-    fontFamily: FONT.MERRIWEATHER.REGULAR,
-    fontSize: 20,
+    fontFamily: FONT.SUMANA.REGULAR,
+    fontSize: 22,
+    lineHeight: 28,
     textAlign: 'center',
   },
   headerTabActiveText: {
-    fontFamily: FONT.MERRIWEATHER.BOLD,
+    fontFamily: FONT.SUMANA.BOLD,
     paddingBottom: 1,
   },
 });
