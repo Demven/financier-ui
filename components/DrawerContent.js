@@ -2,7 +2,8 @@ import {
   StyleSheet,
   View,
   Text,
-  Pressable, Platform,
+  Pressable,
+  Platform,
 } from 'react-native';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';

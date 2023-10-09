@@ -371,8 +371,9 @@ function DrawerNavigator () {
 
 export default function App () {
   const [fontsLoaded] = useFonts({
-    [FONT.MERRIWEATHER.REGULAR]: require('./assets/fonts/Merriweather-Regular.ttf'),
-    [FONT.MERRIWEATHER.BOLD]: require('./assets/fonts/Merriweather-Bold.ttf'),
+    [FONT.MERRIWEATHER.REGULAR]: require('./assets/fonts/Merriweather/Merriweather-Regular.ttf'),
+    [FONT.MERRIWEATHER.BOLD]: require('./assets/fonts/Merriweather/Merriweather-Bold.ttf'),
+    [FONT.TIRO_GURMUKHI.REGULAR]: require('./assets/fonts/Tiro Gurmukhi/TiroGurmukhi-Regular.ttf'),
   });
 
   const onLayoutRootView = useCallback(async () => {
@@ -414,7 +415,7 @@ export default function App () {
               name='SignIn'
               component={SignInScreen}
               options={{
-                title: 'Sign In',
+                headerShown: false,
               }}
             />
           </Stack.Navigator>

@@ -3,4 +3,7 @@ export const FONT = {
     REGULAR: 'Merriweather-Regular',
     BOLD: 'Merriweather-Bold',
   },
+  TIRO_GURMUKHI: {
+    REGULAR: 'TiroGurmukhi-Regular',
+  },
 };
