@@ -1,5 +1,5 @@
 import { StyleSheet, Pressable } from 'react-native';
-import Icon from './Icon';
+import Icon, { ICON_COLLECTION } from './Icon';
 
 export default function IconButton ({ iconName, size, color, onPress }) {
   return (
@@ -9,7 +9,8 @@ export default function IconButton ({ iconName, size, color, onPress }) {
     >
       <Icon
         style={styles.icon}
-        iconName={iconName}
+        name={iconName}
+        collection={ICON_COLLECTION.IONICONS}
         size={size}
         color={color}
       />

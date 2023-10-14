@@ -1,11 +1,10 @@
 import { Platform, StyleSheet, View, Dimensions } from 'react-native';
 import { useCallback } from 'react';
-import { createDrawerNavigator, useDrawerStatus } from '@react-navigation/drawer';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
-import { HeaderTitle } from '@react-navigation/elements';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Provider, useDispatch, useSelector } from 'react-redux';
+import { Provider } from 'react-redux';
 import 'react-native-gesture-handler';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
@@ -16,12 +15,10 @@ import CategoriesScreen from './screens/CategoriesScreen';
 import SavingsScreen from './screens/SavingsScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import SignInScreen from './screens/SignInScreen';
-import Logo from './components/Logo';
+import HeaderLeft from './components/HeaderLeft';
+import HeaderRight from './components/HeaderRight';
+import { TAB, TAB_NAME } from './components/HeaderTabs';
 import DrawerContent from './components/DrawerContent';
-import IconButton from './components/IconButton';
-import HeaderTabs, { TAB, TAB_NAME } from './components/HeaderTabs';
-import HeaderDropdown from './components/HeaderDropdown';
-import { setSelectedYear } from './redux/reducers/ui';
 import { store } from './redux/store';
 import { MEDIA } from './styles/media';
 import { FONT } from './styles/fonts';
@@ -44,7 +41,7 @@ function OverviewScreens () {
         headerTintColor: 'black',
         tabBarStyle: {
           backgroundColor: 'white',
-          display: deviceWidth >= MEDIA.TABLET ? 'none' : undefined,
+          display: deviceWidth >= MEDIA.DESKTOP ? 'none' : undefined,
         },
         tabBarActiveTintColor: 'black',
         headerShown: false,
@@ -264,47 +261,17 @@ function DrawerNavigator () {
   return (
     <Drawer.Navigator
       initialRouteName='Overview'
-      screenOptions={({ navigation }) => ({
-        headerTitle: ({ children }) => {
-          const selectedYear = useSelector(state => state.ui.selectedYear);
-          const dispatch = useDispatch();
-
-          const isDrawerOpen = useDrawerStatus() === 'open';
-
-          return (
-            <View style={styles.headerLogoAndTitle}>
-              {!isDrawerOpen && (
-                <Logo containerStyle={styles.logo} />
-              )}
-
-              <HeaderTitle style={styles.headerTitle}>
-                {children}
-              </HeaderTitle>
-
-              <HeaderDropdown
-                style={styles.headerDropdown}
-                selectedValue={selectedYear}
-                values={[selectedYear, selectedYear - 1, selectedYear - 2, selectedYear - 3]}
-                onSelect={(selectedYear) => dispatch(setSelectedYear({ selectedYear }))}
-              />
-            </View>
-          );
-        },
+      screenOptions={() => ({
+        headerTitle: ({ children }) => (
+          <HeaderLeft
+            style={styles.headerLeft}
+            title={children}
+          />
+        ),
         headerTitleAlign: 'left',
         headerTitleContainerStyle: { margin: 0 },
-        headerRight: ({ tintColor }) => (
-          <View style={styles.headerTabsAndActions}>
-            {deviceWidth >= MEDIA.TABLET && (
-              <HeaderTabs style={styles.headerTabs} />
-            )}
-
-            <IconButton
-              iconName='add-circle-outline'
-              size={24}
-              color={tintColor}
-              onPress={() => navigation.navigate('SignIn')}
-            />
-          </View>
+        headerRight: () => (
+          <HeaderRight />
         ),
         headerStyle: { backgroundColor: '#fff' },
         headerTintColor: 'black',
@@ -443,28 +410,8 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
 
-  headerLogoAndTitle: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  headerLeft: {
     left: Platform.select({ ios: -16 }),
-  },
-  headerTitle: {
-    marginLeft: 34,
-    marginBottom: 3,
-    fontFamily: FONT.SUMANA.REGULAR,
-    fontSize: 20,
-    lineHeight: 20,
-  },
-  headerDropdown: {
-    marginLeft: 24,
-  },
-
-  headerTabsAndActions: {
-    flexDirection: 'row',
-    alignItems: 'right',
-  },
-  headerTabs: {
-    marginRight: 88,
   },
 
   logo: {

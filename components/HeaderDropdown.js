@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { StyleSheet, View, Text, Pressable } from 'react-native';
 import PropTypes from 'prop-types';
-import Icon from './Icon';
+import Icon, { ICON_COLLECTION } from './Icon';
 import { COLOR } from '../styles/colors';
 import { FONT } from '../styles/fonts';
 
@@ -42,7 +42,8 @@ export default function HeaderDropdown (props) {
 
           <Icon
             style={styles.arrowIcon}
-            iconName={opened ? 'caret-up' : 'caret-down'}
+            name={opened ? 'caret-up' : 'caret-down'}
+            collection={ICON_COLLECTION.IONICONS}
             size={20}
             color={COLOR.BLACK}
           />

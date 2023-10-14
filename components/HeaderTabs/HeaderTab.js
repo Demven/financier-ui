@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
   headerTabTextContainer: {
     minWidth: 80,
     paddingHorizontal: 12,
-    paddingBottom: 8,
+    paddingBottom: 10,
     boxSizing: 'content-box',
   },
   headerTabText: {
