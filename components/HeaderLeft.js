@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     marginLeft: deviceWidth < MEDIA.TABLET ? 16 : 34,
     fontFamily: deviceWidth < MEDIA.TABLET ? FONT.SUMANA.BOLD : FONT.SUMANA.REGULAR,
     fontSize: deviceWidth < MEDIA.TABLET ? 18 : 20,
-    lineHeight: deviceWidth < MEDIA.TABLET ? 24 : 30,
+    lineHeight: deviceWidth < MEDIA.TABLET ? 48 : 30,
   },
   headerDropdown: {
     marginLeft: 24,

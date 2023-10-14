@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { StyleSheet, View, Text, Pressable, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import Icon, { ICON_COLLECTION } from './Icon';
@@ -33,7 +33,7 @@ const MENU_ITEMS = [
     color: COLOR.BLACK,
     iconName: 'money-off',
     iconCollection: ICON_COLLECTION.MATERIAL,
-    iconSize: 24,
+    iconSize: 22,
     iconOffsetTop: 0,
     iconOffsetRight: 6,
   },
@@ -51,6 +51,13 @@ export default function HeaderCornerMenu ({ style }) {
 
   function toggleDropDown () {
     setOpened(!opened);
+  }
+
+  function onNavigate (navigateTo) {
+    return () => {
+      setOpened(false);
+      navigation.navigate(navigateTo);
+    };
   }
 
   return (
@@ -84,8 +91,8 @@ export default function HeaderCornerMenu ({ style }) {
             .map((menuItem, index) => (
               <Pressable
                 key={index}
-                style={({ pressed }) => [pressed && styles.listItemPressed]}
-                onPress={() => navigation.navigate(menuItem.navigateTo)}
+                style={({ pressed }) => [styles.listItemPressable, pressed && styles.listItemPressed]}
+                onPress={onNavigate(menuItem.navigateTo)}
               >
                 <View
                   style={[
@@ -145,7 +152,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
     fontFamily: FONT.SUMANA.BOLD,
     fontSize: 16,
-    lineHeight: 18,
+    lineHeight: Platform.OS === 'ios' ? 40 : 16,
     color: COLOR.GRAY,
   },
 
@@ -154,7 +161,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -6,
     paddingTop: 60,
-    paddingBottom: 20,
+    paddingBottom: Platform.OS === 'ios' ? 0 : 20,
     paddingRight: 16,
     backgroundColor: COLOR.WHITE,
     alignItems: 'flex-end',
@@ -164,12 +171,13 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     shadowOpacity: 0.1,
   },
+
   listItem: {
     width: '100%',
     flexDirection: 'row',
     marginVertical: 12,
     paddingVertical: 6,
-    borderStyle: 'dashed',
+    borderStyle: Platform.select({ web: 'dashed' }),
     borderBottomWidth: 1,
     borderBottomColor: COLOR.TRANSPARENT,
   },
@@ -177,9 +185,8 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   listItemText: {
-    width: '100%',
     fontFamily: FONT.SUMANA.BOLD,
     fontSize: 20,
-    lineHeight: 20,
+    lineHeight: Platform.OS === 'ios' ? 38 : 20,
   },
 });

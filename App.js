@@ -277,8 +277,8 @@ function DrawerNavigator () {
         headerTintColor: 'black',
         sceneContainerStyle: { backgroundColor: 'white' },
         drawerContentStyle: { paddingTop: 16, paddingLeft: 16, backgroundColor: 'white' },
-        drawerItemStyle: { paddingVertical: 12, paddingLeft: 32, paddingRight: 12, margin: 0 },
-        drawerLabelStyle: { fontSize: 18, fontFamily: FONT.SUMANA.REGULAR, lineHeight: 26 },
+        drawerItemStyle: styles.drawerItemStyle,
+        drawerLabelStyle: styles.drawerLabelStyle,
         drawerActiveTintColor: 'black',
         drawerInactiveTintColor: 'black',
         drawerActiveBackgroundColor: 'white',
@@ -350,7 +350,7 @@ function DrawerNavigator () {
 
 export default function App () {
   const [fontsLoaded] = useFonts({
-    [FONT.TIRO_GURMUKHI.REGULAR]: require('./assets/fonts/Tiro Gurmukhi/TiroGurmukhi-Regular.ttf'),
+    [FONT.TIRO_GURMUKHI.REGULAR]: require('./assets/fonts/TiroGurmukhi/TiroGurmukhi-Regular.ttf'),
 
     [FONT.SUMANA.REGULAR]: require('./assets/fonts/Sumana/Sumana-Regular.ttf'),
     [FONT.SUMANA.BOLD]: require('./assets/fonts/Sumana/Sumana-Bold.ttf'),
@@ -416,5 +416,17 @@ const styles = StyleSheet.create({
 
   logo: {
     marginBottom: 2,
+  },
+
+  drawerItemStyle: {
+    paddingVertical: deviceWidth >= MEDIA.DESKTOP ? 2 : 4,
+    paddingLeft: 32,
+    paddingRight: 12,
+    margin: 0,
+  },
+  drawerLabelStyle: {
+    fontFamily: FONT.SUMANA.REGULAR,
+    fontSize: 18,
+    lineHeight: 48,
   },
 });

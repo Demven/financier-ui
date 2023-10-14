@@ -5,6 +5,7 @@ import {
   Image,
   Text,
   View,
+  Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FONT } from '../../styles/fonts';
@@ -17,10 +18,14 @@ export default function SignInScreen () {
   const navigation = useNavigation();
 
   useEffect(() => {
-    window.addEventListener('resize', onResize);
+    if (Platform.OS === 'web') {
+      window.addEventListener('resize', onResize);
+    }
 
     return () => {
-      window.removeEventListener('resize', onResize);
+      if (Platform.OS === 'web') {
+        window.removeEventListener('resize', onResize);
+      }
     };
   }, []);
 
