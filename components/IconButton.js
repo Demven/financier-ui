@@ -1,10 +1,10 @@
 import { StyleSheet, Pressable } from 'react-native';
 import Icon, { ICON_COLLECTION } from './Icon';
 
-export default function IconButton ({ iconName, size, color, onPress }) {
+export default function IconButton ({ style, iconName, size, color, onPress }) {
   return (
     <Pressable
-      style={({ pressed }) => [styles.iconButton, pressed && styles.iconButtonPressed]}
+      style={({ pressed }) => [styles.iconButton, pressed && styles.iconButtonPressed, style]}
       onPress={onPress}
     >
       <Icon
@@ -25,8 +25,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     borderRadius: 24,
-    padding: 6,
-    marginVertical: 2,
-    marginHorizontal: 8,
+    padding: 0,
+    margin: 0,
   },
 });

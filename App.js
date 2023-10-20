@@ -15,6 +15,9 @@ import CategoriesScreen from './screens/CategoriesScreen';
 import SavingsScreen from './screens/SavingsScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import SignInScreen from './screens/SignInScreen';
+import ExpenseScreen from './screens/ExpenseScreen';
+import SavingScreen from './screens/SavingScreen';
+import IncomeScreen from './screens/IncomeScreen';
 import HeaderLeft from './components/HeaderLeft';
 import HeaderRight from './components/HeaderRight';
 import { TAB, TAB_NAME } from './components/HeaderTabs';
@@ -22,6 +25,7 @@ import DrawerContent from './components/DrawerContent';
 import { store } from './redux/store';
 import { MEDIA } from './styles/media';
 import { FONT } from './styles/fonts';
+import { COLOR } from './styles/colors';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -378,9 +382,10 @@ export default function App () {
           <Stack.Navigator
             initialRouteName='Categories'
             screenOptions={{
-              headerStyle: { backgroundColor: '#fff' },
-              headerTintColor: 'black',
-              contentStyle: { backgroundColor: '#fff' },
+              headerStyle: { backgroundColor: COLOR.WHITE },
+              headerTitleStyle: styles.headerTitleStyle,
+              headerTintColor: COLOR.BLACK,
+              contentStyle: { backgroundColor: COLOR.WHITE },
             }}
           >
             <Stack.Screen
@@ -398,6 +403,39 @@ export default function App () {
                 headerShown: false,
               }}
             />
+
+            <Stack.Screen
+              name='Expense'
+              component={ExpenseScreen}
+              options={{
+                title: 'Add an Expense',
+                presentation: Platform.OS === 'web' ? 'transparentModal' : 'modal',
+                headerShown: Platform.OS !== 'web',
+                contentStyle: { backgroundColor: Platform.select({ web: 'transparent' }) }
+              }}
+            />
+
+            <Stack.Screen
+              name='Saving'
+              component={SavingScreen}
+              options={{
+                title: 'Add a Saving',
+                presentation: Platform.OS === 'web' ? 'transparentModal' : 'modal',
+                headerShown: Platform.OS !== 'web',
+                contentStyle: { backgroundColor: Platform.select({ web: 'transparent' }) }
+              }}
+            />
+
+            <Stack.Screen
+              name='Income'
+              component={IncomeScreen}
+              options={{
+                title: 'Add an Income',
+                presentation: Platform.OS === 'web' ? 'transparentModal' : 'modal',
+                headerShown: Platform.OS !== 'web',
+                contentStyle: { backgroundColor: Platform.select({ web: 'transparent' }) }
+              }}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </Provider>
@@ -412,6 +450,12 @@ const styles = StyleSheet.create({
 
   headerLeft: {
     left: Platform.select({ ios: -16 }),
+  },
+
+  headerTitleStyle: {
+    fontFamily: FONT.SUMANA.BOLD,
+    fontSize: 18,
+    lineHeight: 18,
   },
 
   logo: {

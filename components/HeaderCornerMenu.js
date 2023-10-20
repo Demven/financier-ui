@@ -9,7 +9,7 @@ import { FONT } from '../styles/fonts';
 const MENU_ITEMS = [
   {
     title: 'Income',
-    navigateTo: 'Overview',
+    navigateTo: 'Income',
     color: COLOR.ORANGE,
     iconName: 'money-check-alt',
     iconCollection: ICON_COLLECTION.FONT_AWESOME_5,
@@ -19,7 +19,7 @@ const MENU_ITEMS = [
   },
   {
     title: 'Saving',
-    navigateTo: 'Savings',
+    navigateTo: 'Saving',
     color: COLOR.GREEN,
     iconName: 'bank',
     iconCollection: ICON_COLLECTION.MATERIAL_COMMUNITY,
@@ -29,7 +29,7 @@ const MENU_ITEMS = [
   },
   {
     title: 'Expense',
-    navigateTo: 'Categories',
+    navigateTo: 'Expense',
     color: COLOR.BLACK,
     iconName: 'money-off',
     iconCollection: ICON_COLLECTION.MATERIAL,
