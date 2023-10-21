@@ -1,23 +1,24 @@
-import { StyleSheet, Text } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet } from 'react-native';
 import Modal from '../../components/Modal';
+import Input, { KEYBOARD_TYPE } from '../../components/Input';
 
 export default function ExpenseScreen () {
+  const [name, setName] = useState('');
+  const [amount, setAmount] = useState('');
+
   return (
     <Modal
       style={styles.expenseScreen}
       title='Add an Expense'
     >
-      <Text>
-        Mise en place is a French term that literally means “put in place.” It
-        also refers to a way cooks in professional kitchens and restaurants
-        set up their work stations—first by gathering all ingredients for a
-        recipes, partially preparing them (like measuring out and chopping),
-        and setting them all near each other. Setting up mise en place before
-        cooking is another top tip for home cooks, as it seriously helps with
-        organization. It’ll pretty much guarantee you never forget to add an
-        ingredient and save you time from running back and forth from the
-        pantry ten times.
-      </Text>
+      <Input
+        label='Name'
+        keyboardType={KEYBOARD_TYPE.DEFAULT}
+        value={name}
+        placeholder='Latte'
+        onChange={setName}
+      />
     </Modal>
   );
 }

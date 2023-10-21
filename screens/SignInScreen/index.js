@@ -8,9 +8,10 @@ import {
   Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AppleButton from '../../components/AppleButton';
 import { FONT } from '../../styles/fonts';
 import { MEDIA } from '../../styles/media';
-import AppleButton from '../../components/AppleButton';
+import { COLOR } from '../../styles/colors';
 
 export default function SignInScreen () {
   const [imageWidth, setImageWidth] = useState(getWindowWidth());
@@ -77,7 +78,7 @@ const styles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
     fontFamily: FONT.TIRO_GURMUKHI.REGULAR,
-    color: '#504643',
+    color: COLOR.BROWN,
     textAlign: 'center',
   },
 
