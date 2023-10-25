@@ -11,6 +11,7 @@ import { FONT } from '../styles/fonts';
 
 export const KEYBOARD_TYPE = {
   DEFAULT: 'default',
+  NUMBER: 'numeric',
 };
 
 Input.propTypes = {
@@ -21,7 +22,10 @@ Input.propTypes = {
   maxLength: PropTypes.number,
   multiline: PropTypes.bool,
   secure: PropTypes.bool,
-  value: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
   onChange: PropTypes.func.isRequired,
   errorText: PropTypes.string,
 };

@@ -17,7 +17,7 @@ export const BUTTON_LOOK = {
 
 Button.propTypes = {
   style: PropTypes.object,
-  look: PropTypes.oneOf([Object.values(BUTTON_LOOK)]),
+  look: PropTypes.oneOf(Object.values(BUTTON_LOOK)),
   onPress: PropTypes.func,
   text: PropTypes.string.isRequired,
 };

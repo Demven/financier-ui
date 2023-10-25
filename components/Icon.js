@@ -15,7 +15,10 @@ export const ICON_COLLECTION = {
 };
 
 Icon.propTypes = {
-  style: PropTypes.object,
+  style: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.arrayOf(PropTypes.object),
+  ]),
   name: PropTypes.string.isRequired,
   collection: PropTypes.oneOf([
     ICON_COLLECTION.IONICONS,

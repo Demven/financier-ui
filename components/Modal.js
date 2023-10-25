@@ -162,6 +162,7 @@ const styles = StyleSheet.create({
   content: {
     padding: Platform.select({ ios: 0, web: 32 }),
     paddingRight: Platform.select({ ios: 0, web: 52 }),
+    zIndex: 1,
   },
 
   footer: {
