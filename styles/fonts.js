@@ -6,8 +6,8 @@ export const FONT = {
     REGULAR: 'Lora-Regular',
     BOLD: 'Lora-Bold',
   },
-  SUMANA: {
-    REGULAR: 'Sumana-Regular',
-    BOLD: 'Sumana-Bold',
+  NOTO_SERIF: {
+    REGULAR: 'NotoSerif-Regular',
+    BOLD: 'NotoSerif-Bold',
   },
 };

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Text,
   View,
@@ -24,7 +25,7 @@ Dropdown.propTypes = {
   setItems: PropTypes.func.isRequired,
 };
 
-const ITEM_HEIGHT = 40;
+const ITEM_HEIGHT = 52;
 
 export default function Dropdown (props) {
   const {
@@ -39,19 +40,31 @@ export default function Dropdown (props) {
     setItems = () => {},
   } = props;
 
+  const [focused, setFocused] = useState(false);
+
+  function onFocus () {
+    setFocused(true);
+  }
+
+  function onBlur () {
+    setFocused(false);
+  }
+
+
   return (
     <View style={[styles.dropdown, style]}>
-      <Text style={[styles.label, open && styles.labelOpen]}>
+      <Text style={[styles.label, (open || focused) && styles.labelActive]}>
         {label}
       </Text>
 
       <DropDownPicker
-        containerStyle={[styles.pickerContainer, open && styles.pickerContainerOpen]}
         style={[styles.picker]}
+        containerStyle={[styles.pickerContainer, (open || focused) && styles.pickerContainerActive]}
+        containerProps={{ onFocus, onBlur }}
         textStyle={styles.pickerText}
         dropDownContainerStyle={[styles.pickerList, {
-          height: `${Math.ceil(ITEM_HEIGHT * items.length)}px`,
-          maxHeight: `${Math.ceil(ITEM_HEIGHT * 6)}px`,
+          height: Math.ceil(ITEM_HEIGHT * items.length),
+          maxHeight: Math.ceil(ITEM_HEIGHT * 6),
         }]}
         listItemContainerStyle={styles.pickerListItem}
         listItemLabelStyle={styles.pickerListItemText}
@@ -103,15 +116,19 @@ const styles = StyleSheet.create({
   label: {
     marginBottom: 8,
     marginLeft: 4,
-    fontFamily: FONT.SUMANA.REGULAR,
+    fontFamily: FONT.NOTO_SERIF.REGULAR,
     fontSize: 12,
     lineHeight: 12,
     color: COLOR.GRAY,
     transition: 'color 0.3s',
   },
-  labelOpen: {
+  labelFocused: {
     color: COLOR.ORANGE,
-    fontFamily: FONT.SUMANA.BOLD,
+    fontFamily: FONT.NOTO_SERIF.BOLD,
+  },
+  labelActive: {
+    color: COLOR.ORANGE,
+    fontFamily: FONT.NOTO_SERIF.BOLD,
   },
 
   pickerContainer: {
@@ -120,45 +137,51 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     transition: 'border 0.3s',
   },
-  pickerContainerOpen: {
+  pickerContainerActive: {
     borderBottomColor: COLOR.BRIGHT_ORANGE,
     borderBottomWidth: 3,
   },
 
   picker: {
-    border: 0,
+    borderWidth: 0,
+    outlineStyle: 'none',
   },
+
   pickerList: {
     top: 55,
     borderRadius: 0,
     borderColor: COLOR.LIGHTER_GRAY,
+    paddingVertical: 8,
+    backgroundColor: COLOR.WHITE,
   },
   pickerListItem: {
     height: 'auto',
-    paddingVertical: 8,
+    paddingVertical: 16,
     paddingHorizontal: 24,
+    paddingLeft: 30,
   },
   pickerListItemText: {
-    fontFamily: FONT.SUMANA.REGULAR,
-    fontSize: 18,
-    lineHeight: 34,
+    fontFamily: FONT.NOTO_SERIF.REGULAR,
+    fontSize: 20,
+    lineHeight: 20,
     color: COLOR.DARK_GRAY,
   },
   pickerListItemTextSelected: {
-    fontFamily: FONT.SUMANA.BOLD,
+    left: -12,
+    fontFamily: FONT.NOTO_SERIF.BOLD,
   },
   pickerPlaceholder: {
     left: -6,
-    fontFamily: FONT.SUMANA.REGULAR,
+    fontFamily: FONT.NOTO_SERIF.REGULAR,
     fontSize: 20,
-    lineHeight: 36,
+    lineHeight: 20,
     color: COLOR.LIGHT_GRAY,
   },
   pickerText: {
     left: -6,
-    fontFamily: FONT.SUMANA.REGULAR,
+    fontFamily: FONT.NOTO_SERIF.REGULAR,
     fontSize: 20,
-    lineHeight: 36,
+    lineHeight: 20,
     color: COLOR.DARK_GRAY,
   },
 });

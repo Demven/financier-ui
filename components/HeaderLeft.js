@@ -62,10 +62,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerTitle: {
+    marginTop: deviceWidth < MEDIA.TABLET ? 4 : 2,
     marginLeft: deviceWidth < MEDIA.TABLET ? 16 : 34,
-    fontFamily: deviceWidth < MEDIA.TABLET ? FONT.SUMANA.BOLD : FONT.SUMANA.REGULAR,
+    fontFamily: FONT.NOTO_SERIF.BOLD,
     fontSize: deviceWidth < MEDIA.TABLET ? 18 : 20,
-    lineHeight: deviceWidth < MEDIA.TABLET ? 48 : 30,
+    lineHeight: deviceWidth < MEDIA.TABLET ? 18 : 20,
   },
   headerDropdown: {
     marginLeft: 24,

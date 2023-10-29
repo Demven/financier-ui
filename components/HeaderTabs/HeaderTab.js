@@ -43,20 +43,20 @@ const styles = StyleSheet.create({
   },
 
   headerTabTextContainer: {
-    minWidth: 80,
+    minWidth: 84,
     paddingHorizontal: 12,
     paddingBottom: 10,
     boxSizing: 'content-box',
   },
   headerTabText: {
     width: '100%',
-    fontFamily: FONT.SUMANA.REGULAR,
+    fontFamily: FONT.NOTO_SERIF.REGULAR,
     fontSize: 22,
     lineHeight: 28,
     textAlign: 'center',
   },
   headerTabActiveText: {
-    fontFamily: FONT.SUMANA.BOLD,
+    fontFamily: FONT.NOTO_SERIF.BOLD,
     paddingBottom: 1,
   },
 });

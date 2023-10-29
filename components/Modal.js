@@ -107,6 +107,7 @@ export default function Modal (props) {
           />
 
           <Button
+            style={styles.saveButton}
             look={BUTTON_LOOK.PRIMARY}
             text='Save'
             onPress={onClose}
@@ -147,10 +148,10 @@ const styles = StyleSheet.create({
   },
   title: {
     height: 34,
-    paddingLeft: 16,
-    fontFamily: FONT.SUMANA.BOLD,
-    fontSize: 34,
-    lineHeight: 34,
+    paddingLeft: 20,
+    fontFamily: FONT.NOTO_SERIF.BOLD,
+    fontSize: 30,
+    lineHeight: 38,
     color: COLOR.DARK_GRAY,
   },
   closeButton: {
@@ -166,14 +167,20 @@ const styles = StyleSheet.create({
   },
 
   footer: {
+    marginTop: Platform.select({ ios: 'auto' }),
+    marginBottom: Platform.select({ ios: 34 }),
     paddingTop: Platform.select({ ios: 80, web: 24 }),
     flexDirection: 'row',
-    justifyContent: deviceWidth < MEDIA.TABLET ? 'space-between' : 'flex-end',
+    justifyContent: deviceWidth < MEDIA.TABLET ? 'center' : 'flex-end',
     borderTopWidth: Platform.select({ web: 1 }),
     borderTopColor: COLOR.LIGHTER_GRAY,
   },
 
   cancelButton: {
+    width: 150,
     marginRight: 24,
+  },
+  saveButton: {
+    width: 150,
   },
 });

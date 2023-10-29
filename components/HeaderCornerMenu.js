@@ -33,7 +33,7 @@ const MENU_ITEMS = [
     color: COLOR.BLACK,
     iconName: 'money-off',
     iconCollection: ICON_COLLECTION.MATERIAL,
-    iconSize: 22,
+    iconSize: 24,
     iconOffsetTop: 0,
     iconOffsetRight: 6,
   },
@@ -76,8 +76,8 @@ export default function HeaderCornerMenu ({ style }) {
           )}
 
           <Icon
-            style={styles.icon}
-            name={opened ? 'close-circle-outline' : 'add-circle-outline'}
+            style={[styles.icon, opened && styles.iconRotate45Degrees]}
+            name='add-circle-outline'
             collection={ICON_COLLECTION.IONICONS}
             size={32}
             color={opened ? COLOR.GRAY : COLOR.BLACK}
@@ -146,13 +146,18 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 8,
+    transition: Platform.select({ web: 'transform 0.2s' }),
   },
+  iconRotate45Degrees: {
+    transform: 'translateY(1px) rotate(45deg)',
+  },
+
   addText: {
-    marginBottom: 3,
+    marginTop: 2,
     marginRight: 12,
-    fontFamily: FONT.SUMANA.BOLD,
-    fontSize: 16,
-    lineHeight: Platform.OS === 'ios' ? 40 : 16,
+    fontFamily: FONT.NOTO_SERIF.BOLD,
+    fontSize: 15,
+    lineHeight: 15,
     color: COLOR.GRAY,
   },
 
@@ -185,8 +190,8 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   listItemText: {
-    fontFamily: FONT.SUMANA.BOLD,
+    fontFamily: FONT.NOTO_SERIF.BOLD,
     fontSize: 20,
-    lineHeight: Platform.OS === 'ios' ? 38 : 20,
+    lineHeight: 23,
   },
 });

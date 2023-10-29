@@ -4,21 +4,29 @@ import {
   TextInput,
   View,
   StyleSheet,
+  Platform,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { COLOR } from '../styles/colors';
 import { FONT } from '../styles/fonts';
 
-export const KEYBOARD_TYPE = {
+export const INPUT_TYPE = {
   DEFAULT: 'default',
-  NUMBER: 'numeric',
+  NUMBER: 'number',
+  CURRENCY: 'currency',
+};
+
+const KEYBOARD_TYPE = {
+  [INPUT_TYPE.DEFAULT]: 'default',
+  [INPUT_TYPE.NUMBER]: 'numeric',
+  [INPUT_TYPE.CURRENCY]: 'numeric',
 };
 
 Input.propTypes = {
   style: PropTypes.object,
+  inputType: PropTypes.oneOf(Object.values(INPUT_TYPE)),
   label: PropTypes.string,
   placeholder: PropTypes.string,
-  keyboardType: PropTypes.oneOf(Object.values(KEYBOARD_TYPE)),
   maxLength: PropTypes.number,
   multiline: PropTypes.bool,
   secure: PropTypes.bool,
@@ -35,7 +43,7 @@ export default function Input (props) {
     style,
     label,
     placeholder,
-    keyboardType,
+    inputType,
     maxLength,
     multiline,
     secure,
@@ -58,13 +66,18 @@ export default function Input (props) {
         {label}
       </Text>
 
+      {inputType === INPUT_TYPE.CURRENCY && (
+        <Text style={[styles.currencySymbol, focused && styles.currencySymbolFocused]}>$</Text>
+      )}
+
       <TextInput
         style={[
           styles.input,
           multiline && styles.multiline,
           errorText && styles.inputInvalid,
+          inputType === INPUT_TYPE.CURRENCY && styles.inputWithCurrencySymbol,
         ]}
-        keyboardType={keyboardType}
+        keyboardType={KEYBOARD_TYPE[inputType] || KEYBOARD_TYPE[INPUT_TYPE.DEFAULT]}
         placeholder={placeholder}
         placeholderTextColor={COLOR.LIGHT_GRAY}
         maxLength={maxLength}
@@ -96,34 +109,51 @@ const styles = StyleSheet.create({
   },
 
   label: {
-    marginBottom: 8,
+    marginBottom: Platform.select({ web: 8, ios: 0 }),
     marginLeft: 4,
-    fontFamily: FONT.SUMANA.REGULAR,
-    fontSize: 12,
-    lineHeight: 12,
+    fontFamily: FONT.NOTO_SERIF.REGULAR,
+    fontSize: 10,
+    lineHeight: 10,
     color: COLOR.GRAY,
-    transition: 'color 0.3s',
+    transition: Platform.select({ web: 'color 0.3s' }),
   },
   labelFocused: {
     color: COLOR.ORANGE,
-    fontFamily: FONT.SUMANA.BOLD,
+    fontFamily: FONT.NOTO_SERIF.BOLD,
+  },
+
+  currencySymbol: {
+    position: 'absolute',
+    left: 3,
+    bottom: Platform.select({ web: 10, ios: 7 }),
+    fontFamily: FONT.NOTO_SERIF.REGULAR,
+    fontSize: Platform.select({ web: 24, ios: 28 }),
+    lineHeight: Platform.select({ web: 24, ios: 28 }),
+    color: COLOR.GRAY,
+  },
+  currencySymbolFocused: {
+    fontFamily: FONT.NOTO_SERIF.BOLD,
   },
 
   input: {
-    paddingTop: 4,
-    paddingBottom: 8,
+    paddingTop: Platform.select({ web: 0, ios: 4 }),
+    paddingBottom: Platform.select({ web: 4, ios: 12 }),
     paddingHorizontal: 4,
     backgroundColor: COLOR.TRANSPARENT,
     color: COLOR.DARK_GRAY,
-    fontFamily: FONT.SUMANA.REGULAR,
-    fontSize: 20,
-    lineHeight: 30,
-    border: 0,
-    transition: 'border 0.3s',
+    fontFamily: FONT.NOTO_SERIF.REGULAR,
+    fontSize: Platform.select({ web: 20, ios: 22 }),
+    lineHeight: Platform.select({ web: 34, ios: 34 }),
+    borderWidth: 0,
+    transition: Platform.select({ web: 'border 0.3s' }),
     outlineStyle: 'none',
   },
   inputInvalid: {
     backgroundColor: COLOR.RED,
+  },
+  inputWithCurrencySymbol: {
+    paddingLeft: 20,
+    textAlign: 'right',
   },
   multiline: {
     minHeight: 100,

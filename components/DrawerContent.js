@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   userNameText: {
-    fontFamily: FONT.SUMANA.BOLD,
+    fontFamily: FONT.NOTO_SERIF.BOLD,
     fontSize: 18,
     color: COLOR.GRAY,
   },

@@ -356,8 +356,8 @@ export default function App () {
   const [fontsLoaded] = useFonts({
     [FONT.TIRO_GURMUKHI.REGULAR]: require('./assets/fonts/TiroGurmukhi/TiroGurmukhi-Regular.ttf'),
 
-    [FONT.SUMANA.REGULAR]: require('./assets/fonts/Sumana/Sumana-Regular.ttf'),
-    [FONT.SUMANA.BOLD]: require('./assets/fonts/Sumana/Sumana-Bold.ttf'),
+    [FONT.NOTO_SERIF.REGULAR]: require('./assets/fonts/NotoSerif/NotoSerif-Regular.ttf'),
+    [FONT.NOTO_SERIF.BOLD]: require('./assets/fonts/NotoSerif/NotoSerif-Bold.ttf'),
   });
 
   const onLayoutRootView = useCallback(async () => {
@@ -453,7 +453,7 @@ const styles = StyleSheet.create({
   },
 
   headerTitleStyle: {
-    fontFamily: FONT.SUMANA.BOLD,
+    fontFamily: FONT.NOTO_SERIF.BOLD,
     fontSize: 18,
     lineHeight: 18,
   },
@@ -464,13 +464,13 @@ const styles = StyleSheet.create({
 
   drawerItemStyle: {
     paddingVertical: deviceWidth >= MEDIA.DESKTOP ? 2 : 4,
-    paddingLeft: 32,
+    paddingLeft: 22,
     paddingRight: 12,
     margin: 0,
   },
   drawerLabelStyle: {
-    fontFamily: FONT.SUMANA.REGULAR,
+    fontFamily: FONT.NOTO_SERIF.REGULAR,
     fontSize: 18,
-    lineHeight: 48,
+    lineHeight: 36,
   },
 });

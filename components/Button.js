@@ -3,7 +3,8 @@ import {
   StyleSheet,
   Pressable,
   View,
-  Text, Platform,
+  Text,
+  Platform,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { FONT } from '../styles/fonts';
@@ -31,6 +32,7 @@ export default function Button (props) {
   } = props;
 
   const [hover, setHover] = useState(false);
+  const [focused, setFocused] = useState(false);
 
   return (
     <Pressable
@@ -38,10 +40,12 @@ export default function Button (props) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onPress={onPress}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
     >
       <View style={[
         styles.buttonContainer,
-        hover && styles.buttonContainerHover,
+        (hover || focused) && styles.buttonContainerActive,
         styles[`buttonContainer--${look}`
       ]]}>
         <Text style={[styles.text, styles[`text--${look}`]]}>
@@ -53,7 +57,9 @@ export default function Button (props) {
 }
 
 const styles = StyleSheet.create({
-  button: {},
+  button: {
+    outlineStyle: 'none',
+  },
   buttonPressed: {
     opacity: 0.7,
   },
@@ -61,15 +67,16 @@ const styles = StyleSheet.create({
   buttonContainer: {
     position: 'relative',
     height: Platform.select({ ios: 46, web: 40 }),
-    paddingTop: Platform.select({ ios: 12, web: 8 }),
+    paddingVertical: 8,
     paddingHorizontal: Platform.select({ ios: 36, web: 24 }),
-    paddingBottom: Platform.select({ ios: 0, web: 8 }),
+    justifyContent: 'center',
+    alignItems: 'center',
     borderWidth: 1,
     borderStyle: 'solid',
     borderRadius: 2,
     boxSizing: 'border-box',
   },
-  buttonContainerHover: {
+  buttonContainerActive: {
     borderWidth: 2,
     paddingVertical: 7,
     paddingHorizontal: 23,
@@ -88,12 +95,11 @@ const styles = StyleSheet.create({
   },
 
   text: {
-    paddingBottom: Platform.select({ ios: 0, web: 3 }),
-    fontFamily: FONT.SUMANA.REGULAR,
-    fontSize: Platform.select({ ios: 21, web: 18 }),
-    lineHeight: Platform.select({ ios: 38, web: 18 }),
+    fontFamily: FONT.NOTO_SERIF.REGULAR,
+    fontSize: Platform.select({ ios: 20, web: 18 }),
+    lineHeight: Platform.select({ ios: 26, web: 18 }),
   },
   ['text--primary']: {
-    fontFamily: FONT.SUMANA.BOLD,
+    fontFamily: FONT.NOTO_SERIF.BOLD,
   },
 });

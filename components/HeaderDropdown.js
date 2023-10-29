@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
 
   selectedItemValue: {
     marginLeft: 28,
-    fontFamily: FONT.SUMANA.BOLD,
+    fontFamily: FONT.NOTO_SERIF.BOLD,
     fontSize: 22,
     lineHeight: 22,
   },
@@ -142,9 +142,9 @@ const styles = StyleSheet.create({
   },
   listItemText: {
     width: '100%',
-    fontFamily: FONT.SUMANA.BOLD,
+    fontFamily: FONT.NOTO_SERIF.REGULAR,
     textAlign: 'center',
-    fontSize: 17,
-    lineHeight: 17,
+    fontSize: 20,
+    lineHeight: 20,
   },
 });

@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
+// import { DatePickerModal } from 'react-native-paper-dates';
 import Modal from '../../components/Modal';
-import Input, { KEYBOARD_TYPE } from '../../components/Input';
+import Input, { INPUT_TYPE } from '../../components/Input';
+// import Button, { BUTTON_LOOK } from '../../components/Button';
 import Dropdown from '../../components/Dropdown';
 
 const CATEGORIES = [
@@ -38,51 +40,83 @@ export default function ExpenseScreen () {
 
   const [amount, setAmount] = useState('');
 
+  // const [datePickerOpen, setDatePickerOpen] = useState(false);
+  // const [date, setDate] = useState(new Date());
+  //
+  // function onPickDate ({ date }) {
+  //   setDate(date);
+  //   setDatePickerOpen(false);
+  // }
+
   return (
     <Modal
       style={styles.expenseScreen}
       title='Add an Expense'
     >
       <Input
+        style={styles.formElement}
         label='Name'
         placeholder='Latte'
-        keyboardType={KEYBOARD_TYPE.DEFAULT}
+        inputType={INPUT_TYPE.DEFAULT}
         value={name}
         onChange={setName}
       />
 
-      <Dropdown
-        style={styles.dropdown}
-        label='Category'
-        placeholder='Select a category'
-        open={categorySelectOpen}
-        setOpen={setCategorySelectOpen}
-        value={categoryId}
-        setValue={setCategoryId}
-        items={categories}
-        setItems={setCategories}
-      />
+      <View style={[styles.formRow, { zIndex: 20 }]}>
+        <Dropdown
+          style={styles.formElement}
+          label='Category'
+          placeholder='Select a category'
+          open={categorySelectOpen}
+          setOpen={setCategorySelectOpen}
+          value={categoryId}
+          setValue={setCategoryId}
+          items={categories}
+          setItems={setCategories}
+        />
+      </View>
 
-      <Dropdown
-        style={styles.dropdown}
-        label='Subcategory'
-        placeholder='Group expenses by subcategory'
-        open={subcategorySelectOpen}
-        setOpen={setSubcategorySelectOpen}
-        value={subcategoryId}
-        setValue={setSubcategoryId}
-        items={subcategories}
-        setItems={setSubcategories}
-      />
+      <View style={[styles.formRow, { zIndex: 10 }]}>
+        <Dropdown
+          style={styles.formElement}
+          label='Subcategory'
+          placeholder='Group expenses'
+          open={subcategorySelectOpen}
+          setOpen={setSubcategorySelectOpen}
+          value={subcategoryId}
+          setValue={setSubcategoryId}
+          items={subcategories}
+          setItems={setSubcategories}
+        />
+      </View>
 
-      <Input
-        style={styles.input}
-        label='Amount'
-        placeholder='0.01'
-        keyboardType={KEYBOARD_TYPE.NUMBER}
-        value={amount}
-        onChange={setAmount}
-      />
+      <View style={styles.formRow}>
+        <Input
+          style={styles.amountInput}
+          label='Amount'
+          placeholder='0.01'
+          inputType={INPUT_TYPE.CURRENCY}
+          value={amount}
+          onChange={setAmount}
+        />
+      </View>
+
+{/*      <Button
+        look={BUTTON_LOOK.SECONDARY}
+        text='Choose Date'
+        onPress={() => setDatePickerOpen(true)}
+      />*/}
+
+      {/*<DatePickerModal*/}
+      {/*  visible={datePickerOpen}*/}
+      {/*  date={date}*/}
+      {/*  locale='en'*/}
+      {/*  mode='single'*/}
+      {/*  onConfirm={onPickDate}*/}
+      {/*  onDismiss={() => setDatePickerOpen(false)}*/}
+      {/*  animationType='fade'*/}
+      {/*  inputEnabled={false}*/}
+      {/*/>*/}
     </Modal>
   );
 }
@@ -90,11 +124,17 @@ export default function ExpenseScreen () {
 const styles = StyleSheet.create({
   expenseScreen: {},
 
-  dropdown: {
+  formRow: {
+    flexGrow: 1,
     marginTop: 32,
+    alignItems: 'flex-end',
   },
 
-  input: {
-    marginTop: 32,
+  formElement: {
+    width: '100%',
+  },
+
+  amountInput: {
+    width: Platform.select({ web: '50%', ios: '100%' }),
   },
 });
