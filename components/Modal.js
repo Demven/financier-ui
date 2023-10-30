@@ -19,6 +19,7 @@ const deviceWidth = Dimensions.get('window').width;
 
 Modal.propTypes = {
   style: PropTypes.object,
+  contentStyle: PropTypes.object,
   title: PropTypes.string.isRequired,
   children: PropTypes.any.isRequired,
   maxWidth: PropTypes.number,
@@ -27,6 +28,7 @@ Modal.propTypes = {
 export default function Modal (props) {
   const {
     style,
+    contentStyle,
     title,
     children,
     maxWidth = 680,
@@ -94,7 +96,7 @@ export default function Modal (props) {
           />
         )}
 
-        <View style={styles.content}>
+        <View style={[styles.content, contentStyle]}>
           {children}
         </View>
 

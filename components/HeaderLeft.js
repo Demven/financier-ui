@@ -7,7 +7,7 @@ import Logo from './Logo';
 import HeaderDropdown from './HeaderDropdown';
 import { setSelectedYear } from '../redux/reducers/ui';
 import { FONT } from '../styles/fonts';
-import { MEDIA } from "../styles/media";
+import { MEDIA } from '../styles/media';
 
 const deviceWidth = Dimensions.get('window').width;
 
@@ -62,11 +62,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerTitle: {
-    marginTop: deviceWidth < MEDIA.TABLET ? 4 : 2,
+    marginTop: deviceWidth < MEDIA.TABLET ? 8 : 2,
     marginLeft: deviceWidth < MEDIA.TABLET ? 16 : 34,
     fontFamily: FONT.NOTO_SERIF.BOLD,
     fontSize: deviceWidth < MEDIA.TABLET ? 18 : 20,
-    lineHeight: deviceWidth < MEDIA.TABLET ? 18 : 20,
+    lineHeight: deviceWidth < MEDIA.TABLET ? 18 : 26,
   },
   headerDropdown: {
     marginLeft: 24,

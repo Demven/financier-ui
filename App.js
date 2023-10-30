@@ -380,7 +380,7 @@ export default function App () {
       <Provider store={store}>
         <NavigationContainer>
           <Stack.Navigator
-            initialRouteName='Categories'
+            initialRouteName='Drawer'
             screenOptions={{
               headerStyle: { backgroundColor: COLOR.WHITE },
               headerTitleStyle: styles.headerTitleStyle,
@@ -411,7 +411,8 @@ export default function App () {
                 title: 'Add an Expense',
                 presentation: Platform.OS === 'web' ? 'transparentModal' : 'modal',
                 headerShown: Platform.OS !== 'web',
-                contentStyle: { backgroundColor: Platform.select({ web: 'transparent' }) }
+                contentStyle: { backgroundColor: Platform.select({ web: 'transparent' }) },
+                headerTitleStyle: styles.modalTitle,
               }}
             />
 
@@ -422,7 +423,8 @@ export default function App () {
                 title: 'Add a Saving',
                 presentation: Platform.OS === 'web' ? 'transparentModal' : 'modal',
                 headerShown: Platform.OS !== 'web',
-                contentStyle: { backgroundColor: Platform.select({ web: 'transparent' }) }
+                contentStyle: { backgroundColor: Platform.select({ web: 'transparent' }) },
+                headerTitleStyle: styles.modalTitle,
               }}
             />
 
@@ -433,7 +435,8 @@ export default function App () {
                 title: 'Add an Income',
                 presentation: Platform.OS === 'web' ? 'transparentModal' : 'modal',
                 headerShown: Platform.OS !== 'web',
-                contentStyle: { backgroundColor: Platform.select({ web: 'transparent' }) }
+                contentStyle: { backgroundColor: Platform.select({ web: 'transparent' }) },
+                headerTitleStyle: styles.modalTitle,
               }}
             />
           </Stack.Navigator>
@@ -455,7 +458,7 @@ const styles = StyleSheet.create({
   headerTitleStyle: {
     fontFamily: FONT.NOTO_SERIF.BOLD,
     fontSize: 18,
-    lineHeight: 18,
+    lineHeight: 24,
   },
 
   logo: {
@@ -473,4 +476,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 36,
   },
+
+  modalTitle: {
+    fontFamily: FONT.NOTO_SERIF.BOLD,
+    fontSize: 18,
+  }
 });

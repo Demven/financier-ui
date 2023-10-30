@@ -5,6 +5,10 @@ import Modal from '../../components/Modal';
 import Input, { INPUT_TYPE } from '../../components/Input';
 // import Button, { BUTTON_LOOK } from '../../components/Button';
 import Dropdown from '../../components/Dropdown';
+import { ICON_COLLECTION } from '../../components/Icon';
+import IconButton from '../../components/IconButton';
+import { COLOR } from '../../styles/colors';
+import { useNavigation } from "@react-navigation/native";
 
 const CATEGORIES = [
   { id: '123', name: 'Primary Expenses', description: 'Food, clothes, transport, medicine, taxes, mobile, internet, etc.' },
@@ -21,8 +25,15 @@ const SUBCATEGORIES = [
   { id: '456', name: 'Gas' },
 ];
 
+const DATE_OPTIONS = [
+  { id: '123', name: 'Today' },
+  { id: '234', name: 'Yesterday' },
+  { id: '345', name: 'Choose a Date' },
+];
+
 export default function ExpenseScreen () {
   const [name, setName] = useState('');
+  const navigation = useNavigation();
 
   const [categorySelectOpen, setCategorySelectOpen] = useState(false);
   const [categoryId, setCategoryId] = useState(null);
@@ -38,6 +49,13 @@ export default function ExpenseScreen () {
     value: subcategory.id,
   })));
 
+  const [dateOptionsSelectOpen, setDateOptionsSelectOpen] = useState(false);
+  const [dateOptions, setDateOptions] = useState(DATE_OPTIONS.map(dateOption => ({
+    label: dateOption.name,
+    value: dateOption.id,
+  })));
+  const [dateOptionId, setDateOptionId] = useState(dateOptions[0].value);
+
   const [amount, setAmount] = useState('');
 
   // const [datePickerOpen, setDatePickerOpen] = useState(false);
@@ -48,9 +66,17 @@ export default function ExpenseScreen () {
   //   setDatePickerOpen(false);
   // }
 
+  function onAddCategory () {
+    navigation.navigate('Categories'); // TODO: open Add Category modal
+  }
+
+  function onAddSubcategory () {
+    navigation.navigate('Categories'); // TODO: open Add Sub Category modal
+  }
+
   return (
     <Modal
-      style={styles.expenseScreen}
+      contentStyle={styles.expenseScreen}
       title='Add an Expense'
     >
       <Input
@@ -62,7 +88,7 @@ export default function ExpenseScreen () {
         onChange={setName}
       />
 
-      <View style={[styles.formRow, { zIndex: 20 }]}>
+      <View style={[styles.formRow, { zIndex: 30 }]}>
         <Dropdown
           style={styles.formElement}
           label='Category'
@@ -74,9 +100,18 @@ export default function ExpenseScreen () {
           items={categories}
           setItems={setCategories}
         />
+
+        <IconButton
+          style={styles.addButton}
+          iconName='add-circle-outline'
+          iconCollection={ICON_COLLECTION.IONICONS}
+          size={32}
+          color={COLOR.BLACK}
+          onPress={onAddCategory}
+        />
       </View>
 
-      <View style={[styles.formRow, { zIndex: 10 }]}>
+      <View style={[styles.formRow, { zIndex: 20 }]}>
         <Dropdown
           style={styles.formElement}
           label='Subcategory'
@@ -87,6 +122,28 @@ export default function ExpenseScreen () {
           setValue={setSubcategoryId}
           items={subcategories}
           setItems={setSubcategories}
+        />
+
+        <IconButton
+          style={styles.addButton}
+          iconName='add-circle-outline'
+          iconCollection={ICON_COLLECTION.IONICONS}
+          size={32}
+          color={COLOR.BLACK}
+          onPress={onAddSubcategory}
+        />
+      </View>
+
+      <View style={[styles.formRow, { zIndex: 10 }]}>
+        <Dropdown
+          style={styles.formElement}
+          label='Date'
+          open={dateOptionsSelectOpen}
+          setOpen={setDateOptionsSelectOpen}
+          value={dateOptionId}
+          setValue={setDateOptionId}
+          items={dateOptions}
+          setItems={setDateOptions}
         />
       </View>
 
@@ -122,19 +179,31 @@ export default function ExpenseScreen () {
 }
 
 const styles = StyleSheet.create({
-  expenseScreen: {},
+  expenseScreen: {
+    paddingTop: Platform.select({ web: 48 }),
+    paddingBottom: Platform.select({ web: 80 }),
+  },
 
   formRow: {
+    flexDirection: 'row',
     flexGrow: 1,
     marginTop: 32,
     alignItems: 'flex-end',
+    justifyContent: 'flex-end',
   },
 
   formElement: {
-    width: '100%',
+    flexShrink: 1,
+  },
+
+  addButton: {
+    width: 46,
+    height: 46,
+    marginLeft: 16,
   },
 
   amountInput: {
     width: Platform.select({ web: '50%', ios: '100%' }),
+    flexGrow: 0,
   },
 });
