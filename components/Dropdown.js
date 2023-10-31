@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
   Text,
   View,
-  StyleSheet,
+  StyleSheet, Platform,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -21,6 +21,7 @@ Dropdown.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape({
     label: PropTypes.string,
     value: PropTypes.string,
+    description: PropTypes.string,
   })).isRequired,
   setItems: PropTypes.func.isRequired,
 };
@@ -50,6 +51,7 @@ export default function Dropdown (props) {
     setFocused(false);
   }
 
+  const description = items.find(item => item.value === value)?.description;
 
   return (
     <View style={[styles.dropdown, style]}>
@@ -104,6 +106,12 @@ export default function Dropdown (props) {
           />
         )}
       />
+
+      {description && (
+        <Text style={styles.description}>
+          {description}
+        </Text>
+      )}
     </View>
   );
 }
@@ -181,6 +189,16 @@ const styles = StyleSheet.create({
     left: -6,
     fontFamily: FONT.NOTO_SERIF.REGULAR,
     fontSize: 20,
+    lineHeight: 20,
+    color: COLOR.DARK_GRAY,
+  },
+
+  description: {
+    width: Platform.select({ web: '80%' }),
+    marginTop: 12,
+    marginLeft: 4,
+    fontFamily: FONT.NOTO_SERIF.REGULAR,
+    fontSize: 15,
     lineHeight: 20,
     color: COLOR.DARK_GRAY,
   },

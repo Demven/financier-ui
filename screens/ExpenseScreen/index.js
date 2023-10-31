@@ -11,24 +11,24 @@ import { COLOR } from '../../styles/colors';
 import { useNavigation } from "@react-navigation/native";
 
 const CATEGORIES = [
-  { id: '123', name: 'Primary Expenses', description: 'Food, clothes, transport, medicine, taxes, mobile, internet, etc.' },
-  { id: '234', name: 'Secondary Expenses', description: 'Home goods, furniture, renovation, car, hobbies, etc.' },
-  { id: '345', name: 'Housing', description: 'Mortgage, rent, insurance' },
-  { id: '456', name: 'Entertainment', description: 'Dining, bars, night clubs, concerts, casual trips, etc.' },
-  { id: '567', name: 'Gifts & Charity', description: 'Donations, presents, street musicians, etc.' },
+  { value: '123', label: 'Primary Expenses', description: 'Food, clothes, transport, medicine, taxes, mobile, internet, etc.' },
+  { value: '234', label: 'Secondary Expenses', description: 'Home goods, furniture, renovation, car, hobbies, etc.' },
+  { value: '345', label: 'Housing', description: 'Mortgage, rent, insurance' },
+  { value: '456', label: 'Entertainment', description: 'Dining, bars, night clubs, concerts, casual trips, etc.' },
+  { value: '567', label: 'Gifts & Charity', description: 'Donations, presents, street musicians, etc.' },
 ];
 
 const SUBCATEGORIES = [
-  { id: '123', name: 'Lunch' },
-  { id: '234', name: 'Dining' },
-  { id: '345', name: 'Taxi' },
-  { id: '456', name: 'Gas' },
+  { value: '123', label: 'Lunch' },
+  { value: '234', label: 'Dining' },
+  { value: '345', label: 'Taxi' },
+  { value: '456', label: 'Gas' },
 ];
 
 const DATE_OPTIONS = [
-  { id: '123', name: 'Today' },
-  { id: '234', name: 'Yesterday' },
-  { id: '345', name: 'Choose a Date' },
+  { value: '123', label: 'Today' },
+  { value: '234', label: 'Yesterday' },
+  { value: '345', label: 'Choose a Date' },
 ];
 
 export default function ExpenseScreen () {
@@ -37,24 +37,15 @@ export default function ExpenseScreen () {
 
   const [categorySelectOpen, setCategorySelectOpen] = useState(false);
   const [categoryId, setCategoryId] = useState(null);
-  const [categories, setCategories] = useState(CATEGORIES.map(category => ({
-    label: category.name,
-    value: category.id,
-  })));
+  const [categories, setCategories] = useState(CATEGORIES);
 
   const [subcategorySelectOpen, setSubcategorySelectOpen] = useState(false);
   const [subcategoryId, setSubcategoryId] = useState(null);
-  const [subcategories, setSubcategories] = useState(SUBCATEGORIES.map(subcategory => ({
-    label: subcategory.name,
-    value: subcategory.id,
-  })));
+  const [subcategories, setSubcategories] = useState(SUBCATEGORIES);
 
   const [dateOptionsSelectOpen, setDateOptionsSelectOpen] = useState(false);
-  const [dateOptions, setDateOptions] = useState(DATE_OPTIONS.map(dateOption => ({
-    label: dateOption.name,
-    value: dateOption.id,
-  })));
-  const [dateOptionId, setDateOptionId] = useState(dateOptions[0].value);
+  const [dateOptionId, setDateOptionId] = useState(DATE_OPTIONS[0].value);
+  const [dateOptions, setDateOptions] = useState(DATE_OPTIONS);
 
   const [amount, setAmount] = useState('');
 
@@ -188,7 +179,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexGrow: 1,
     marginTop: 32,
-    alignItems: 'flex-end',
     justifyContent: 'flex-end',
   },
 
@@ -200,6 +190,7 @@ const styles = StyleSheet.create({
     width: 46,
     height: 46,
     marginLeft: 16,
+    marginTop: 28,
   },
 
   amountInput: {
