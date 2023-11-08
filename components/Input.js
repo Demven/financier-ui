@@ -62,9 +62,11 @@ export default function Input (props) {
         style,
       ]}
     >
-      <Text style={[styles.label, focused && styles.labelFocused]}>
-        {label}
-      </Text>
+      {label && (
+        <Text style={[styles.label, focused && styles.labelFocused]}>
+          {label}
+        </Text>
+      )}
 
       {inputType === INPUT_TYPE.CURRENCY && (
         <Text style={[styles.currencySymbol, focused && styles.currencySymbolFocused]}>$</Text>
@@ -143,7 +145,7 @@ const styles = StyleSheet.create({
     color: COLOR.DARK_GRAY,
     fontFamily: FONT.NOTO_SERIF.REGULAR,
     fontSize: Platform.select({ web: 20, ios: 22 }),
-    lineHeight: Platform.select({ web: 34, ios: 34 }),
+    lineHeight: 34,
     borderWidth: 0,
     transition: Platform.select({ web: 'border 0.3s' }),
     outlineStyle: 'none',

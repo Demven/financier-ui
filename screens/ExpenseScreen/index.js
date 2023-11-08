@@ -1,14 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
-// import { DatePickerModal } from 'react-native-paper-dates';
+import { useNavigation } from '@react-navigation/native';
 import Modal from '../../components/Modal';
 import Input, { INPUT_TYPE } from '../../components/Input';
-// import Button, { BUTTON_LOOK } from '../../components/Button';
 import Dropdown from '../../components/Dropdown';
 import { ICON_COLLECTION } from '../../components/Icon';
 import IconButton from '../../components/IconButton';
+import DatePicker, { dateToDateString } from '../../components/DatePicker';
 import { COLOR } from '../../styles/colors';
-import { useNavigation } from "@react-navigation/native";
 
 const CATEGORIES = [
   { value: '123', label: 'Primary Expenses', description: 'Food, clothes, transport, medicine, taxes, mobile, internet, etc.' },
@@ -25,10 +24,15 @@ const SUBCATEGORIES = [
   { value: '456', label: 'Gas' },
 ];
 
+const DATE_OPTION = {
+  TODAY: 'today',
+  YESTERDAY: 'yesterday',
+  CHOOSE_DATE: 'choose',
+};
 const DATE_OPTIONS = [
-  { value: '123', label: 'Today' },
-  { value: '234', label: 'Yesterday' },
-  { value: '345', label: 'Choose a Date' },
+  { value: DATE_OPTION.TODAY, label: 'Today' },
+  { value: DATE_OPTION.YESTERDAY, label: 'Yesterday' },
+  { value: DATE_OPTION.CHOOSE_DATE, label: 'Choose' },
 ];
 
 export default function ExpenseScreen () {
@@ -44,18 +48,32 @@ export default function ExpenseScreen () {
   const [subcategories, setSubcategories] = useState(SUBCATEGORIES);
 
   const [dateOptionsSelectOpen, setDateOptionsSelectOpen] = useState(false);
-  const [dateOptionId, setDateOptionId] = useState(DATE_OPTIONS[0].value);
+  const [dateOptionId, setDateOptionId] = useState(DATE_OPTION.TODAY);
   const [dateOptions, setDateOptions] = useState(DATE_OPTIONS);
+
+  const [dateString, setDateString] = useState(dateToDateString(new Date()));
+  const [dateDisabled, setDateDisabled] = useState(false);
 
   const [amount, setAmount] = useState('');
 
-  // const [datePickerOpen, setDatePickerOpen] = useState(false);
-  // const [date, setDate] = useState(new Date());
-  //
-  // function onPickDate ({ date }) {
-  //   setDate(date);
-  //   setDatePickerOpen(false);
-  // }
+  const todayDate = new Date();
+  todayDate.setHours(0);
+  todayDate.setMinutes(0);
+  todayDate.setSeconds(0);
+
+  useEffect(() => {
+    if (dateOptionId === DATE_OPTION.TODAY) {
+      setDateString(dateToDateString(todayDate));
+      setDateDisabled(true);
+    } else if (dateOptionId === DATE_OPTION.YESTERDAY) {
+      const yesterdayDate = new Date(todayDate.setDate(todayDate.getDate() - 1));
+      setDateString(dateToDateString(yesterdayDate));
+      setDateDisabled(true);
+    } else {
+      setDateString(dateToDateString(todayDate));
+      setDateDisabled(false);
+    }
+  }, [dateOptionId]);
 
   function onAddCategory () {
     navigation.navigate('Categories'); // TODO: open Add Category modal
@@ -63,6 +81,11 @@ export default function ExpenseScreen () {
 
   function onAddSubcategory () {
     navigation.navigate('Categories'); // TODO: open Add Sub Category modal
+  }
+
+  function onDateChange (date) {
+    setDateString(date);
+    setDateError('');
   }
 
   return (
@@ -126,45 +149,40 @@ export default function ExpenseScreen () {
       </View>
 
       <View style={[styles.formRow, { zIndex: 10 }]}>
-        <Dropdown
-          style={styles.formElement}
-          label='Date'
-          open={dateOptionsSelectOpen}
-          setOpen={setDateOptionsSelectOpen}
-          value={dateOptionId}
-          setValue={setDateOptionId}
-          items={dateOptions}
-          setItems={setDateOptions}
-        />
+        <View style={[styles.halfFormElement, { paddingRight: 12 }]}>
+          <Dropdown
+            label='Date'
+            open={dateOptionsSelectOpen}
+            setOpen={setDateOptionsSelectOpen}
+            value={dateOptionId}
+            setValue={setDateOptionId}
+            items={dateOptions}
+            setItems={setDateOptions}
+          />
+        </View>
+
+        <View style={[styles.halfFormElement, { paddingLeft: 12 }]}>
+          <DatePicker
+            label='Set Date'
+            dateString={dateString}
+            max={dateToDateString(todayDate)}
+            onChange={onDateChange}
+            disabled={dateDisabled}
+          />
+        </View>
       </View>
 
       <View style={styles.formRow}>
-        <Input
-          style={styles.amountInput}
-          label='Amount'
-          placeholder='0.01'
-          inputType={INPUT_TYPE.CURRENCY}
-          value={amount}
-          onChange={setAmount}
-        />
+        <View style={styles.amountContainer}>
+          <Input
+            label='Amount'
+            placeholder='0.01'
+            inputType={INPUT_TYPE.CURRENCY}
+            value={amount}
+            onChange={setAmount}
+          />
+        </View>
       </View>
-
-{/*      <Button
-        look={BUTTON_LOOK.SECONDARY}
-        text='Choose Date'
-        onPress={() => setDatePickerOpen(true)}
-      />*/}
-
-      {/*<DatePickerModal*/}
-      {/*  visible={datePickerOpen}*/}
-      {/*  date={date}*/}
-      {/*  locale='en'*/}
-      {/*  mode='single'*/}
-      {/*  onConfirm={onPickDate}*/}
-      {/*  onDismiss={() => setDatePickerOpen(false)}*/}
-      {/*  animationType='fade'*/}
-      {/*  inputEnabled={false}*/}
-      {/*/>*/}
     </Modal>
   );
 }
@@ -185,6 +203,9 @@ const styles = StyleSheet.create({
   formElement: {
     flexShrink: 1,
   },
+  halfFormElement: {
+    width: '50%',
+  },
 
   addButton: {
     width: 46,
@@ -193,8 +214,8 @@ const styles = StyleSheet.create({
     marginTop: 28,
   },
 
-  amountInput: {
+  amountContainer: {
     width: Platform.select({ web: '50%', ios: '100%' }),
-    flexGrow: 0,
+    paddingLeft: Platform.select({ web: 16 }),
   },
 });

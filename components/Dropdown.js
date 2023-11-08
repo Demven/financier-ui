@@ -101,7 +101,7 @@ export default function Dropdown (props) {
             style={style}
             collection={ICON_COLLECTION.IONICONS}
             name='checkmark-sharp'
-            size={24}
+            size={Platform.select({ web: 24, ios: 16 })}
             color={COLOR.ORANGE}
           />
         )}
@@ -170,8 +170,8 @@ const styles = StyleSheet.create({
   },
   pickerListItemText: {
     fontFamily: FONT.NOTO_SERIF.REGULAR,
-    fontSize: 20,
-    lineHeight: 20,
+    fontSize: Platform.select({ web: 20, ios: 18 }),
+    lineHeight: Platform.select({ web: 20, ios: 18 }),
     color: COLOR.DARK_GRAY,
   },
   pickerListItemTextSelected: {
@@ -181,15 +181,15 @@ const styles = StyleSheet.create({
   pickerPlaceholder: {
     left: -6,
     fontFamily: FONT.NOTO_SERIF.REGULAR,
-    fontSize: 20,
-    lineHeight: 20,
+    fontSize: Platform.select({ web: 20, ios: 22 }),
+    lineHeight: Platform.select({ web: 20, ios: 22 }),
     color: COLOR.LIGHT_GRAY,
   },
   pickerText: {
     left: -6,
     fontFamily: FONT.NOTO_SERIF.REGULAR,
-    fontSize: 20,
-    lineHeight: 20,
+    fontSize: Platform.select({ web: 20, ios: 22 }),
+    lineHeight: Platform.select({ web: 20, ios: 22 }),
     color: COLOR.DARK_GRAY,
   },
 
