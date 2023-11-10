@@ -76,11 +76,11 @@ export default function ExpenseScreen () {
   }, [dateOptionId]);
 
   function onAddCategory () {
-    navigation.navigate('Categories'); // TODO: open Add Category modal
+    navigation.navigate('Category');
   }
 
   function onAddSubcategory () {
-    navigation.navigate('Categories'); // TODO: open Add Sub Category modal
+    navigation.navigate('Subcategory');
   }
 
   function onDateChange (date) {
@@ -129,7 +129,7 @@ export default function ExpenseScreen () {
         <Dropdown
           style={styles.formElement}
           label='Subcategory'
-          placeholder='Group expenses'
+          placeholder='Group expenses as'
           open={subcategorySelectOpen}
           setOpen={setSubcategorySelectOpen}
           value={subcategoryId}

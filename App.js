@@ -18,6 +18,8 @@ import SignInScreen from './screens/SignInScreen';
 import ExpenseScreen from './screens/ExpenseScreen';
 import SavingScreen from './screens/SavingScreen';
 import IncomeScreen from './screens/IncomeScreen';
+import CategoryScreen from './screens/CategoryScreen';
+import SubcategoryScreen from './screens/SubcategoryScreen';
 import HeaderLeft from './components/HeaderLeft';
 import HeaderRight from './components/HeaderRight';
 import { TAB, TAB_NAME } from './components/HeaderTabs';
@@ -370,6 +372,13 @@ export default function App () {
     return null;
   }
 
+  const modalScreenOptions = {
+    presentation: Platform.OS === 'web' ? 'transparentModal' : 'modal',
+    headerShown: Platform.OS !== 'web',
+    contentStyle: { backgroundColor: Platform.select({ web: 'transparent' }) },
+    headerTitleStyle: styles.modalTitle,
+  };
+
   return (
     <View
       style={styles.app}
@@ -409,10 +418,7 @@ export default function App () {
               component={ExpenseScreen}
               options={{
                 title: 'Add an Expense',
-                presentation: Platform.OS === 'web' ? 'transparentModal' : 'modal',
-                headerShown: Platform.OS !== 'web',
-                contentStyle: { backgroundColor: Platform.select({ web: 'transparent' }) },
-                headerTitleStyle: styles.modalTitle,
+                ...modalScreenOptions,
               }}
             />
 
@@ -421,10 +427,7 @@ export default function App () {
               component={SavingScreen}
               options={{
                 title: 'Add a Saving',
-                presentation: Platform.OS === 'web' ? 'transparentModal' : 'modal',
-                headerShown: Platform.OS !== 'web',
-                contentStyle: { backgroundColor: Platform.select({ web: 'transparent' }) },
-                headerTitleStyle: styles.modalTitle,
+                ...modalScreenOptions,
               }}
             />
 
@@ -433,10 +436,25 @@ export default function App () {
               component={IncomeScreen}
               options={{
                 title: 'Add an Income',
-                presentation: Platform.OS === 'web' ? 'transparentModal' : 'modal',
-                headerShown: Platform.OS !== 'web',
-                contentStyle: { backgroundColor: Platform.select({ web: 'transparent' }) },
-                headerTitleStyle: styles.modalTitle,
+                ...modalScreenOptions,
+              }}
+            />
+
+            <Stack.Screen
+              name='Category'
+              component={CategoryScreen}
+              options={{
+                title: 'Create a Category',
+                ...modalScreenOptions,
+              }}
+            />
+
+            <Stack.Screen
+              name='Subcategory'
+              component={SubcategoryScreen}
+              options={{
+                title: 'Create a Subcategory',
+                ...modalScreenOptions,
               }}
             />
           </Stack.Navigator>
