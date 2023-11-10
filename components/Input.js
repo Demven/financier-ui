@@ -38,6 +38,7 @@ Input.propTypes = {
   ]),
   onChange: PropTypes.func.isRequired,
   errorText: PropTypes.string,
+  disabled: PropTypes.bool,
 };
 
 export default function Input (props) {
@@ -52,6 +53,7 @@ export default function Input (props) {
     value,
     errorText,
     onChange,
+    disabled,
   } = props;
 
   const [focused, setFocused] = useState(false);
@@ -61,6 +63,7 @@ export default function Input (props) {
       style={[
         styles.inputContainer,
         focused && styles.inputContainerFocused,
+        disabled && styles.inputContainerDisabled,
         style,
       ]}
     >
@@ -81,6 +84,7 @@ export default function Input (props) {
           styles.input,
           multiline && styles.multiline,
           errorText && styles.inputInvalid,
+          disabled && styles.inputDisabled,
           inputType === INPUT_TYPE.NUMBER && styles.inputNumber,
           (inputType === INPUT_TYPE.QUANTITY || inputType === INPUT_TYPE.CURRENCY) && styles.inputWithSymbol,
         ]}
@@ -113,6 +117,9 @@ const styles = StyleSheet.create({
   inputContainerFocused: {
     borderBottomWidth: 3,
     borderBottomColor: COLOR.BRIGHT_ORANGE,
+  },
+  inputContainerDisabled: {
+    cursor: 'not-allowed',
   },
 
   label: {
@@ -157,6 +164,10 @@ const styles = StyleSheet.create({
   },
   inputInvalid: {
     backgroundColor: COLOR.RED,
+  },
+  inputDisabled: {
+    color: COLOR.LIGHT_GRAY,
+    pointerEvents: 'none',
   },
   inputNumber: {
     textAlign: 'right',

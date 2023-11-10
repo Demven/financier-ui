@@ -19,14 +19,14 @@ Dropdown.propTypes = {
   value: PropTypes.string,
   setValue: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.shape({
-    label: PropTypes.string,
-    value: PropTypes.string,
+    label: PropTypes.string.isRequired,
+    value: PropTypes.string.isRequired,
     description: PropTypes.string,
   })).isRequired,
   setItems: PropTypes.func.isRequired,
 };
 
-const ITEM_HEIGHT = 52;
+const ITEM_HEIGHT = 60;
 
 export default function Dropdown (props) {
   const {

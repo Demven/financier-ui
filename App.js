@@ -348,6 +348,7 @@ function DrawerNavigator () {
               size={28}
             />
           ),
+          headerRight: () => null,
         }}
       />
     </Drawer.Navigator>
