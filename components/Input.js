@@ -13,12 +13,14 @@ import { FONT } from '../styles/fonts';
 export const INPUT_TYPE = {
   DEFAULT: 'default',
   NUMBER: 'number',
+  QUANTITY: 'quantity',
   CURRENCY: 'currency',
 };
 
 const KEYBOARD_TYPE = {
   [INPUT_TYPE.DEFAULT]: 'default',
   [INPUT_TYPE.NUMBER]: 'numeric',
+  [INPUT_TYPE.QUANTITY]: 'numeric',
   [INPUT_TYPE.CURRENCY]: 'numeric',
 };
 
@@ -68,8 +70,10 @@ export default function Input (props) {
         </Text>
       )}
 
-      {inputType === INPUT_TYPE.CURRENCY && (
-        <Text style={[styles.currencySymbol, focused && styles.currencySymbolFocused]}>$</Text>
+      {(inputType === INPUT_TYPE.QUANTITY || inputType === INPUT_TYPE.CURRENCY) && (
+        <Text style={[styles.symbol, focused && styles.symbolFocused]}>
+          {inputType === INPUT_TYPE.QUANTITY ? '#' : '$'}
+        </Text>
       )}
 
       <TextInput
@@ -77,7 +81,8 @@ export default function Input (props) {
           styles.input,
           multiline && styles.multiline,
           errorText && styles.inputInvalid,
-          inputType === INPUT_TYPE.CURRENCY && styles.inputWithCurrencySymbol,
+          inputType === INPUT_TYPE.NUMBER && styles.inputNumber,
+          (inputType === INPUT_TYPE.QUANTITY || inputType === INPUT_TYPE.CURRENCY) && styles.inputWithSymbol,
         ]}
         keyboardType={KEYBOARD_TYPE[inputType] || KEYBOARD_TYPE[INPUT_TYPE.DEFAULT]}
         placeholder={placeholder}
@@ -124,7 +129,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT.NOTO_SERIF.BOLD,
   },
 
-  currencySymbol: {
+  symbol: {
     position: 'absolute',
     left: 3,
     bottom: Platform.select({ web: 10, ios: 7 }),
@@ -133,7 +138,7 @@ const styles = StyleSheet.create({
     lineHeight: Platform.select({ web: 24, ios: 28 }),
     color: COLOR.GRAY,
   },
-  currencySymbolFocused: {
+  symbolFocused: {
     fontFamily: FONT.NOTO_SERIF.BOLD,
   },
 
@@ -153,7 +158,10 @@ const styles = StyleSheet.create({
   inputInvalid: {
     backgroundColor: COLOR.RED,
   },
-  inputWithCurrencySymbol: {
+  inputNumber: {
+    textAlign: 'right',
+  },
+  inputWithSymbol: {
     paddingLeft: 20,
     textAlign: 'right',
   },

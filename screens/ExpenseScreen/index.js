@@ -149,7 +149,7 @@ export default function ExpenseScreen () {
       </View>
 
       <View style={[styles.formRow, { zIndex: 10 }]}>
-        <View style={[styles.halfFormElement, { paddingRight: 12 }]}>
+        <View style={[styles.halfFormElement, { paddingRight: Platform.select({ web: 16, ios: 12 }) }]}>
           <Dropdown
             label='Date'
             open={dateOptionsSelectOpen}
@@ -161,7 +161,7 @@ export default function ExpenseScreen () {
           />
         </View>
 
-        <View style={[styles.halfFormElement, { paddingLeft: 12 }]}>
+        <View style={[styles.halfFormElement, { paddingLeft: Platform.select({ web: 16, ios: 12 }) }]}>
           <DatePicker
             label='Set Date'
             dateString={dateString}
