@@ -41,11 +41,11 @@ const accountSlice = createSlice({
   },
 });
 
-export const setFirstName = accountSlice.actions.setFirstName;
-export const setLastName = accountSlice.actions.setLastName;
-export const setEmail = accountSlice.actions.setEmail;
-export const setLanguage = accountSlice.actions.setLanguage;
-export const setCurrencyType = accountSlice.actions.setCurrencyType;
-export const setCurrencySymbol = accountSlice.actions.setCurrencySymbol;
+export const setFirstNameAction = accountSlice.actions.setFirstName;
+export const setLastNameAction = accountSlice.actions.setLastName;
+export const setEmailAction = accountSlice.actions.setEmail;
+export const setLanguageAction = accountSlice.actions.setLanguage;
+export const setCurrencyTypeAction = accountSlice.actions.setCurrencyType;
+export const setCurrencySymbolAction = accountSlice.actions.setCurrencySymbol;
 
 export default accountSlice.reducer;

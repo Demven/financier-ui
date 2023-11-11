@@ -21,6 +21,7 @@ Button.propTypes = {
   look: PropTypes.oneOf(Object.values(BUTTON_LOOK)),
   onPress: PropTypes.func,
   text: PropTypes.string.isRequired,
+  disabled: PropTypes.bool,
 };
 
 export default function Button (props) {
@@ -29,26 +30,41 @@ export default function Button (props) {
     look = BUTTON_LOOK.PRIMARY,
     onPress,
     text,
+    disabled,
   } = props;
 
   const [hover, setHover] = useState(false);
+  const [pressed, setPressed] = useState(false);
   const [focused, setFocused] = useState(false);
 
   return (
     <Pressable
-      style={({ pressed }) => [styles.button, pressed && styles.buttonPressed, style]}
+      style={({ pressed }) => [
+        styles.button,
+        pressed && styles.buttonPressed,
+        disabled && styles.buttonDisabled,
+        style,
+      ]}
+      disabled={disabled}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      onPress={onPress}
+      onPressIn={() => setPressed(true)}
+      onPress={!disabled ? onPress : undefined}
+      onPressOut={() => setPressed(false)}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
     >
       <View style={[
         styles.buttonContainer,
-        (hover || focused) && styles.buttonContainerActive,
-        styles[`buttonContainer--${look}`
-      ]]}>
-        <Text style={[styles.text, styles[`text--${look}`]]}>
+        styles[`buttonContainer--${look}`],
+        ((hover || focused) && !disabled) && styles.buttonContainerActive,
+        disabled && styles.buttonContainerDisabled,
+      ]}>
+        <Text style={[
+          styles.text,
+          styles[`text--${look}`],
+          ((pressed || focused) && !disabled) && styles.textActive,
+        ]}>
           {text}
         </Text>
       </View>
@@ -63,6 +79,10 @@ const styles = StyleSheet.create({
   buttonPressed: {
     opacity: 0.7,
   },
+  buttonDisabled: {
+    opacity: 0.7,
+    cursor: 'not-allowed',
+  },
 
   buttonContainer: {
     position: 'relative',
@@ -76,11 +96,6 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     boxSizing: 'border-box',
   },
-  buttonContainerActive: {
-    borderWidth: 2,
-    paddingVertical: 7,
-    paddingHorizontal: 23,
-  },
   ['buttonContainer--primary']: {
     backgroundColor: COLOR.LIGHT_ORANGE,
     borderColor: COLOR.ORANGE,
@@ -93,13 +108,26 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR.TRANSPARENT,
     borderColor: COLOR.TRANSPARENT,
   },
+  buttonContainerActive: {
+    borderWidth: 2,
+    paddingVertical: 7,
+    paddingHorizontal: 23,
+  },
+  buttonContainerDisabled: {
+    backgroundColor: COLOR.LIGHTER_GRAY,
+    borderColor: COLOR.LIGHT_GRAY,
+  },
 
   text: {
     fontFamily: FONT.NOTO_SERIF.REGULAR,
     fontSize: Platform.select({ ios: 20, web: 18 }),
     lineHeight: Platform.select({ ios: 26, web: 18 }),
+    color: COLOR.DARK_GRAY,
   },
   ['text--primary']: {
     fontFamily: FONT.NOTO_SERIF.BOLD,
+  },
+  textActive: {
+    color: COLOR.BLACK,
   },
 });

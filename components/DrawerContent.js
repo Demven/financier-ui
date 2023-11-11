@@ -6,9 +6,9 @@ import {
   Platform,
 } from 'react-native';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+import { useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import Logo from './Logo';
-import { firstName, lastName } from '../data/settings.json';
 import { COLOR } from '../styles/colors';
 import { FONT } from '../styles/fonts';
 
@@ -16,6 +16,9 @@ import { FONT } from '../styles/fonts';
 // Read more here https://reactnavigation.org/docs/drawer-navigator/#drawercontent
 export default function DrawerContent (props) {
   const { navigation } = props;
+
+  const firstName = useSelector(state => state.account.firstName) || '';
+  const lastName = useSelector(state => state.account.lastName) || '';
 
   function onLogOut () {
     navigation.navigate('SignIn');

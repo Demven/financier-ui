@@ -1,9 +1,17 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import Dropdown from '../../components/Dropdown';
 import Button, { BUTTON_LOOK } from '../../components/Button';
-import { MEDIA } from "../../styles/media";
+import {
+  setFirstNameAction,
+  setLastNameAction,
+  setLanguageAction,
+  setCurrencyTypeAction,
+  setCurrencySymbolAction,
+} from '../../redux/reducers/account';
+import { MEDIA } from '../../styles/media';
 
 const LANGUAGE = {
   ENGLISH: 'en',
@@ -30,21 +38,86 @@ const CURRENCIES = [
   { value: CURRENCY.CANADIAN_DOLLAR, label: 'Canadian Dollar ($)' },
   { value: CURRENCY.SWISS_FRANC, label: 'Swiss Franc' },
 ];
+const CURRENCY_SYMBOL = {
+  [CURRENCY.US_DOLLAR]: '$',
+  [CURRENCY.EURO]: '€',
+  [CURRENCY.JAPANESE_YEN]: '¥',
+  [CURRENCY.POUND_STERLING]: '£',
+  [CURRENCY.AUSTRALIAN_DOLLAR]: '$',
+  [CURRENCY.CANADIAN_DOLLAR]: '$',
+  [CURRENCY.SWISS_FRANC]: '',
+};
 
 const deviceWidth = Dimensions.get('window').width;
 
 export default function SettingsScreen () {
-  const [firstName, setFirstName] = useState('Dmitry');
-  const [lastName, setLastName] = useState('Salnikov');
-  const [email, setEmail] = useState('dmitry_salnikov@protonmail.com');
+  const dispatch = useDispatch();
+
+  const initialFirstName = useSelector(state => state.account.firstName);
+  const initialLastName = useSelector(state => state.account.lastName);
+  const initialEmail = useSelector(state => state.account.email);
+  const initialLanguage = useSelector(state => state.account.language);
+  const initialCurrency = useSelector(state => state.account.currencyType);
+
+  const [firstName, setFirstName] = useState(initialFirstName);
+  const [firstNameError, setFirstNameError] = useState('');
+
+  const [lastName, setLastName] = useState(initialLastName);
+  const [lastNameError, setLastNameError] = useState('');
+
+  const [email, setEmail] = useState(initialEmail);
 
   const [languageSelectOpen, setLanguageSelectOpen] = useState(false);
-  const [languageId, setLanguageId] = useState(LANGUAGE.ENGLISH);
+  const [languageId, setLanguageId] = useState(initialLanguage || LANGUAGE.ENGLISH);
   const [languages, setLanguages] = useState(LANGUAGES);
 
   const [currencySelectOpen, setCurrencySelectOpen] = useState(false);
-  const [currencyId, setCurrencyId] = useState(CURRENCY.US_DOLLAR);
+  const [currencyId, setCurrencyId] = useState(initialCurrency || CURRENCY.US_DOLLAR);
   const [currencies, setCurrencies] = useState(CURRENCIES);
+
+  const [formIsValid, setFormIsValid] = useState(false);
+
+  useEffect(() => {
+    const valid = !firstNameError && !lastNameError;
+
+    if (valid !== formIsValid) {
+      setFormIsValid(valid);
+    }
+  }, [firstNameError, lastNameError]);
+
+  function validate () {
+    let hasError = false;
+
+    if (!firstName.trim().length) {
+      setFirstNameError('Please fill in your first name');
+      hasError = true;
+    } else {
+      setFirstNameError('')
+    }
+
+    if (!lastName.trim().length) {
+      setLastNameError('Please fill in your last name');
+      hasError = true;
+    } else {
+      setLastNameError('');
+    }
+
+    return !hasError;
+  }
+
+  function onSave () {
+    const isValid = validate();
+
+    if (isValid) {
+      dispatch(setFirstNameAction({ firstName }));
+      dispatch(setLastNameAction({ lastName }));
+      dispatch(setLanguageAction({ language: languageId }));
+      dispatch(setCurrencyTypeAction({ currencyType: currencyId }));
+      dispatch(setCurrencySymbolAction({ currencySymbol: CURRENCY_SYMBOL[currencyId] }));
+
+      console.info('Pushed to Redux, open the Drawer');
+    }
+  }
 
   return (
     <View style={styles.settingsScreen}>
@@ -53,7 +126,9 @@ export default function SettingsScreen () {
         label='First Name'
         inputType={INPUT_TYPE.DEFAULT}
         value={firstName}
+        errorText={firstNameError}
         onChange={setFirstName}
+        onBlur={validate}
       />
 
       <View style={styles.formRow}>
@@ -62,7 +137,9 @@ export default function SettingsScreen () {
           label='Last Name'
           inputType={INPUT_TYPE.DEFAULT}
           value={lastName}
+          errorText={lastNameError}
           onChange={setLastName}
+          onBlur={validate}
         />
       </View>
 
@@ -108,7 +185,8 @@ export default function SettingsScreen () {
           style={styles.saveButton}
           look={BUTTON_LOOK.PRIMARY}
           text='Save'
-          onPress={() => {}}
+          disabled={!formIsValid}
+          onPress={onSave}
         />
       </View>
     </View>

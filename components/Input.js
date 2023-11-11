@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Platform,
 } from 'react-native';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { COLOR } from '../styles/colors';
 import { FONT } from '../styles/fonts';
@@ -37,6 +38,7 @@ Input.propTypes = {
     PropTypes.number,
   ]),
   onChange: PropTypes.func.isRequired,
+  onBlur: PropTypes.func,
   errorText: PropTypes.string,
   disabled: PropTypes.bool,
 };
@@ -53,52 +55,64 @@ export default function Input (props) {
     value,
     errorText,
     onChange,
+    onBlur = () => {},
     disabled,
   } = props;
+
+  const currencySymbol = useSelector(state => state.account.currencySymbol) || '';
 
   const [focused, setFocused] = useState(false);
 
   return (
-    <View
-      style={[
-        styles.inputContainer,
-        focused && styles.inputContainerFocused,
-        disabled && styles.inputContainerDisabled,
-        style,
-      ]}
-    >
-      {label && (
-        <Text style={[styles.label, focused && styles.labelFocused]}>
-          {label}
-        </Text>
-      )}
-
-      {(inputType === INPUT_TYPE.QUANTITY || inputType === INPUT_TYPE.CURRENCY) && (
-        <Text style={[styles.symbol, focused && styles.symbolFocused]}>
-          {inputType === INPUT_TYPE.QUANTITY ? '#' : '$'}
-        </Text>
-      )}
-
-      <TextInput
+    <View style={{ flexGrow: 1 }}>
+      <View
         style={[
-          styles.input,
-          multiline && styles.multiline,
-          errorText && styles.inputInvalid,
-          disabled && styles.inputDisabled,
-          inputType === INPUT_TYPE.NUMBER && styles.inputNumber,
-          (inputType === INPUT_TYPE.QUANTITY || inputType === INPUT_TYPE.CURRENCY) && styles.inputWithSymbol,
+          styles.inputContainer,
+          focused && styles.inputContainerFocused,
+          disabled && styles.inputContainerDisabled,
+          errorText && styles.inputContainerInvalid,
+          style,
         ]}
-        keyboardType={KEYBOARD_TYPE[inputType] || KEYBOARD_TYPE[INPUT_TYPE.DEFAULT]}
-        placeholder={placeholder}
-        placeholderTextColor={COLOR.LIGHT_GRAY}
-        maxLength={maxLength}
-        multiline={multiline}
-        secureTextEntry={secure}
-        value={value}
-        onChangeText={onChange}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-      />
+      >
+        {label && (
+          <Text style={[
+            styles.label,
+            focused && styles.labelFocused,
+            !!errorText && styles.labelError
+          ]}>
+            {label}
+          </Text>
+        )}
+
+        {(inputType === INPUT_TYPE.QUANTITY || inputType === INPUT_TYPE.CURRENCY) && (
+          <Text style={[styles.symbol, focused && styles.symbolFocused]}>
+            {inputType === INPUT_TYPE.QUANTITY ? '#' : currencySymbol}
+          </Text>
+        )}
+
+        <TextInput
+          style={[
+            styles.input,
+            multiline && styles.multiline,
+            disabled && styles.inputDisabled,
+            inputType === INPUT_TYPE.NUMBER && styles.inputNumber,
+            (inputType === INPUT_TYPE.QUANTITY || inputType === INPUT_TYPE.CURRENCY) && styles.inputWithSymbol,
+          ]}
+          keyboardType={KEYBOARD_TYPE[inputType] || KEYBOARD_TYPE[INPUT_TYPE.DEFAULT]}
+          placeholder={placeholder}
+          placeholderTextColor={COLOR.LIGHT_GRAY}
+          maxLength={maxLength}
+          multiline={multiline}
+          secureTextEntry={secure}
+          value={value}
+          onChangeText={onChange}
+          onFocus={() => setFocused(true)}
+          onBlur={() => {
+            setFocused(false);
+            onBlur();
+          }}
+        />
+      </View>
 
       {errorText && (
         <Text style={styles.error}>{errorText}</Text>
@@ -121,6 +135,10 @@ const styles = StyleSheet.create({
   inputContainerDisabled: {
     cursor: 'not-allowed',
   },
+  inputContainerInvalid: {
+    borderBottomWidth: 3,
+    borderBottomColor: COLOR.RED,
+  },
 
   label: {
     marginBottom: Platform.select({ web: 8, ios: 0 }),
@@ -134,6 +152,9 @@ const styles = StyleSheet.create({
   labelFocused: {
     color: COLOR.ORANGE,
     fontFamily: FONT.NOTO_SERIF.BOLD,
+  },
+  labelError: {
+    color: COLOR.RED,
   },
 
   symbol: {
@@ -162,9 +183,6 @@ const styles = StyleSheet.create({
     transition: Platform.select({ web: 'border 0.3s' }),
     outlineStyle: 'none',
   },
-  inputInvalid: {
-    backgroundColor: COLOR.RED,
-  },
   inputDisabled: {
     color: COLOR.LIGHT_GRAY,
     pointerEvents: 'none',
@@ -176,12 +194,15 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     textAlign: 'right',
   },
+
   multiline: {
     minHeight: 100,
     textAlignVertical : 'top',
   },
+
   error: {
-    marginTop: 8,
+    marginTop: 10,
+    paddingLeft: 4,
     fontSize: 12,
     color: COLOR.RED,
   },
