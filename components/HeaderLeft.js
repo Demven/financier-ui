@@ -14,6 +14,7 @@ const deviceWidth = Dimensions.get('window').width;
 HeaderLeft.propTypes = {
   style: PropTypes.object,
   title: PropTypes.string,
+  simplified: PropTypes.bool,
 };
 
 const YEARS = [
@@ -27,6 +28,7 @@ export default function HeaderLeft (props) {
   const {
     style,
     title,
+    simplified = false,
   } = props;
 
   const selectedYear = useSelector(state => state.ui.selectedYear);
@@ -44,7 +46,7 @@ export default function HeaderLeft (props) {
         {title}
       </HeaderTitle>
 
-      {deviceWidth >= MEDIA.TABLET && (
+      {(deviceWidth >= MEDIA.TABLET && !simplified) && (
         <HeaderDropdown
           style={styles.headerDropdown}
           selectedValue={selectedYear}

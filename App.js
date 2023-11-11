@@ -348,6 +348,13 @@ function DrawerNavigator () {
               size={28}
             />
           ),
+          headerTitle: ({ children }) => (
+            <HeaderLeft
+              style={styles.headerLeft}
+              title={children}
+              simplified
+            />
+          ),
           headerRight: () => null,
         }}
       />
