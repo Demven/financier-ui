@@ -1,7 +1,7 @@
 import { Platform, StyleSheet, View, Dimensions } from 'react-native';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Provider } from 'react-redux';
@@ -24,6 +24,7 @@ import HeaderLeft from './components/HeaderLeft';
 import HeaderRight from './components/HeaderRight';
 import { TAB, TAB_NAME } from './components/HeaderTabs';
 import DrawerContent from './components/DrawerContent';
+import { STORAGE_KEY, retrieveFromStorage } from './services/storage';
 import { store } from './redux/store';
 import { MEDIA } from './styles/media';
 import { FONT } from './styles/fonts';
@@ -362,6 +363,102 @@ function DrawerNavigator () {
   );
 }
 
+function Navigator () {
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    checkIfLoggedIn();
+  }, [navigation]);
+
+  async function checkIfLoggedIn () {
+    const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
+
+    if (!token) {
+      navigation.navigate('SignIn');
+    }
+  }
+
+  const modalScreenOptions = {
+    presentation: Platform.OS === 'web' ? 'transparentModal' : 'modal',
+    headerShown: Platform.OS !== 'web',
+    contentStyle: { backgroundColor: Platform.select({ web: 'transparent' }) },
+    headerTitleStyle: styles.modalTitle,
+  };
+
+  return (
+    <Stack.Navigator
+      initialRouteName='Drawer'
+      screenOptions={{
+        headerStyle: { backgroundColor: COLOR.WHITE },
+        headerTitleStyle: styles.headerTitleStyle,
+        headerTintColor: COLOR.BLACK,
+        contentStyle: { backgroundColor: COLOR.WHITE },
+      }}
+    >
+      <Stack.Screen
+        name='Drawer'
+        component={DrawerNavigator}
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      <Stack.Screen
+        name='SignIn'
+        component={SignInScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      <Stack.Screen
+        name='Expense'
+        component={ExpenseScreen}
+        options={{
+          title: 'Add an Expense',
+          ...modalScreenOptions,
+        }}
+      />
+
+      <Stack.Screen
+        name='Saving'
+        component={SavingScreen}
+        options={{
+          title: 'Add a Saving',
+          ...modalScreenOptions,
+        }}
+      />
+
+      <Stack.Screen
+        name='Income'
+        component={IncomeScreen}
+        options={{
+          title: 'Add an Income',
+          ...modalScreenOptions,
+        }}
+      />
+
+      <Stack.Screen
+        name='Category'
+        component={CategoryScreen}
+        options={{
+          title: 'Create a Category',
+          ...modalScreenOptions,
+        }}
+      />
+
+      <Stack.Screen
+        name='Subcategory'
+        component={SubcategoryScreen}
+        options={{
+          title: 'Create a Subcategory',
+          ...modalScreenOptions,
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 export default function App () {
   const [fontsLoaded] = useFonts({
     [FONT.TIRO_GURMUKHI.REGULAR]: require('./assets/fonts/TiroGurmukhi/TiroGurmukhi-Regular.ttf'),
@@ -380,13 +477,6 @@ export default function App () {
     return null;
   }
 
-  const modalScreenOptions = {
-    presentation: Platform.OS === 'web' ? 'transparentModal' : 'modal',
-    headerShown: Platform.OS !== 'web',
-    contentStyle: { backgroundColor: Platform.select({ web: 'transparent' }) },
-    headerTitleStyle: styles.modalTitle,
-  };
-
   return (
     <View
       style={styles.app}
@@ -396,76 +486,7 @@ export default function App () {
 
       <Provider store={store}>
         <NavigationContainer>
-          <Stack.Navigator
-            initialRouteName='Drawer'
-            screenOptions={{
-              headerStyle: { backgroundColor: COLOR.WHITE },
-              headerTitleStyle: styles.headerTitleStyle,
-              headerTintColor: COLOR.BLACK,
-              contentStyle: { backgroundColor: COLOR.WHITE },
-            }}
-          >
-            <Stack.Screen
-              name='Drawer'
-              component={DrawerNavigator}
-              options={{
-                headerShown: false,
-              }}
-            />
-
-            <Stack.Screen
-              name='SignIn'
-              component={SignInScreen}
-              options={{
-                headerShown: false,
-              }}
-            />
-
-            <Stack.Screen
-              name='Expense'
-              component={ExpenseScreen}
-              options={{
-                title: 'Add an Expense',
-                ...modalScreenOptions,
-              }}
-            />
-
-            <Stack.Screen
-              name='Saving'
-              component={SavingScreen}
-              options={{
-                title: 'Add a Saving',
-                ...modalScreenOptions,
-              }}
-            />
-
-            <Stack.Screen
-              name='Income'
-              component={IncomeScreen}
-              options={{
-                title: 'Add an Income',
-                ...modalScreenOptions,
-              }}
-            />
-
-            <Stack.Screen
-              name='Category'
-              component={CategoryScreen}
-              options={{
-                title: 'Create a Category',
-                ...modalScreenOptions,
-              }}
-            />
-
-            <Stack.Screen
-              name='Subcategory'
-              component={SubcategoryScreen}
-              options={{
-                title: 'Create a Subcategory',
-                ...modalScreenOptions,
-              }}
-            />
-          </Stack.Navigator>
+          <Navigator />
         </NavigationContainer>
       </Provider>
     </View>

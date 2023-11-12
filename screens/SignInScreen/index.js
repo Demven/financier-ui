@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AppleButton from '../../components/AppleButton';
+import { STORAGE_KEY, saveToStorage } from '../../services/storage';
 import { FONT } from '../../styles/fonts';
 import { MEDIA } from '../../styles/media';
 import { COLOR } from '../../styles/colors';
@@ -38,6 +39,12 @@ export default function SignInScreen () {
     return Dimensions.get('window').width;
   }
 
+  async function onSignIn () {
+    await saveToStorage(STORAGE_KEY.TOKEN, '1234');
+
+    navigation.navigate('Overview');
+  }
+
   return (
     <View style={styles.signInScreen}>
       <Image
@@ -60,7 +67,7 @@ export default function SignInScreen () {
       </Text>
 
       <View style={styles.appleButtonContainer}>
-        <AppleButton onSignIn={() => navigation.navigate('Overview')} />
+        <AppleButton onSignIn={onSignIn} />
       </View>
     </View>
   );
