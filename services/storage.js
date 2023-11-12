@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const STORAGE_KEY = {
   TOKEN: 'token',
   SETTINGS: 'settings',
+  CATEGORIES: 'categories',
 };
 
 export function saveToStorage (key, value) {

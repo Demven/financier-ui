@@ -3,6 +3,7 @@ import accountReducer from './account';
 import incomesReducer from './incomes';
 import expensesReducer from './expenses';
 import savingsReducer from './savings';
+import categoriesReducer from './categories';
 
 export default {
   ui: uiReducer,
@@ -10,4 +11,5 @@ export default {
   incomes: incomesReducer,
   expenses: expensesReducer,
   savings: savingsReducer,
+  categories: categoriesReducer,
 };

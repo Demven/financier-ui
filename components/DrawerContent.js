@@ -32,7 +32,7 @@ export default function DrawerContent (props) {
       <View style={styles.drawerHeader}>
         <Logo containerStyle={styles.logo} />
       </View>
-
+w
       <DrawerContentScrollView
         {...props}
         contentContainerStyle={styles.drawerScrollView}

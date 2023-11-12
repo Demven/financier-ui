@@ -26,6 +26,7 @@ import { TAB, TAB_NAME } from './components/HeaderTabs';
 import DrawerContent from './components/DrawerContent';
 import { STORAGE_KEY, retrieveFromStorage } from './services/storage';
 import { setSettingsAction } from './redux/reducers/account';
+import { setCategoriesAction } from './redux/reducers/categories';
 import { store } from './redux/store';
 import { MEDIA } from './styles/media';
 import { FONT } from './styles/fonts';
@@ -383,9 +384,13 @@ function Navigator () {
 
   async function initializeRedux () {
     const settings = await retrieveFromStorage(STORAGE_KEY.SETTINGS);
-
     if (settings) {
       dispatch(setSettingsAction(settings));
+    }
+
+    const categories = await retrieveFromStorage(STORAGE_KEY.CATEGORIES);
+    if (categories) {
+      dispatch(setCategoriesAction(categories));
     }
   }
 

@@ -1,0 +1,27 @@
+[
+  {
+    "id": "1234",
+    "name": "Primary Expenses",
+    "description": "Food, clothes, transport, medicine, taxes, mobile, internet, etc."
+  },
+  {
+    "id": "2345",
+    "name": "Secondary Expenses",
+    "description": "Home goods, furniture, renovation, car, hobbies, etc."
+  },
+  {
+    "id": "3456",
+    "name": "Housing",
+    "description": "Mortgage, rent, insurance"
+  },
+  {
+    "id": "4567",
+    "name": "Entertainment",
+    "description": "Dining, bars, night clubs, concerts, casual trips, etc."
+  },
+  {
+    "id": "5678",
+    "name": "Gifts & Charity",
+    "description": "Donations, presents, street musicians, etc."
+  }
+]

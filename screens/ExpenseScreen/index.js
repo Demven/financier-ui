@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 import Modal from '../../components/Modal';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import Dropdown from '../../components/Dropdown';
@@ -8,14 +9,6 @@ import { ICON_COLLECTION } from '../../components/Icon';
 import IconButton from '../../components/IconButton';
 import DatePicker, { dateToDateString } from '../../components/DatePicker';
 import { COLOR } from '../../styles/colors';
-
-const CATEGORIES = [
-  { value: '123', label: 'Primary Expenses', description: 'Food, clothes, transport, medicine, taxes, mobile, internet, etc.' },
-  { value: '234', label: 'Secondary Expenses', description: 'Home goods, furniture, renovation, car, hobbies, etc.' },
-  { value: '345', label: 'Housing', description: 'Mortgage, rent, insurance' },
-  { value: '456', label: 'Entertainment', description: 'Dining, bars, night clubs, concerts, casual trips, etc.' },
-  { value: '567', label: 'Gifts & Charity', description: 'Donations, presents, street musicians, etc.' },
-];
 
 const SUBCATEGORIES = [
   { value: '123', label: 'Lunch' },
@@ -39,9 +32,11 @@ export default function ExpenseScreen () {
   const [name, setName] = useState('');
   const navigation = useNavigation();
 
+  const categoriesList = useSelector(state => state.categories);
+
   const [categorySelectOpen, setCategorySelectOpen] = useState(false);
   const [categoryId, setCategoryId] = useState(null);
-  const [categories, setCategories] = useState(CATEGORIES);
+  const [categories, setCategories] = useState(storedCategoryToDropdownItems(categoriesList));
 
   const [subcategorySelectOpen, setSubcategorySelectOpen] = useState(false);
   const [subcategoryId, setSubcategoryId] = useState(null);
@@ -60,6 +55,10 @@ export default function ExpenseScreen () {
   todayDate.setHours(0);
   todayDate.setMinutes(0);
   todayDate.setSeconds(0);
+
+  useEffect(() => {
+    setCategories(storedCategoryToDropdownItems(categoriesList));
+  }, [categoriesList]);
 
   useEffect(() => {
     if (dateOptionId === DATE_OPTION.TODAY) {
@@ -86,6 +85,14 @@ export default function ExpenseScreen () {
   function onDateChange (date) {
     setDateString(date);
     setDateError('');
+  }
+
+  function storedCategoryToDropdownItems (categoriesList) {
+    return categoriesList.map(category => ({
+      value: category.id,
+      label: category.name,
+      description: category.description,
+    }));
   }
 
   return (

@@ -23,6 +23,8 @@ Modal.propTypes = {
   title: PropTypes.string.isRequired,
   children: PropTypes.any.isRequired,
   maxWidth: PropTypes.number,
+  onSave: PropTypes.func,
+  disableSave: PropTypes.bool,
 };
 
 export default function Modal (props) {
@@ -32,6 +34,8 @@ export default function Modal (props) {
     title,
     children,
     maxWidth = 680,
+    onSave = () => {},
+    disableSave,
   } = props;
 
   const navigation = useNavigation();
@@ -112,7 +116,11 @@ export default function Modal (props) {
             style={styles.saveButton}
             look={BUTTON_LOOK.PRIMARY}
             text='Save'
-            onPress={onClose}
+            disabled={disableSave}
+            onPress={() => {
+              onSave();
+              onClose();
+            }}
           />
         </View>
       </View>
