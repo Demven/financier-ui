@@ -17,7 +17,7 @@ export const ICON_COLLECTION = {
 Icon.propTypes = {
   style: PropTypes.oneOfType([
     PropTypes.object,
-    PropTypes.arrayOf(PropTypes.object),
+    PropTypes.array,
   ]),
   name: PropTypes.string.isRequired,
   collection: PropTypes.oneOf([

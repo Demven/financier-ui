@@ -4,7 +4,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Provider } from 'react-redux';
+import { Provider, useDispatch } from 'react-redux';
 import 'react-native-gesture-handler';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
@@ -25,6 +25,7 @@ import HeaderRight from './components/HeaderRight';
 import { TAB, TAB_NAME } from './components/HeaderTabs';
 import DrawerContent from './components/DrawerContent';
 import { STORAGE_KEY, retrieveFromStorage } from './services/storage';
+import { setSettingsAction } from './redux/reducers/account';
 import { store } from './redux/store';
 import { MEDIA } from './styles/media';
 import { FONT } from './styles/fonts';
@@ -365,9 +366,11 @@ function DrawerNavigator () {
 
 function Navigator () {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     checkIfLoggedIn();
+    initializeRedux();
   }, [navigation]);
 
   async function checkIfLoggedIn () {
@@ -375,6 +378,14 @@ function Navigator () {
 
     if (!token) {
       navigation.navigate('SignIn');
+    }
+  }
+
+  async function initializeRedux () {
+    const settings = await retrieveFromStorage(STORAGE_KEY.SETTINGS);
+
+    if (settings) {
+      dispatch(setSettingsAction(settings));
     }
   }
 

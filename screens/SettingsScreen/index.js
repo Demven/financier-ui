@@ -4,13 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import Dropdown from '../../components/Dropdown';
 import Button, { BUTTON_LOOK } from '../../components/Button';
-import {
-  setFirstNameAction,
-  setLastNameAction,
-  setLanguageAction,
-  setCurrencyTypeAction,
-  setCurrencySymbolAction,
-} from '../../redux/reducers/account';
+import { setSettingsAction } from '../../redux/reducers/account';
+import { saveToStorage, STORAGE_KEY } from '../../services/storage';
 import { MEDIA } from '../../styles/media';
 
 const LANGUAGE = {
@@ -108,14 +103,19 @@ export default function SettingsScreen () {
   function onSave () {
     const isValid = validate();
 
-    if (isValid) {
-      dispatch(setFirstNameAction({ firstName }));
-      dispatch(setLastNameAction({ lastName }));
-      dispatch(setLanguageAction({ language: languageId }));
-      dispatch(setCurrencyTypeAction({ currencyType: currencyId }));
-      dispatch(setCurrencySymbolAction({ currencySymbol: CURRENCY_SYMBOL[currencyId] }));
+    const settingsToSave = {
+      firstName,
+      lastName,
+      email,
+      language: languageId,
+      currencyType: currencyId,
+      currencySymbol: CURRENCY_SYMBOL[currencyId],
+    };
 
-      console.info('Pushed to Redux, open the Drawer');
+    if (isValid) {
+      dispatch(setSettingsAction(settingsToSave));
+
+      saveToStorage(STORAGE_KEY.SETTINGS, settingsToSave);
     }
   }
 
