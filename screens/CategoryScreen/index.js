@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { useDispatch } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
 import Modal from '../../components/Modal';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import { addCategoryAction } from '../../redux/reducers/categories';
@@ -12,6 +13,7 @@ export default function CategoryScreen () {
   const [description, setDescription] = useState('');
 
   const dispatch = useDispatch();
+  const navigation = useNavigation();
 
   function validate () {
     let valid = true;
@@ -38,12 +40,17 @@ export default function CategoryScreen () {
     }
   }
 
+  function onClose () {
+    navigation.navigate('Expense', { preselectedCategory: 'last' });
+  }
+
   return (
     <Modal
       contentStyle={styles.categoryScreen}
-      title='Create a Category'
+      title='New category'
       maxWidth={568}
       onSave={onSave}
+      onCloseRequest={onClose}
       disableSave={!!nameError}
     >
       <Input
@@ -54,6 +61,7 @@ export default function CategoryScreen () {
         value={name}
         onChange={setName}
         onBlur={validate}
+        autoFocus
       />
 
       <View style={styles.formRow}>

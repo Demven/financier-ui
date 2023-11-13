@@ -41,6 +41,7 @@ Input.propTypes = {
   onBlur: PropTypes.func,
   errorText: PropTypes.string,
   disabled: PropTypes.bool,
+  autoFocus: PropTypes.bool,
 };
 
 export default function Input (props) {
@@ -57,6 +58,7 @@ export default function Input (props) {
     onChange,
     onBlur = () => {},
     disabled,
+    autoFocus,
   } = props;
 
   const currencySymbol = useSelector(state => state.account.currencySymbol) || '';
@@ -111,6 +113,7 @@ export default function Input (props) {
             setFocused(false);
             onBlur();
           }}
+          autoFocus={autoFocus}
         />
       </View>
 

@@ -19,7 +19,6 @@ import ExpenseScreen from './screens/ExpenseScreen';
 import SavingScreen from './screens/SavingScreen';
 import IncomeScreen from './screens/IncomeScreen';
 import CategoryScreen from './screens/CategoryScreen';
-import SubcategoryScreen from './screens/SubcategoryScreen';
 import HeaderLeft from './components/HeaderLeft';
 import HeaderRight from './components/HeaderRight';
 import { TAB, TAB_NAME } from './components/HeaderTabs';
@@ -430,6 +429,9 @@ function Navigator () {
       <Stack.Screen
         name='Expense'
         component={ExpenseScreen}
+        initialParams={{
+          preselectedCategory: 'first', // 'first' or 'last'
+        }}
         options={{
           title: 'Add an Expense',
           ...modalScreenOptions,
@@ -459,15 +461,6 @@ function Navigator () {
         component={CategoryScreen}
         options={{
           title: 'Create a Category',
-          ...modalScreenOptions,
-        }}
-      />
-
-      <Stack.Screen
-        name='Subcategory'
-        component={SubcategoryScreen}
-        options={{
-          title: 'Create a Subcategory',
           ...modalScreenOptions,
         }}
       />

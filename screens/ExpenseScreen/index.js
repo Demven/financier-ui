@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import Modal from '../../components/Modal';
 import Input, { INPUT_TYPE } from '../../components/Input';
@@ -9,13 +9,6 @@ import { ICON_COLLECTION } from '../../components/Icon';
 import IconButton from '../../components/IconButton';
 import DatePicker, { dateToDateString } from '../../components/DatePicker';
 import { COLOR } from '../../styles/colors';
-
-const SUBCATEGORIES = [
-  { value: '123', label: 'Lunch' },
-  { value: '234', label: 'Dining' },
-  { value: '345', label: 'Taxi' },
-  { value: '456', label: 'Gas' },
-];
 
 const DATE_OPTION = {
   TODAY: 'today',
@@ -38,10 +31,6 @@ export default function ExpenseScreen () {
   const [categoryId, setCategoryId] = useState(null);
   const [categories, setCategories] = useState(storedCategoryToDropdownItems(categoriesList));
 
-  const [subcategorySelectOpen, setSubcategorySelectOpen] = useState(false);
-  const [subcategoryId, setSubcategoryId] = useState(null);
-  const [subcategories, setSubcategories] = useState(SUBCATEGORIES);
-
   const [dateOptionsSelectOpen, setDateOptionsSelectOpen] = useState(false);
   const [dateOptionId, setDateOptionId] = useState(DATE_OPTION.TODAY);
   const [dateOptions, setDateOptions] = useState(DATE_OPTIONS);
@@ -56,8 +45,17 @@ export default function ExpenseScreen () {
   todayDate.setMinutes(0);
   todayDate.setSeconds(0);
 
+  const route = useRoute();
+  const preselectedCategory = route.params?.preselectedCategory || ''; // 'first' or 'last'
+
   useEffect(() => {
     setCategories(storedCategoryToDropdownItems(categoriesList));
+
+    if (preselectedCategory === 'first' && categoriesList.length > 0) {
+      setCategoryId(categoriesList?.[0]?.id);
+    } else if (preselectedCategory === 'last' && categoriesList.length > 0) {
+      setCategoryId(categoriesList?.[categoriesList.length - 1]?.id);
+    }
   }, [categoriesList]);
 
   useEffect(() => {
@@ -76,10 +74,6 @@ export default function ExpenseScreen () {
 
   function onAddCategory () {
     navigation.navigate('Category');
-  }
-
-  function onAddSubcategory () {
-    navigation.navigate('Subcategory');
   }
 
   function onDateChange (date) {
@@ -107,6 +101,7 @@ export default function ExpenseScreen () {
         inputType={INPUT_TYPE.DEFAULT}
         value={name}
         onChange={setName}
+        autoFocus
       />
 
       <View style={[styles.formRow, { zIndex: 30 }]}>
@@ -129,29 +124,6 @@ export default function ExpenseScreen () {
           size={32}
           color={COLOR.BLACK}
           onPress={onAddCategory}
-        />
-      </View>
-
-      <View style={[styles.formRow, { zIndex: 20 }]}>
-        <Dropdown
-          style={styles.formElement}
-          label='Subcategory'
-          placeholder='Group expenses as'
-          open={subcategorySelectOpen}
-          setOpen={setSubcategorySelectOpen}
-          value={subcategoryId}
-          setValue={setSubcategoryId}
-          items={subcategories}
-          setItems={setSubcategories}
-        />
-
-        <IconButton
-          style={styles.addButton}
-          iconName='add-circle-outline'
-          iconCollection={ICON_COLLECTION.IONICONS}
-          size={32}
-          color={COLOR.BLACK}
-          onPress={onAddSubcategory}
         />
       </View>
 

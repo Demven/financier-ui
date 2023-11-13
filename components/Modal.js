@@ -24,6 +24,7 @@ Modal.propTypes = {
   children: PropTypes.any.isRequired,
   maxWidth: PropTypes.number,
   onSave: PropTypes.func,
+  onCloseRequest: PropTypes.func,
   disableSave: PropTypes.bool,
 };
 
@@ -35,6 +36,7 @@ export default function Modal (props) {
     children,
     maxWidth = 680,
     onSave = () => {},
+    onCloseRequest = undefined,
     disableSave,
   } = props;
 
@@ -62,8 +64,12 @@ export default function Modal (props) {
     return Dimensions.get('window').width;
   }
 
-  function onClose () {
-    navigation.goBack();
+  function onPressClose () {
+    if (typeof onCloseRequest === 'function') {
+      onCloseRequest();
+    } else {
+      navigation.goBack();
+    }
   }
 
   return (
@@ -73,7 +79,7 @@ export default function Modal (props) {
     >
       <Pressable
         style={[styles.overlay, StyleSheet.absoluteFill]}
-        onPress={onClose}
+        onPress={onPressClose}
       />
 
       <View
@@ -96,7 +102,7 @@ export default function Modal (props) {
           <CloseButton
             style={styles.closeButton}
             size={46}
-            onPress={onClose}
+            onPress={onPressClose}
           />
         )}
 
@@ -109,7 +115,7 @@ export default function Modal (props) {
             style={styles.cancelButton}
             look={BUTTON_LOOK.SECONDARY}
             text='Cancel'
-            onPress={onClose}
+            onPress={onPressClose}
           />
 
           <Button
@@ -119,7 +125,7 @@ export default function Modal (props) {
             disabled={disableSave}
             onPress={() => {
               onSave();
-              onClose();
+              onPressClose();
             }}
           />
         </View>
