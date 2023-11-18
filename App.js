@@ -26,6 +26,9 @@ import DrawerContent from './components/DrawerContent';
 import { STORAGE_KEY, retrieveFromStorage } from './services/storage';
 import { setSettingsAction } from './redux/reducers/account';
 import { setCategoriesAction } from './redux/reducers/categories';
+import { setExpensesAction } from './redux/reducers/expenses';
+import { setInvestmentsAction, setSavingsAction } from './redux/reducers/savings';
+import { setIncomesAction } from './redux/reducers/incomes';
 import { store } from './redux/store';
 import { MEDIA } from './styles/media';
 import { FONT } from './styles/fonts';
@@ -390,6 +393,26 @@ function Navigator () {
     const categories = await retrieveFromStorage(STORAGE_KEY.CATEGORIES);
     if (categories) {
       dispatch(setCategoriesAction(categories));
+    }
+
+    const expenses = await retrieveFromStorage(STORAGE_KEY.EXPENSES);
+    if (expenses) {
+      dispatch(setExpensesAction(expenses));
+    }
+
+    const savings = await retrieveFromStorage(STORAGE_KEY.SAVINGS);
+    if (savings) {
+      dispatch(setSavingsAction(savings));
+    }
+
+    const investments = await retrieveFromStorage(STORAGE_KEY.INVESTMENTS);
+    if (investments) {
+      dispatch(setInvestmentsAction(investments));
+    }
+
+    const incomes = await retrieveFromStorage(STORAGE_KEY.INCOMES);
+    if (incomes) {
+      dispatch(setIncomesAction(incomes));
     }
   }
 

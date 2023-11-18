@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
+import { useDispatch } from 'react-redux';
 import Modal from '../../components/Modal';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import Dropdown from '../../components/Dropdown';
 import DatePicker, { dateToDateString } from '../../components/DatePicker';
+import { addSavingAction, addInvestmentAction } from '../../redux/reducers/savings';
 
 const TYPE = {
   SAVING: 'saving',
@@ -26,7 +28,10 @@ const DATE_OPTIONS = [
 ];
 
 export default function SavingScreen () {
+  const dispatch = useDispatch();
+
   const [name, setName] = useState('');
+  const [nameError, setNameError] = useState('');
 
   const [typeSelectOpen, setTypeSelectOpen] = useState(false);
   const [typeId, setTypeId] = useState(TYPE.SAVING);
@@ -40,8 +45,13 @@ export default function SavingScreen () {
   const [dateDisabled, setDateDisabled] = useState(false);
 
   const [shares, setShares] = useState('');
+  const [sharesError, setSharesError] = useState('');
+
   const [pricePerShare, setPricePerShare] = useState('');
+  const [pricePerShareError, setPricePerShareError] = useState('');
+
   const [amount, setAmount] = useState('');
+  const [amountError, setAmountError] = useState('');
 
   const todayDate = new Date();
   todayDate.setHours(0);
@@ -62,10 +72,129 @@ export default function SavingScreen () {
     }
   }, [dateOptionId]);
 
-  function onDateChange (date) {
-    setDateString(date);
-    setDateError('');
+  function validateName () {
+    let valid = true;
+
+    if (!name.trim().length) {
+      setNameError('Name can\'t be empty');
+      valid = false;
+    } else {
+      setNameError('');
+    }
+
+    return valid;
   }
+
+  function validateAmount () {
+    let valid = true;
+
+    if (!amount.trim().length) {
+      setAmountError('Can\'t be empty');
+      valid = false;
+    } else if (isNaN(Number(amount))) {
+      setAmountError('Can contain only numeric characters');
+      valid = false;
+    } else {
+      setAmountError('');
+    }
+
+    return valid;
+  }
+
+  function validateShares () {
+    let valid = true;
+
+    if (!shares.trim().length) {
+      setSharesError('Can\'t be empty');
+      valid = false;
+    } else if (isNaN(Number(shares))) {
+      setSharesError('Can contain only numeric characters');
+      valid = false;
+    } else {
+      setSharesError('');
+    }
+
+    return valid;
+  }
+
+  function validatePricePerShare () {
+    let valid = true;
+
+    if (!pricePerShare.trim().length) {
+      setPricePerShareError('Can\'t be empty');
+      valid = false;
+    } else if (isNaN(Number(pricePerShare))) {
+      setPricePerShareError('Can contain only numeric characters');
+      valid = false;
+    } else {
+      setPricePerShareError('');
+    }
+
+    return valid;
+  }
+
+  function isValid () {
+    const nameValid = validateName();
+    const amountValid = validateAmount();
+    const sharesValid = validateShares();
+    const pricePerShareValid = validatePricePerShare();
+
+    return nameValid
+      && (
+        (typeId === TYPE.SAVING && amountValid)
+        || (typeId === TYPE.INVESTMENT && sharesValid && pricePerShareValid)
+      );
+  }
+
+  function onSave () {
+    if (isValid()) {
+      const [year, month, day] = dateString.split('-').map(string => Number(string));
+
+      let week = 1;
+      if (day <= 7) {
+        week = 1;
+      } else if (day > 7 && day <= 14) {
+        week = 2;
+      } else if (day > 14 && day <= 21) {
+        week = 3;
+      } else if (day > 21) {
+        week = 4;
+      }
+
+      if (typeId === TYPE.SAVING) {
+        dispatch(addSavingAction({
+          year,
+          month,
+          week,
+          day,
+          saving: {
+            id: `${Math.floor(Math.random() * 100000)}`,
+            name,
+            dateString,
+            amount: parseFloat(amount),
+          },
+        }));
+      } else if (typeId === TYPE.INVESTMENT) {
+        dispatch(addInvestmentAction({
+          year,
+          month,
+          week,
+          day,
+          investment: {
+            id: `${Math.floor(Math.random() * 100000)}`,
+            name,
+            dateString,
+            shares: parseFloat(shares),
+            pricePerShare: parseFloat(pricePerShare),
+          },
+        }));
+      }
+    }
+  }
+
+  const formIsInvalid = !!nameError
+    || (typeId === TYPE.SAVING && !!amountError)
+    || (typeId === TYPE.INVESTMENT && (!!sharesError || !!pricePerShareError));
 
   return (
     <Modal
@@ -74,6 +203,8 @@ export default function SavingScreen () {
         ? 'Add a Saving'
         : 'Add an Investment'
       }
+      disableSave={formIsInvalid}
+      onSave={onSave}
     >
       <View style={{ zIndex: 20 }}>
         <Dropdown
@@ -95,7 +226,10 @@ export default function SavingScreen () {
           placeholder='American Express Savings'
           inputType={INPUT_TYPE.DEFAULT}
           value={name}
+          errorText={nameError}
           onChange={setName}
+          onBlur={validateName}
+          autoFocus
         />
       </View>
 
@@ -117,7 +251,7 @@ export default function SavingScreen () {
             label='Set Date'
             dateString={dateString}
             max={dateToDateString(todayDate)}
-            onChange={onDateChange}
+            onChange={setDateString}
             disabled={dateDisabled}
           />
         </View>
@@ -133,7 +267,9 @@ export default function SavingScreen () {
                 placeholder='0'
                 inputType={INPUT_TYPE.QUANTITY}
                 value={shares}
+                errorText={sharesError}
                 onChange={setShares}
+                onBlur={validateShares}
               />
             </View>
           </View>
@@ -146,7 +282,9 @@ export default function SavingScreen () {
                 placeholder='0.01'
                 inputType={INPUT_TYPE.CURRENCY}
                 value={pricePerShare}
+                errorText={pricePerShareError}
                 onChange={setPricePerShare}
+                onBlur={validatePricePerShare}
               />
             </View>
           </View>
@@ -161,7 +299,9 @@ export default function SavingScreen () {
               placeholder='0.01'
               inputType={INPUT_TYPE.CURRENCY}
               value={amount}
+              errorText={amountError}
               onChange={setAmount}
+              onBlur={validateAmount}
             />
           </View>
         </View>

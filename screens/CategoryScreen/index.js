@@ -51,7 +51,7 @@ export default function CategoryScreen () {
       maxWidth={568}
       onSave={onSave}
       onCloseRequest={onClose}
-      disableSave={!!nameError}
+      disableSave={!!nameError || !name.length}
     >
       <Input
         style={styles.formElement}
@@ -61,6 +61,7 @@ export default function CategoryScreen () {
         value={name}
         onChange={setName}
         onBlur={validate}
+        errorText={nameError}
         autoFocus
       />
 

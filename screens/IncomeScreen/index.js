@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
+import { useDispatch } from 'react-redux';
 import Modal from '../../components/Modal';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import Dropdown from '../../components/Dropdown';
 import DatePicker, { dateToDateString } from '../../components/DatePicker';
+import { addIncomeAction } from '../../redux/reducers/incomes';
 
 const DATE_OPTION = {
   TODAY: 'today',
@@ -17,7 +19,10 @@ const DATE_OPTIONS = [
 ];
 
 export default function IncomeScreen () {
+  const dispatch = useDispatch();
+
   const [name, setName] = useState('');
+  const [nameError, setNameError] = useState('');
 
   const [dateOptionsSelectOpen, setDateOptionsSelectOpen] = useState(false);
   const [dateOptionId, setDateOptionId] = useState(DATE_OPTION.TODAY);
@@ -27,6 +32,7 @@ export default function IncomeScreen () {
   const [dateDisabled, setDateDisabled] = useState(false);
 
   const [amount, setAmount] = useState('');
+  const [amountError, setAmountError] = useState('');
 
   const todayDate = new Date();
   todayDate.setHours(0);
@@ -47,15 +53,80 @@ export default function IncomeScreen () {
     }
   }, [dateOptionId]);
 
-  function onDateChange (date) {
-    setDateString(date);
-    setDateError('');
+  function validateName () {
+    let valid = true;
+
+    if (!name.trim().length) {
+      setNameError('Name can\'t be empty');
+      valid = false;
+    } else {
+      setNameError('');
+    }
+
+    return valid;
   }
+
+  function validateAmount () {
+    let valid = true;
+
+    if (!amount.trim().length) {
+      setAmountError('Amount can\'t be empty');
+      valid = false;
+    } else if (isNaN(Number(amount))) {
+      setAmountError('Amount can contain only numeric characters');
+      valid = false;
+    } else {
+      setAmountError('');
+    }
+
+    return valid;
+  }
+
+  function isValid () {
+    const nameValid = validateName();
+    const amountValid = validateAmount();
+
+    return nameValid && amountValid;
+  }
+
+  function onSave () {
+    if (isValid()) {
+      const [year, month, day] = dateString.split('-').map(string => Number(string));
+
+      let week = 1;
+      if (day <= 7) {
+        week = 1;
+      } else if (day > 7 && day <= 14) {
+        week = 2;
+      } else if (day > 14 && day <= 21) {
+        week = 3;
+      } else if (day > 21) {
+        week = 4;
+      }
+
+      dispatch(addIncomeAction({
+        year,
+        month,
+        week,
+        day,
+        income: {
+          id: `${Math.floor(Math.random() * 100000)}`,
+          name,
+          dateString,
+          amount: parseFloat(amount),
+        },
+      }));
+    }
+  }
+
+  const formIsInvalid = (!!nameError || !name.length) || (!!amountError || !amount.length);
 
   return (
     <Modal
       contentStyle={styles.incomeScreen}
       title='Add an Income'
+      disableSave={formIsInvalid}
+      onSave={onSave}
     >
       <Input
         style={styles.formElement}
@@ -63,7 +134,9 @@ export default function IncomeScreen () {
         placeholder='Paycheck'
         inputType={INPUT_TYPE.DEFAULT}
         value={name}
+        errorText={nameError}
         onChange={setName}
+        onBlur={validateName}
       />
 
       <View style={[styles.formRow, { zIndex: 10 }]}>
@@ -84,7 +157,7 @@ export default function IncomeScreen () {
             label='Set Date'
             dateString={dateString}
             max={dateToDateString(todayDate)}
-            onChange={onDateChange}
+            onChange={setDateString}
             disabled={dateDisabled}
           />
         </View>
@@ -97,7 +170,9 @@ export default function IncomeScreen () {
             placeholder='0.01'
             inputType={INPUT_TYPE.CURRENCY}
             value={amount}
+            errorText={amountError}
             onChange={setAmount}
+            onBlur={validateAmount}
           />
         </View>
       </View>

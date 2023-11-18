@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Modal from '../../components/Modal';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import Dropdown from '../../components/Dropdown';
 import { ICON_COLLECTION } from '../../components/Icon';
 import IconButton from '../../components/IconButton';
 import DatePicker, { dateToDateString } from '../../components/DatePicker';
+import { addExpenseAction } from '../../redux/reducers/expenses';
 import { COLOR } from '../../styles/colors';
 
 const DATE_OPTION = {
@@ -22,10 +23,13 @@ const DATE_OPTIONS = [
 ];
 
 export default function ExpenseScreen () {
-  const [name, setName] = useState('');
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const categoriesList = useSelector(state => state.categories);
+
+  const [name, setName] = useState('');
+  const [nameError, setNameError] = useState('');
 
   const [categorySelectOpen, setCategorySelectOpen] = useState(false);
   const [categoryId, setCategoryId] = useState(null);
@@ -39,6 +43,7 @@ export default function ExpenseScreen () {
   const [dateDisabled, setDateDisabled] = useState(false);
 
   const [amount, setAmount] = useState('');
+  const [amountError, setAmountError] = useState('');
 
   const todayDate = new Date();
   todayDate.setHours(0);
@@ -76,11 +81,6 @@ export default function ExpenseScreen () {
     navigation.navigate('Category');
   }
 
-  function onDateChange (date) {
-    setDateString(date);
-    setDateError('');
-  }
-
   function storedCategoryToDropdownItems (categoriesList) {
     return categoriesList.map(category => ({
       value: category.id,
@@ -89,10 +89,81 @@ export default function ExpenseScreen () {
     }));
   }
 
+  function validateName () {
+    let valid = true;
+
+    if (!name.trim().length) {
+      setNameError('Name can\'t be empty');
+      valid = false;
+    } else {
+      setNameError('');
+    }
+
+    return valid;
+  }
+
+  function validateAmount () {
+    let valid = true;
+
+    if (!amount.trim().length) {
+      setAmountError('Amount can\'t be empty');
+      valid = false;
+    } else if (isNaN(Number(amount))) {
+      setAmountError('Amount can contain only numeric characters');
+      valid = false;
+    } else {
+      setAmountError('');
+    }
+
+    return valid;
+  }
+
+  function isValid () {
+    const nameValid = validateName();
+    const amountValid = validateAmount();
+
+    return nameValid && amountValid;
+  }
+
+  function onSave () {
+    if (isValid()) {
+      const [year, month, day] = dateString.split('-').map(string => Number(string));
+
+      let week = 1;
+      if (day <= 7) {
+        week = 1;
+      } else if (day > 7 && day <= 14) {
+        week = 2;
+      } else if (day > 14 && day <= 21) {
+        week = 3;
+      } else if (day > 21) {
+        week = 4;
+      }
+
+      dispatch(addExpenseAction({
+        year,
+        month,
+        week,
+        day,
+        expense: {
+          id: `${Math.floor(Math.random() * 100000)}`,
+          name,
+          categoryId,
+          dateString,
+          amount: parseFloat(amount),
+        },
+      }));
+    }
+  }
+
+  const formIsInvalid = (!!nameError || !name.length) || (!!amountError || !amount.length);
+
   return (
     <Modal
       contentStyle={styles.expenseScreen}
       title='Add an Expense'
+      disableSave={formIsInvalid}
+      onSave={onSave}
     >
       <Input
         style={styles.formElement}
@@ -100,7 +171,9 @@ export default function ExpenseScreen () {
         placeholder='Latte'
         inputType={INPUT_TYPE.DEFAULT}
         value={name}
+        errorText={nameError}
         onChange={setName}
+        onBlur={validateName}
         autoFocus
       />
 
@@ -145,7 +218,7 @@ export default function ExpenseScreen () {
             label='Set Date'
             dateString={dateString}
             max={dateToDateString(todayDate)}
-            onChange={onDateChange}
+            onChange={setDateString}
             disabled={dateDisabled}
           />
         </View>
@@ -158,7 +231,9 @@ export default function ExpenseScreen () {
             placeholder='0.01'
             inputType={INPUT_TYPE.CURRENCY}
             value={amount}
+            errorText={amountError}
             onChange={setAmount}
+            onBlur={validateAmount}
           />
         </View>
       </View>

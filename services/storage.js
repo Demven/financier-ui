@@ -4,6 +4,10 @@ export const STORAGE_KEY = {
   TOKEN: 'token',
   SETTINGS: 'settings',
   CATEGORIES: 'categories',
+  EXPENSES: 'expenses',
+  SAVINGS: 'savings',
+  INVESTMENTS: 'investments',
+  INCOMES: 'incomes',
 };
 
 export function saveToStorage (key, value) {
