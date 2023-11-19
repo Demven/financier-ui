@@ -91,7 +91,7 @@ export default function HeaderCornerMenu ({ style }) {
             .map((menuItem, index) => (
               <Pressable
                 key={index}
-                style={({ pressed }) => [styles.listItemPressable, pressed && styles.listItemPressed]}
+                style={({ pressed }) => [pressed && styles.listItemPressed]}
                 onPress={onNavigate(menuItem.navigateTo)}
               >
                 <View

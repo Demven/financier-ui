@@ -108,7 +108,6 @@ export default function IncomeScreen () {
         year,
         month,
         week,
-        day,
         income: {
           id: `${Math.floor(Math.random() * 100000)}`,
           name,

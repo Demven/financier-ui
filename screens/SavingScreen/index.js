@@ -44,6 +44,8 @@ export default function SavingScreen () {
   const [dateString, setDateString] = useState(dateToDateString(new Date()));
   const [dateDisabled, setDateDisabled] = useState(false);
 
+  const [ticker, setTicker] = useState('');
+
   const [shares, setShares] = useState('');
   const [sharesError, setSharesError] = useState('');
 
@@ -166,7 +168,6 @@ export default function SavingScreen () {
           year,
           month,
           week,
-          day,
           saving: {
             id: `${Math.floor(Math.random() * 100000)}`,
             name,
@@ -179,11 +180,11 @@ export default function SavingScreen () {
           year,
           month,
           week,
-          day,
           investment: {
             id: `${Math.floor(Math.random() * 100000)}`,
             name,
             dateString,
+            ticker,
             shares: parseFloat(shares),
             pricePerShare: parseFloat(pricePerShare),
           },
@@ -223,7 +224,10 @@ export default function SavingScreen () {
         <Input
           style={styles.formElement}
           label='Name'
-          placeholder='American Express Savings'
+          placeholder={typeId === TYPE.SAVING
+            ? 'American Express Savings'
+            : 'S&P500'
+          }
           inputType={INPUT_TYPE.DEFAULT}
           value={name}
           errorText={nameError}
@@ -260,6 +264,17 @@ export default function SavingScreen () {
       {typeId === TYPE.INVESTMENT && (
         <>
           <View style={styles.formRow}>
+            <View style={styles.tickerContainer}>
+              <Input
+                style={styles.formElement}
+                label='Ticker'
+                placeholder='SPY'
+                inputType={INPUT_TYPE.DEFAULT}
+                value={ticker}
+                onChange={(ticker) => setTicker(ticker.toUpperCase())}
+              />
+            </View>
+
             <View style={styles.amountContainer}>
               <Input
                 style={styles.formElement}
@@ -332,6 +347,11 @@ const styles = StyleSheet.create({
 
   pricePerShareContainer: {
     paddingLeft: Platform.select({ web: 16 }),
+  },
+
+  tickerContainer: {
+    width: Platform.select({ web: '50%', ios: '100%' }),
+    paddingRight: Platform.select({ web: 16 }),
   },
 
   amountContainer: {

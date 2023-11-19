@@ -144,7 +144,6 @@ export default function ExpenseScreen () {
         year,
         month,
         week,
-        day,
         expense: {
           id: `${Math.floor(Math.random() * 100000)}`,
           name,

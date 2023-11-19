@@ -16,11 +16,16 @@
   },
   {
     "id": "4567",
+    "name": "Major",
+    "description": "Traveling, expensive purchases"
+  },
+  {
+    "id": "5678",
     "name": "Entertainment",
     "description": "Dining, bars, night clubs, concerts, casual trips, etc."
   },
   {
-    "id": "5678",
+    "id": "6789",
     "name": "Gifts & Charity",
     "description": "Donations, presents, street musicians, etc."
   }

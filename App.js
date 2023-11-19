@@ -48,13 +48,13 @@ function OverviewScreens () {
     <BottomTabs.Navigator
       initialRouteName='OverviewMonths'
       screenOptions={() => ({
-        headerStyle: { backgroundColor: 'white' },
-        headerTintColor: 'black',
+        headerStyle: { backgroundColor: COLOR.WHITE },
+        headerTintColor: COLOR.BLACK,
         tabBarStyle: {
-          backgroundColor: 'white',
+          backgroundColor: COLOR.WHITE,
           display: deviceWidth >= MEDIA.DESKTOP ? 'none' : undefined,
         },
-        tabBarActiveTintColor: 'black',
+        tabBarActiveTintColor: COLOR.BLACK,
         headerShown: false,
       })}
     >
@@ -63,6 +63,7 @@ function OverviewScreens () {
         component={OverviewScreen}
         initialParams={{
           type: TAB.WEEKS,
+          monthNumber: undefined,
         }}
         options={{
           title: 'Overview',
@@ -198,13 +199,13 @@ function SavingsScreens () {
     <BottomTabs.Navigator
       initialRouteName='SavingsMonths'
       screenOptions={() => ({
-        headerStyle: { backgroundColor: 'white' },
-        headerTintColor: 'black',
+        headerStyle: { backgroundColor: COLOR.WHITE },
+        headerTintColor: COLOR.BLACK,
         tabBarStyle: {
-          backgroundColor: 'white',
+          backgroundColor: COLOR.WHITE,
           display: deviceWidth >= MEDIA.TABLET ? 'none' : undefined,
         },
-        tabBarActiveTintColor: 'black',
+        tabBarActiveTintColor: COLOR.BLACK,
         headerShown: false,
       })}
     >
@@ -284,15 +285,15 @@ function DrawerNavigator () {
         headerRight: () => (
           <HeaderRight />
         ),
-        headerStyle: { backgroundColor: '#fff' },
-        headerTintColor: 'black',
-        sceneContainerStyle: { backgroundColor: 'white' },
-        drawerContentStyle: { paddingTop: 16, paddingLeft: 16, backgroundColor: 'white' },
+        headerStyle: { backgroundColor: COLOR.WHITE },
+        headerTintColor: COLOR.BLACK,
+        sceneContainerStyle: { backgroundColor: COLOR.WHITE, flexGrow: 1 },
+        drawerContentStyle: { paddingTop: 16, paddingLeft: 16, backgroundColor: COLOR.WHITE },
         drawerItemStyle: styles.drawerItemStyle,
         drawerLabelStyle: styles.drawerLabelStyle,
-        drawerActiveTintColor: 'black',
-        drawerInactiveTintColor: 'black',
-        drawerActiveBackgroundColor: 'white',
+        drawerActiveTintColor: COLOR.BLACK,
+        drawerInactiveTintColor: COLOR.BLACK,
+        drawerActiveBackgroundColor: COLOR.WHITE,
       })}
       drawerContent={DrawerContent}
     >
@@ -430,7 +431,7 @@ function Navigator () {
         headerStyle: { backgroundColor: COLOR.WHITE },
         headerTitleStyle: styles.headerTitleStyle,
         headerTintColor: COLOR.BLACK,
-        contentStyle: { backgroundColor: COLOR.WHITE },
+        contentStyle: { backgroundColor: COLOR.WHITE, flexGrow: 1 },
       }}
     >
       <Stack.Screen

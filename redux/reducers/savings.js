@@ -1,46 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { saveToStorage, STORAGE_KEY } from '../../services/storage';
+import savingsData from '../../data/savings';
+import investmentsData from '../../data/investments';
 
 const savingsSlice = createSlice({
   name: 'savings',
 
   initialState: {
-    savings: {
-      [2023]: {
-        [1]: { // month
-          [1]: { // week
-            [1]: [], // day
-            [2]: [],
-            [3]: [],
-            [4]: [],
-            [5]: [],
-            [6]: [],
-            [7]: [],
-          },
-          [2]: {},
-          [3]: {},
-          [4]: {},
-        },
-      },
-    },
-    investments: {
-      [2023]: {
-        [1]: { // month
-          [1]: { // week
-            [1]: [], // day
-            [2]: [],
-            [3]: [],
-            [4]: [],
-            [5]: [],
-            [6]: [],
-            [7]: [],
-          },
-          [2]: {},
-          [3]: {},
-          [4]: {},
-        },
-      },
-    },
+    savings: savingsData,
+    investments: investmentsData,
   },
 
   reducers: {
@@ -53,7 +21,7 @@ const savingsSlice = createSlice({
       };
     },
     addSaving: (state, action) => {
-      const { year, month, week, day, saving } = action.payload;
+      const { year, month, week, saving } = action.payload;
 
       const updatedSavings = {
         ...state.savings,
@@ -61,13 +29,10 @@ const savingsSlice = createSlice({
           ...(state.savings?.[year] || {}),
           [month]: {
             ...(state.savings?.[year]?.[month] || {}),
-            [week]: {
-              ...(state.savings?.[year]?.[month]?.[week] || {}),
-              [day]: [
-                ...(state.savings?.[year]?.[month]?.[week]?.[day] || []),
-                saving,
-              ],
-            },
+            [week]: [
+              ...(state.savings?.[year]?.[month]?.[week] || []),
+              saving,
+            ],
           },
         },
       };
@@ -89,7 +54,7 @@ const savingsSlice = createSlice({
       };
     },
     addInvestment: (state, action) => {
-      const { year, month, week, day, investment } = action.payload;
+      const { year, month, week, investment } = action.payload;
 
       const updatedInvestments = {
         ...state.investments,
@@ -97,13 +62,10 @@ const savingsSlice = createSlice({
           ...(state.investments?.[year] || {}),
           [month]: {
             ...(state.investments?.[year]?.[month] || {}),
-            [week]: {
-              ...(state.investments?.[year]?.[month]?.[week] || {}),
-              [day]: [
-                ...(state.investments?.[year]?.[month]?.[week]?.[day] || []),
-                investment,
-              ],
-            },
+            [week]: [
+              ...(state.investments?.[year]?.[month]?.[week] || []),
+              investment,
+            ],
           },
         },
       };

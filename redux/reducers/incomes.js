@@ -1,28 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { saveToStorage, STORAGE_KEY } from '../../services/storage';
+import incomesData from '../../data/incomes';
 
 const incomesSlice = createSlice({
   name: 'incomes',
 
   initialState: {
-    incomes: {
-      [2023]: {
-        [1]: { // month
-          [1]: { // week
-            [1]: [], // day
-            [2]: [],
-            [3]: [],
-            [4]: [],
-            [5]: [],
-            [6]: [],
-            [7]: [],
-          },
-          [2]: {},
-          [3]: {},
-          [4]: {},
-        },
-      },
-    },
+    incomes: incomesData,
   },
 
   reducers: {
@@ -35,7 +19,7 @@ const incomesSlice = createSlice({
       };
     },
     addIncome: (state, action) => {
-      const { year, month, week, day, income } = action.payload;
+      const { year, month, week, income } = action.payload;
 
       const updatedIncomes = {
         ...state.incomes,
@@ -43,13 +27,10 @@ const incomesSlice = createSlice({
           ...(state.incomes?.[year] || {}),
           [month]: {
             ...(state.incomes?.[year]?.[month] || {}),
-            [week]: {
-              ...(state.incomes?.[year]?.[month]?.[week] || {}),
-              [day]: [
-                ...(state.incomes?.[year]?.[month]?.[week]?.[day] || []),
-                income,
-              ],
-            },
+            [week]: [
+              ...(state.incomes?.[year]?.[month]?.[week] || []),
+              income,
+            ],
           },
         },
       };
