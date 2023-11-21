@@ -15,8 +15,9 @@ export default function OverviewScreen () {
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const selectedYear = useSelector(state => state.ui.selectedYear);
   const expenses = useSelector(state => state.expenses.expenses[selectedYear]);
-
-  console.info('expenses', expenses);
+  const incomes = useSelector(state => state.incomes.incomes[selectedYear]);
+  const savings = useSelector(state => state.savings.savings[selectedYear]);
+  const investments = useSelector(state => state.savings.investments[selectedYear]);
 
   const months = Object.keys(expenses).map(monthString => Number(monthString)).reverse();
 
@@ -30,33 +31,39 @@ export default function OverviewScreen () {
   }, [route]);
 
   return (
-    <View style={styles.overviewScreen}>
-      <ScrollView style={{ flexGrow: 1 }}>
+    <ScrollView style={{ flexGrow: 1 }}>
+      <View style={styles.overviewScreen}>
         <View style={styles.listContainer}>
-          {months.map((monthNumber) => (
+          {months.map((monthNumber, index) => (
             <OverviewMonth
               key={monthNumber}
-              style={styles.overviewMonth}
+              style={[styles.overviewMonth, index === 0 && { marginTop: 0 }]}
               monthNumber={monthNumber}
               expenses={expenses[monthNumber]}
+              incomes={incomes[monthNumber]}
+              savings={savings[monthNumber]}
+              investments={investments[monthNumber]}
             />
           ))}
         </View>
-      </ScrollView>
-    </View>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   overviewScreen: {
-    flexGrow: 1,
+    height: '100%',
     paddingHorizontal: 52,
     backgroundColor: COLOR.WHITE,
   },
 
   listContainer: {
+    flexGrow: 1,
     width: '100%',
-    maxWidth: 1024,
+    maxWidth: 1280,
+    paddingTop: 40,
+    paddingBottom: 80,
     alignSelf: 'center',
   },
 

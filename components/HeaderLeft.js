@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     marginTop: deviceWidth < MEDIA.TABLET ? 8 : 2,
-    marginLeft: deviceWidth < MEDIA.TABLET ? 16 : 34,
+    marginLeft: deviceWidth < MEDIA.TABLET ? 16 : 41,
     fontFamily: FONT.NOTO_SERIF.BOLD,
     fontSize: deviceWidth < MEDIA.TABLET ? 18 : 20,
     lineHeight: deviceWidth < MEDIA.TABLET ? 18 : 26,

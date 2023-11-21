@@ -2,9 +2,11 @@ import {
   StyleSheet,
   View,
   Text,
-  Pressable, Platform, Image,
+  Pressable,
+  Platform,
+  Image,
 } from 'react-native';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import { FONT } from '../../../styles/fonts';
@@ -13,7 +15,10 @@ import { COLOR } from '../../../styles/colors';
 OverviewMonth.propTypes = {
   style: PropTypes.object,
   monthNumber: PropTypes.number,
-  expenses: PropTypes.object.isRequired, // weeks -> days -> expenses { [1]: { [1]: [], [2]: [] } }
+  expenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
+  incomes: PropTypes.object, // weeks -> incomes { [1]: [], [2]: [] }
+  savings: PropTypes.object, // weeks -> savings { [1]: [], [2]: [] }
+  investments: PropTypes.object, // weeks -> investments { [1]: [], [2]: [] }
 };
 
 const MONTH_NAME = {
@@ -32,21 +37,65 @@ const MONTH_NAME = {
 };
 
 export default function OverviewMonth (props) {
-  const { style, monthNumber, expenses } = props;
+  const {
+    style,
+    monthNumber,
+    expenses = {},
+    incomes = {},
+    savings = {},
+    investments = {},
+  } = props;
 
   const navigation = useNavigation();
 
+  const chartRef = useRef(null);
+  const [chartHeight, setChartHeight] = useState(0);
+
   const [subtitleHighlighted, setSubtitleHighlighted] = useState(false);
 
-  const week1 = expenses[1] || {};
-  const week2 = expenses[2] || {};
-  const week3 = expenses[3] || {};
-  const week4 = expenses[4] || {};
+  function formatAmount (number) {
+    return `${Math.sign(number) === -1 ? '- ' : '+'}${parseFloat(Math.abs(number).toFixed(2)).toLocaleString()}`;
+  }
+
+  function getTotalAmount (items) {
+    return Object
+      .keys(items)
+      .flatMap(week => {
+        return (items[week] || []).reduce((total, item) => {
+          const amount = item.amount || (item.shares * item.pricePerShare);
+          return total + amount;
+        }, 0);
+      })
+      .reduce((total, weekTotal) => total + weekTotal, 0);
+  }
+
+  function getAmountColor (amount) {
+    const isPositive = amount >= 0;
+
+    return isPositive ? COLOR.GREEN : COLOR.RED;
+  }
+
+  function onResizeChart () {
+    const chartWidth = chartRef.current.offsetWidth;
+
+    setChartHeight(Math.floor(chartWidth / 16 * 9));
+  }
+
+  const totalIncomes = getTotalAmount(incomes);
+  const totalExpenses = getTotalAmount(expenses);
+  const totalSavingsAndInvestments = (getTotalAmount(savings) + getTotalAmount(investments)) || 0;
+  const savingsPercent = Math.floor(totalSavingsAndInvestments * 100 / totalIncomes);
+
+  const totalExcludingSavings = totalIncomes - totalExpenses;
+  const total = totalExcludingSavings - totalSavingsAndInvestments;
+
+  const totalExcludingSavingsColor = getAmountColor(totalExcludingSavings);
+  const totalColor = getAmountColor(total);
 
   return (
     <View style={[styles.overviewMonth, style]}>
       <Pressable
-        style={({ pressed }) => [pressed && styles.subtitlePressed]}
+        style={({ pressed }) => [styles.subtitleLink, pressed && styles.subtitlePressed]}
         onPress={() => navigation.navigate('OverviewWeeks', { monthNumber })}
       >
         <View
@@ -67,41 +116,59 @@ export default function OverviewMonth (props) {
 
       <View style={styles.content}>
         <Image
-          style={styles.chart}
+          style={[styles.chart, { height: chartHeight }]}
+          ref={chartRef}
           source={require('../../../assets/images/charts/chart-months.jpg')}
           resizeMode='cover'
+          onLayout={onResizeChart}
         />
 
         <View style={styles.stats}>
-          <View style={styles.statRow}>
-            <Text style={styles.statName}>Income</Text>
-            <Text style={styles.statValue}>+12,092.00</Text>
-          </View>
+          {totalIncomes && (
+            <View style={styles.statRow}>
+              <Text style={styles.statName}>Income</Text>
+              <Text style={styles.statValue}>{formatAmount(totalIncomes)}</Text>
+            </View>
+          )}
 
-          <View style={styles.statRow}>
-            <Text style={styles.statName}>Expenses</Text>
-            <Text style={styles.statValue}>–8,345.29</Text>
-          </View>
+          {totalExpenses && (
+            <View style={styles.statRow}>
+              <Text style={styles.statName}>Expenses</Text>
+              <Text style={styles.statValue}>{formatAmount(-totalExpenses)}</Text>
+            </View>
+          )}
 
-          <View style={styles.statRow}>
-            <Text style={styles.statName}>Savings</Text>
-            <Text style={styles.statValue}>+1,200.30</Text>
-          </View>
+          {totalSavingsAndInvestments && (
+            <View style={styles.statRow}>
+              <Text style={styles.statName}>Savings</Text>
+              <Text style={styles.statValue}>{formatAmount(totalSavingsAndInvestments)}</Text>
+            </View>
+          )}
 
-          <View style={[styles.statRow, { marginTop: 12 }]}>
-            <Text style={[styles.statValue, styles.smallerText]}>(12.3%)</Text>
-          </View>
+          {savingsPercent && (
+            <View style={[styles.statRow, { marginTop: 12 }]}>
+              <Text style={[styles.statValue, styles.smallerText]}>({savingsPercent}%)</Text>
+            </View>
+          )}
 
           <View style={styles.underline} />
 
-          <View style={styles.statRow}>
-            <Text style={styles.statName}>Total</Text>
-            <Text style={styles.statValue}>+3,746.71</Text>
-          </View>
+          {totalSavingsAndInvestments && (
+            <View style={styles.statRow}>
+              <Text style={[styles.statName, styles.smallerText]}>(Excluding Savings)</Text>
+              <Text style={[styles.statValue, styles.statValueBold, { color: totalExcludingSavingsColor }]}>
+                {formatAmount(totalExcludingSavings)}
+              </Text>
+            </View>
+          )}
 
           <View style={styles.statRow}>
-            <Text style={[styles.statName, styles.smallerText]}>(Excluding Savings)</Text>
-            <Text style={[styles.statValue, styles.statValueBold]}>+2,546.41</Text>
+            <Text style={[styles.statName, styles.statNameBold, { color: totalColor }]}>
+              Total
+            </Text>
+            <Text style={[styles.statValue, styles.statValueBold, { color: totalColor }]}>
+              {formatAmount(total)}
+            </Text>
           </View>
         </View>
       </View>
@@ -114,20 +181,29 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
 
-  subtitleContainer: {
+  subtitleLink: {
     alignSelf: 'flex-start',
+  },
+  subtitleContainer: {
     paddingVertical: 6,
     borderStyle: Platform.select({ web: 'dashed' }),
     borderBottomWidth: 3,
     borderBottomColor: COLOR.TRANSPARENT,
   },
   subtitle: {
-    fontFamily: FONT.NOTO_SERIF.BOLD,
-    fontSize: 32,
-    lineHeight: 36,
+    fontFamily: FONT.NOTO_SERIF.REGULAR,
+    fontSize: 40,
+    lineHeight: 40,
+    color: COLOR.DARK_GRAY,
   },
   subtitlePressed: {
     opacity: 0.7,
+  },
+  subtitleNumberPositive: {
+    color: COLOR.GREEN,
+  },
+  subtitleNumberNegative: {
+    color: COLOR.RED,
   },
 
   content: {
@@ -136,7 +212,7 @@ const styles = StyleSheet.create({
   },
 
   chart: {
-    width: 494,
+    width: '50%', // 494
     height: 278,
     marginTop: 40,
   },
@@ -144,6 +220,8 @@ const styles = StyleSheet.create({
   stats: {
     width: '50%',
     paddingLeft: 40,
+    paddingBottom: 22,
+    justifyContent: 'flex-end',
   },
   statRow: {
     marginTop: 20,
@@ -154,6 +232,9 @@ const styles = StyleSheet.create({
     fontSize: 24,
     lineHeight: 30,
     color: COLOR.DARK_GRAY,
+  },
+  statNameBold: {
+    fontFamily: FONT.NOTO_SERIF.BOLD,
   },
   statValue: {
     marginLeft: 'auto',
@@ -167,7 +248,7 @@ const styles = StyleSheet.create({
   },
 
   smallerText: {
-    fontSize: 18,
+    fontSize: 16,
     lineHeight: 30,
   },
 
