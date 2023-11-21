@@ -4,11 +4,11 @@ import {
   Text,
   Pressable,
   Platform,
-  Image,
 } from 'react-native';
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
+import MonthChart from './MonthChart/MonthChart';
 import { FONT } from '../../../styles/fonts';
 import { COLOR } from '../../../styles/colors';
 
@@ -48,9 +48,6 @@ export default function OverviewMonth (props) {
 
   const navigation = useNavigation();
 
-  const chartRef = useRef(null);
-  const [chartHeight, setChartHeight] = useState(0);
-
   const [subtitleHighlighted, setSubtitleHighlighted] = useState(false);
 
   function formatAmount (number) {
@@ -73,12 +70,6 @@ export default function OverviewMonth (props) {
     const isPositive = amount >= 0;
 
     return isPositive ? COLOR.GREEN : COLOR.RED;
-  }
-
-  function onResizeChart () {
-    const chartWidth = chartRef.current.offsetWidth;
-
-    setChartHeight(Math.floor(chartWidth / 16 * 9));
   }
 
   const totalIncomes = getTotalAmount(incomes);
@@ -115,13 +106,7 @@ export default function OverviewMonth (props) {
       </Pressable>
 
       <View style={styles.content}>
-        <Image
-          style={[styles.chart, { height: chartHeight }]}
-          ref={chartRef}
-          source={require('../../../assets/images/charts/chart-months.jpg')}
-          resizeMode='cover'
-          onLayout={onResizeChart}
-        />
+        <MonthChart style={style.chart} />
 
         <View style={styles.stats}>
           {totalIncomes && (
@@ -212,9 +197,8 @@ const styles = StyleSheet.create({
   },
 
   chart: {
-    width: '50%', // 494
-    height: 278,
     marginTop: 40,
+    width: '50%',
   },
 
   stats: {
