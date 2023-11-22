@@ -106,7 +106,7 @@ export default function OverviewMonth (props) {
       </Pressable>
 
       <View style={styles.content}>
-        <MonthChart style={style.chart} />
+        <MonthChart style={styles.chart} />
 
         <View style={styles.stats}>
           {totalIncomes && (
@@ -197,15 +197,15 @@ const styles = StyleSheet.create({
   },
 
   chart: {
-    marginTop: 40,
     width: '50%',
+    marginTop: 40,
+    marginLeft: -58,
   },
 
   stats: {
     width: '50%',
+    paddingTop: 50,
     paddingLeft: 40,
-    paddingBottom: 22,
-    justifyContent: 'flex-end',
   },
   statRow: {
     marginTop: 20,

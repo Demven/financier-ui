@@ -1,11 +1,11 @@
 import {
   StyleSheet,
   View,
-  Image,
 } from 'react-native';
 import { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { LineChart } from 'react-native-chart-kit';
+import { COLOR } from '../../../../styles/colors';
 
 MonthChart.propTypes = {
   style: PropTypes.object,
@@ -33,18 +33,10 @@ export default function MonthChart (props) {
       ref={chartRef}
       onLayout={onResizeChart}
     >
-      {/*<Image*/}
-      {/*  style={[styles.chart, { height: chartHeight }]}*/}
-      {/*  ref={chartRef}*/}
-      {/*  source={require('../../../../assets/images/charts/chart-months.jpg')}*/}
-      {/*  resizeMode='cover'*/}
-      {/*  onLayout={onResizeChart}*/}
-      {/*/>*/}
-
       <LineChart
         style={styles.chart}
         data={{
-          labels: ["January", "February", "March", "April", "May", "June"],
+          labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
           datasets: [
             {
               data: [
@@ -53,32 +45,42 @@ export default function MonthChart (props) {
                 Math.random() * 100,
                 Math.random() * 100,
                 Math.random() * 100,
-                Math.random() * 100
+                Math.random() * 100,
+                Math.random() * 100,
+                Math.random() * 100,
+                Math.random() * 100,
+                Math.random() * 100,
+                Math.random() * 100,
+                Math.random() * 100,
+                Math.random() * 100,
               ]
             }
           ]
         }}
         width={chartWidth}
         height={chartHeight}
-        yAxisLabel="$"
-        yAxisSuffix="k"
+        yAxisLabel='$'
+        yAxisSuffix='k'
         yAxisInterval={1} // optional, defaults to 1
         chartConfig={{
-          backgroundColor: "#e26a00",
-          backgroundGradientFrom: "#fb8c00",
-          backgroundGradientTo: "#ffa726",
-          decimalPlaces: 2, // optional, defaults to 2dp
-          color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-          labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-          style: {
-            borderRadius: 16
-          },
+          backgroundGradientFrom: COLOR.WHITE,
+          backgroundGradientTo: COLOR.WHITE,
+          fillShadowGradientFrom: COLOR.BRIGHT_ORANGE,
+          fillShadowGradientTo: COLOR.ORANGE,
+          decimalPlaces: 2,
+          strokeWidth: 6,
+          fillShadowGradientOpacity: 0.25,
+          color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+          labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
           propsForDots: {
-            r: "6",
-            strokeWidth: "2",
-            stroke: "#ffa726"
-          }
+            r: '1',
+            strokeWidth: '6',
+            stroke: COLOR.BRIGHT_ORANGE,
+          },
         }}
+        withHorizontalLabels={false}
+        withVerticalLines={false}
+        withHorizontalLines={false}
         bezier
       />
     </View>
