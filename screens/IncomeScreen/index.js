@@ -4,8 +4,9 @@ import { useDispatch } from 'react-redux';
 import Modal from '../../components/Modal';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import Dropdown from '../../components/Dropdown';
-import DatePicker, { dateToDateString } from '../../components/DatePicker';
+import DatePicker from '../../components/DatePicker';
 import { addIncomeAction } from '../../redux/reducers/incomes';
+import { dateToDateString } from '../../services/date';
 
 const DATE_OPTION = {
   TODAY: 'today',

@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import PropTypes from 'prop-types';
+import { dateToDateString, formatDateString } from '../services/date';
 import { COLOR } from '../styles/colors';
 import { FONT } from '../styles/fonts';
 
@@ -19,14 +20,6 @@ DatePicker.propTypes = {
   disabled: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
 };
-
-export function dateToDateString (date) {
-  return `${date.getFullYear()}-${`0${date.getMonth() + 1}`.slice(-2)}-${`0${date.getUTCDate()}`.slice(-2)}`;
-}
-
-function formatDateString (dateString) {
-  return new Date(dateString).toLocaleDateString();
-}
 
 export default function DatePicker (props) {
   const {

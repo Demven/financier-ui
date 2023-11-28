@@ -7,8 +7,9 @@ import Input, { INPUT_TYPE } from '../../components/Input';
 import Dropdown from '../../components/Dropdown';
 import { ICON_COLLECTION } from '../../components/Icon';
 import IconButton from '../../components/IconButton';
-import DatePicker, { dateToDateString } from '../../components/DatePicker';
+import DatePicker from '../../components/DatePicker';
 import { addExpenseAction } from '../../redux/reducers/expenses';
+import { dateToDateString } from '../../services/date';
 import { COLOR } from '../../styles/colors';
 
 const DATE_OPTION = {

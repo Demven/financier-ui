@@ -2,19 +2,19 @@ import {
   StyleSheet,
   View,
   Text,
-  Pressable,
-  Platform,
 } from 'react-native';
 import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
-import MonthChart from './MonthChart/MonthChart';
+import MonthChart, { CHART_VIEW } from './MonthChart';
 import { FONT } from '../../../styles/fonts';
 import { COLOR } from '../../../styles/colors';
+import TitleLink from "../../../components/TitleLink";
 
 OverviewMonth.propTypes = {
-  style: PropTypes.object,
-  monthNumber: PropTypes.number,
+  style: PropTypes.any,
+  year: PropTypes.number.isRequired,
+  monthNumber: PropTypes.number.isRequired,
   expenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
   incomes: PropTypes.object, // weeks -> incomes { [1]: [], [2]: [] }
   savings: PropTypes.object, // weeks -> savings { [1]: [], [2]: [] }
@@ -39,6 +39,7 @@ const MONTH_NAME = {
 export default function OverviewMonth (props) {
   const {
     style,
+    year,
     monthNumber,
     expenses = {},
     incomes = {},
@@ -48,7 +49,7 @@ export default function OverviewMonth (props) {
 
   const navigation = useNavigation();
 
-  const [subtitleHighlighted, setSubtitleHighlighted] = useState(false);
+  const [chartView, setChartView] = useState(CHART_VIEW.INCOME);
 
   function formatAmount (number) {
     return `${Math.sign(number) === -1 ? '- ' : '+'}${parseFloat(Math.abs(number).toFixed(2)).toLocaleString()}`;
@@ -85,47 +86,65 @@ export default function OverviewMonth (props) {
 
   return (
     <View style={[styles.overviewMonth, style]}>
-      <Pressable
-        style={({ pressed }) => [styles.subtitleLink, pressed && styles.subtitlePressed]}
+      <TitleLink
+        style={styles.subtitleLink}
         onPress={() => navigation.navigate('OverviewWeeks', { monthNumber })}
       >
-        <View
-          style={[
-            styles.subtitleContainer,
-            subtitleHighlighted && { borderBottomColor: COLOR.BLACK }
-          ]}
-        >
-          <Text
-            style={styles.subtitle}
-            onMouseEnter={() => setSubtitleHighlighted(true)}
-            onMouseLeave={() => setSubtitleHighlighted(false)}
-          >
-            {MONTH_NAME[monthNumber]}
-          </Text>
-        </View>
-      </Pressable>
+        {MONTH_NAME[monthNumber]}
+      </TitleLink>
 
       <View style={styles.content}>
-        <MonthChart style={styles.chart} />
+        <MonthChart
+          style={styles.chart}
+          year={year}
+          chartView={chartView}
+          setChartView={setChartView}
+          monthNumber={monthNumber}
+          expenses={expenses}
+          incomes={incomes}
+          savings={savings}
+          investments={investments}
+        />
 
         <View style={styles.stats}>
           {totalIncomes && (
-            <View style={styles.statRow}>
-              <Text style={styles.statName}>Income</Text>
+            <View style={[styles.statRow, { marginTop: 0 }]}>
+              <TitleLink
+                textStyle={[styles.statName, chartView === CHART_VIEW.INCOME && styles.statNameBold]}
+                underlineGap={2}
+                onPress={() => setChartView(CHART_VIEW.INCOME)}
+              >
+                Income
+              </TitleLink>
+
               <Text style={styles.statValue}>{formatAmount(totalIncomes)}</Text>
             </View>
           )}
 
           {totalExpenses && (
             <View style={styles.statRow}>
-              <Text style={styles.statName}>Expenses</Text>
+              <TitleLink
+                textStyle={[styles.statName, chartView === CHART_VIEW.EXPENSES && styles.statNameBold]}
+                underlineGap={2}
+                onPress={() => setChartView(CHART_VIEW.EXPENSES)}
+              >
+                Expenses
+              </TitleLink>
+
               <Text style={styles.statValue}>{formatAmount(-totalExpenses)}</Text>
             </View>
           )}
 
           {totalSavingsAndInvestments && (
             <View style={styles.statRow}>
-              <Text style={styles.statName}>Savings</Text>
+              <TitleLink
+                textStyle={[styles.statName, chartView === CHART_VIEW.SAVINGS && styles.statNameBold]}
+                underlineGap={2}
+                onPress={() => setChartView(CHART_VIEW.SAVINGS)}
+              >
+                Savings
+              </TitleLink>
+
               <Text style={styles.statValue}>{formatAmount(totalSavingsAndInvestments)}</Text>
             </View>
           )}
@@ -169,27 +188,6 @@ const styles = StyleSheet.create({
   subtitleLink: {
     alignSelf: 'flex-start',
   },
-  subtitleContainer: {
-    paddingVertical: 6,
-    borderStyle: Platform.select({ web: 'dashed' }),
-    borderBottomWidth: 3,
-    borderBottomColor: COLOR.TRANSPARENT,
-  },
-  subtitle: {
-    fontFamily: FONT.NOTO_SERIF.REGULAR,
-    fontSize: 40,
-    lineHeight: 40,
-    color: COLOR.DARK_GRAY,
-  },
-  subtitlePressed: {
-    opacity: 0.7,
-  },
-  subtitleNumberPositive: {
-    color: COLOR.GREEN,
-  },
-  subtitleNumberNegative: {
-    color: COLOR.RED,
-  },
 
   content: {
     flexDirection: 'row',
@@ -204,7 +202,7 @@ const styles = StyleSheet.create({
 
   stats: {
     width: '50%',
-    paddingTop: 50,
+    paddingTop: 48,
     paddingLeft: 40,
   },
   statRow: {

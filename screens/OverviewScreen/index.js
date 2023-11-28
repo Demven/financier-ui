@@ -34,10 +34,11 @@ export default function OverviewScreen () {
     <ScrollView style={{ flexGrow: 1 }}>
       <View style={styles.overviewScreen}>
         <View style={styles.listContainer}>
-          {months.map((monthNumber, index) => (
+          {[...months, ...months].map((monthNumber, index) => (
             <OverviewMonth
-              key={monthNumber}
+              key={index}
               style={[styles.overviewMonth, index === 0 && { marginTop: 0 }]}
+              year={selectedYear}
               monthNumber={monthNumber}
               expenses={expenses[monthNumber]}
               incomes={incomes[monthNumber]}

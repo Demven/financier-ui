@@ -10,6 +10,7 @@ export const COLOR = {
   BROWN: '#504643',
   BRIGHT_ORANGE: '#FF9400',
   ORANGE: '#CA7703',
+  MEDIUM_ORANGE: '#eea74c',
   LIGHT_ORANGE: '#FFD499',
   GREEN: '#2A7128',
   RED: '#bd0101',
