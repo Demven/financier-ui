@@ -8,6 +8,7 @@ import { LineChart } from 'react-native-chart-kit';
 import { useSelector } from 'react-redux';
 import { formatDateString } from '../../../../services/date';
 import PointInfo from './PointInfo';
+import ChartLegend from './ChartLegend';
 import { COLOR } from '../../../../styles/colors';
 
 function daysInMonth (year, month) {
@@ -250,6 +251,14 @@ export default function MonthChart (props) {
         fromZero
         transparent
       />
+
+      <ChartLegend
+        style={styles.legend}
+        width={chartWidth}
+        height={chartHeight}
+        daysInMonth={daysNumber}
+        month
+      />
     </View>
   );
 }
@@ -266,4 +275,9 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
   },
+
+  legend: {
+    paddingLeft: 65,
+    paddingRight: 20,
+  }
 });
