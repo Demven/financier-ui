@@ -34,7 +34,7 @@ export default function OverviewScreen () {
     <ScrollView style={{ flexGrow: 1 }}>
       <View style={styles.overviewScreen}>
         <View style={styles.listContainer}>
-          {overviewType === months.map((monthNumber, index) => (
+          {months.map((monthNumber, index) => (
             <OverviewMonth
               key={index}
               style={[styles.overviewMonth, index === 0 && { marginTop: 0 }]}
