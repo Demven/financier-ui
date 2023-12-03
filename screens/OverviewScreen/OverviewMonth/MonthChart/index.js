@@ -253,7 +253,6 @@ export default function MonthChart (props) {
       />
 
       <ChartLegend
-        style={styles.legend}
         width={chartWidth}
         height={chartHeight}
         daysInMonth={daysNumber}
@@ -275,9 +274,4 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
   },
-
-  legend: {
-    paddingLeft: 65,
-    paddingRight: 20,
-  }
 });

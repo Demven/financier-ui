@@ -26,16 +26,23 @@ export default function PointInfo (props) {
   const subTitleWidth = subTitle?.length * 6.3;
   const width = subTitleWidth + (8 * 2);
   const height = 46;
+
   let xOffset = 6;
-  const yOffset = 6;
+  let yOffset = -6 - height;
   let tipTxtX = 16;
-  const tipTxtY = 24;
+  let tipTxtY = 12 - height;
 
-  const outOfBounds = chartWidth - x - width - MIN_SPACE < 0;
-
-  if (outOfBounds) {
+  const outOfBoundsX = chartWidth - x - width - MIN_SPACE < 0;
+  if (outOfBoundsX) {
     xOffset = -(xOffset + width);
-    tipTxtX = tipTxtX - width - 12;
+    tipTxtX = tipTxtX - width - MIN_SPACE/2;
+  }
+
+  const outOfBoundsY = y < height + MIN_SPACE;
+
+  if (outOfBoundsY) {
+    yOffset = -(yOffset + height);
+    tipTxtY = tipTxtY + height + MIN_SPACE/2;
   }
 
   return (

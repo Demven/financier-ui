@@ -3,12 +3,14 @@ import {
   ScrollView,
   StyleSheet,
   View,
+  Dimensions,
 } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import { setSelectedTab } from '../../redux/reducers/ui';
 import OverviewMonth from './OverviewMonth/OverviewMonth';
 import { COLOR } from '../../styles/colors';
+import { MEDIA } from '../../styles/media';
 
 export default function OverviewScreen () {
   const dispatch = useDispatch();
@@ -32,7 +34,9 @@ export default function OverviewScreen () {
 
   return (
     <ScrollView style={{ flexGrow: 1 }}>
-      <View style={styles.overviewScreen}>
+      <View style={[styles.overviewScreen, {
+        paddingHorizontal: Dimensions.get('window').width < (MEDIA.MEDIUM_DESKTOP + 40*2) ? 24 : 40,
+      }]}>
         <View style={styles.listContainer}>
           {months.map((monthNumber, index) => (
             <OverviewMonth
@@ -55,7 +59,6 @@ export default function OverviewScreen () {
 const styles = StyleSheet.create({
   overviewScreen: {
     height: '100%',
-    paddingHorizontal: 52,
     backgroundColor: COLOR.WHITE,
   },
 
