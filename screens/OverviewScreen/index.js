@@ -3,17 +3,19 @@ import {
   ScrollView,
   StyleSheet,
   View,
-  Dimensions,
 } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
-import { setSelectedTab } from '../../redux/reducers/ui';
+import { setSelectedTabAction } from '../../redux/reducers/ui';
 import OverviewMonth from './OverviewMonth/OverviewMonth';
 import { COLOR } from '../../styles/colors';
 import { MEDIA } from '../../styles/media';
 
 export default function OverviewScreen () {
   const dispatch = useDispatch();
+
+  const windowWidth = useSelector(state => state.ui.windowWidth);
+
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const selectedYear = useSelector(state => state.ui.selectedYear);
   const expenses = useSelector(state => state.expenses.expenses[selectedYear]);
@@ -28,15 +30,17 @@ export default function OverviewScreen () {
 
   useEffect(() => {
     if (overviewType !== selectedTab) {
-      dispatch(setSelectedTab({ selectedTab: overviewType }));
+      dispatch(setSelectedTabAction({ selectedTab: overviewType }));
     }
   }, [route]);
 
   return (
     <ScrollView style={{ flexGrow: 1 }}>
-      <View style={[styles.overviewScreen, {
-        paddingHorizontal: Dimensions.get('window').width < (MEDIA.MEDIUM_DESKTOP + 40*2) ? 24 : 40,
-      }]}>
+      <View
+        style={[styles.overviewScreen, {
+          paddingHorizontal: windowWidth < (MEDIA.MEDIUM_DESKTOP + 40*2) ? 24 : 40,
+        }]}
+      >
         <View style={styles.listContainer}>
           {months.map((monthNumber, index) => (
             <OverviewMonth

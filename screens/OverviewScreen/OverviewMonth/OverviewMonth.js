@@ -3,13 +3,15 @@ import {
   View,
   Text,
 } from 'react-native';
+import { useSelector } from 'react-redux';
 import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import MonthChart, { CHART_VIEW } from './MonthChart';
+import TitleLink from '../../../components/TitleLink';
 import { FONT } from '../../../styles/fonts';
 import { COLOR } from '../../../styles/colors';
-import TitleLink from "../../../components/TitleLink";
+import { MEDIA } from '../../../styles/media';
 
 OverviewMonth.propTypes = {
   style: PropTypes.any,
@@ -49,6 +51,8 @@ export default function OverviewMonth (props) {
 
   const navigation = useNavigation();
 
+  const windowWidth = useSelector(state => state.ui.windowWidth);
+
   const [chartView, setChartView] = useState(CHART_VIEW.INCOME);
 
   function formatAmount (number) {
@@ -84,18 +88,29 @@ export default function OverviewMonth (props) {
   const totalExcludingSavingsColor = getAmountColor(totalExcludingSavings);
   const totalColor = getAmountColor(total);
 
+  const columnWidth = windowWidth < MEDIA.DESKTOP ? '100%' : '50%';
+  const subtitleFontSize = windowWidth < MEDIA.DESKTOP ? 36 : 40;
+  const subtitlePaddingLeft = windowWidth < MEDIA.DESKTOP ? 28 : 0;
+
   return (
     <View style={[styles.overviewMonth, style]}>
       <TitleLink
-        style={styles.subtitleLink}
+        style={[styles.subtitleLink, { paddingLeft: subtitlePaddingLeft }]}
+        textStyle={{ fontSize: subtitleFontSize }}
         onPress={() => navigation.navigate('OverviewWeeks', { monthNumber })}
       >
         {MONTH_NAME[monthNumber]}
       </TitleLink>
 
-      <View style={styles.content}>
+      <View style={[
+        styles.content,
+        {
+          flexDirection: windowWidth < MEDIA.DESKTOP ? 'column' : 'row',
+          alignItems: windowWidth < MEDIA.DESKTOP ? 'center' : 'flex-start',
+        },
+      ]}>
         <MonthChart
-          style={styles.chart}
+          style={[styles.chart, { width: columnWidth }]}
           year={year}
           chartView={chartView}
           setChartView={setChartView}
@@ -106,7 +121,16 @@ export default function OverviewMonth (props) {
           investments={investments}
         />
 
-        <View style={styles.stats}>
+        <View style={[
+          styles.stats,
+          {
+            width: columnWidth,
+            marginTop: windowWidth < MEDIA.DESKTOP ? -40 : 0,
+            paddingTop: windowWidth < MEDIA.DESKTOP ? 0 : 48,
+            paddingLeft: windowWidth < MEDIA.DESKTOP ? 32 : 40,
+            paddingRight: windowWidth < MEDIA.DESKTOP ? 32 : 0,
+          },
+        ]}>
           {totalIncomes && (
             <View style={[styles.statRow, { marginTop: 0 }]}>
               <TitleLink
@@ -190,18 +214,15 @@ const styles = StyleSheet.create({
   },
 
   content: {
-    flexDirection: 'row',
     justifyContent: 'space-between',
   },
 
   chart: {
-    width: '50%',
     marginTop: 40,
     marginLeft: -58,
   },
 
   stats: {
-    width: '50%',
     paddingTop: 48,
     paddingLeft: 40,
   },

@@ -1,19 +1,20 @@
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import HeaderTabs from './HeaderTabs';
+import HeaderCornerMenu from './HeaderCornerMenu';
 import { MEDIA } from '../styles/media';
-import HeaderCornerMenu from "./HeaderCornerMenu";
 
 HeaderRight.propTypes = {
   style: PropTypes.object,
 };
 
 export default function HeaderRight ({ style }) {
-  const deviceWidth = Dimensions.get('window').width;
+  const windowWidth = useSelector(state => state.ui.windowWidth);
 
   return (
     <View style={[styles.headerRight, style]}>
-      {deviceWidth >= MEDIA.DESKTOP && (
+      {windowWidth >= MEDIA.DESKTOP && (
         <HeaderTabs style={styles.headerTabs} />
       )}
 

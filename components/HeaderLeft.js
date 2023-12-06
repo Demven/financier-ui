@@ -1,15 +1,13 @@
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
 import { HeaderTitle } from '@react-navigation/elements';
 import { useDispatch, useSelector } from 'react-redux';
 import { useDrawerStatus } from '@react-navigation/drawer';
 import Logo from './Logo';
 import HeaderDropdown from './HeaderDropdown';
-import { setSelectedYear } from '../redux/reducers/ui';
+import { setSelectedYearAction } from '../redux/reducers/ui';
 import { FONT } from '../styles/fonts';
 import { MEDIA } from '../styles/media';
-
-const deviceWidth = Dimensions.get('window').width;
 
 HeaderLeft.propTypes = {
   style: PropTypes.object,
@@ -32,6 +30,8 @@ export default function HeaderLeft (props) {
   } = props;
 
   const selectedYear = useSelector(state => state.ui.selectedYear);
+  const windowWidth = useSelector(state => state.ui.windowWidth);
+
   const dispatch = useDispatch();
 
   const isDrawerOpen = useDrawerStatus() === 'open';
@@ -42,16 +42,23 @@ export default function HeaderLeft (props) {
         <Logo containerStyle={styles.logo} />
       )}
 
-      <HeaderTitle style={styles.headerTitle}>
+      <HeaderTitle
+        style={[styles.headerTitle, {
+          marginTop: windowWidth < MEDIA.TABLET ? 8 : 2,
+          marginLeft: windowWidth < MEDIA.TABLET ? 16 : 41,
+          fontSize: windowWidth < MEDIA.TABLET ? 18 : 20,
+          lineHeight: windowWidth < MEDIA.TABLET ? 18 : 26,
+        }]}
+      >
         {title}
       </HeaderTitle>
 
-      {(deviceWidth >= MEDIA.TABLET && !simplified) && (
+      {(windowWidth >= MEDIA.TABLET && !simplified) && (
         <HeaderDropdown
           style={styles.headerDropdown}
           selectedValue={selectedYear}
           values={YEARS}
-          onSelect={(selectedYear) => dispatch(setSelectedYear({ selectedYear }))}
+          onSelect={(selectedYear) => dispatch(setSelectedYearAction({ selectedYear }))}
         />
       )}
     </View>
@@ -64,11 +71,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerTitle: {
-    marginTop: deviceWidth < MEDIA.TABLET ? 8 : 2,
-    marginLeft: deviceWidth < MEDIA.TABLET ? 16 : 41,
     fontFamily: FONT.NOTO_SERIF.BOLD,
-    fontSize: deviceWidth < MEDIA.TABLET ? 18 : 20,
-    lineHeight: deviceWidth < MEDIA.TABLET ? 18 : 26,
   },
   headerDropdown: {
     marginLeft: 24,

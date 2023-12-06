@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import Dropdown from '../../components/Dropdown';
@@ -43,10 +43,10 @@ const CURRENCY_SYMBOL = {
   [CURRENCY.SWISS_FRANC]: '',
 };
 
-const deviceWidth = Dimensions.get('window').width;
-
 export default function SettingsScreen () {
   const dispatch = useDispatch();
+
+  const windowWidth = useSelector(state => state.ui.windowWidth);
 
   const initialFirstName = useSelector(state => state.account.firstName);
   const initialLastName = useSelector(state => state.account.lastName);
@@ -120,7 +120,12 @@ export default function SettingsScreen () {
   }
 
   return (
-    <View style={styles.settingsScreen}>
+    <View
+      style={[styles.settingsScreen, {
+        width: windowWidth >= MEDIA.TABLET ? 600 : '100%',
+        marginTop:  windowWidth >= MEDIA.TABLET ? 100 : 16,
+      }]}
+    >
       <Input
         style={styles.formElement}
         label='First Name'
@@ -180,9 +185,15 @@ export default function SettingsScreen () {
         />
       </View>
 
-      <View style={styles.buttons}>
+      <View
+        style={[styles.buttons, {
+          marginTop: windowWidth >= MEDIA.TABLET ? 120 : 80,
+        }]}
+      >
         <Button
-          style={styles.saveButton}
+          style={[styles.saveButton, {
+            alignSelf: windowWidth >= MEDIA.TABLET ? 'flex-end' : 'center',
+          }]}
           look={BUTTON_LOOK.PRIMARY}
           text='Save'
           disabled={!formIsValid}
@@ -195,8 +206,6 @@ export default function SettingsScreen () {
 
 const styles = StyleSheet.create({
   settingsScreen: {
-    width: deviceWidth >= MEDIA.TABLET ? 600 : '100%',
-    marginTop:  deviceWidth >= MEDIA.TABLET ? 100 : 16,
     padding: 32,
     alignSelf: 'center',
     boxSizing: 'border-box',
@@ -215,10 +224,8 @@ const styles = StyleSheet.create({
 
   buttons: {
     flexGrow: 1,
-    marginTop: deviceWidth >= MEDIA.TABLET ? 120 : 80,
   },
   saveButton: {
     width: 150,
-    alignSelf: deviceWidth >= MEDIA.TABLET ? 'flex-end' : 'center',
   },
 });

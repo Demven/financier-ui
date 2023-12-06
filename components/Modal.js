@@ -3,10 +3,8 @@ import {
   Text,
   Pressable,
   StyleSheet,
-  Dimensions,
   Platform,
 } from 'react-native';
-import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigation } from '@react-navigation/native';
 import CloseButton from './CloseButton';
@@ -14,8 +12,7 @@ import Button, { BUTTON_LOOK } from './Button';
 import { FONT } from '../styles/fonts';
 import { COLOR } from '../styles/colors';
 import { MEDIA } from '../styles/media';
-
-const deviceWidth = Dimensions.get('window').width;
+import { useSelector } from "react-redux";
 
 Modal.propTypes = {
   style: PropTypes.object,
@@ -42,27 +39,7 @@ export default function Modal (props) {
 
   const navigation = useNavigation();
 
-  const [windowWidth, setWindowWidth] = useState(getWindowWidth());
-
-  useEffect(() => {
-    if (Platform.OS === 'web') {
-      window.addEventListener('resize', onResize);
-    }
-
-    return () => {
-      if (Platform.OS === 'web') {
-        window.removeEventListener('resize', onResize);
-      }
-    };
-  }, []);
-
-  function onResize () {
-    setWindowWidth(getWindowWidth());
-  }
-
-  function getWindowWidth () {
-    return Dimensions.get('window').width;
-  }
+  const windowWidth = useSelector(state => state.ui.windowWidth);
 
   function onPressClose () {
     if (typeof onCloseRequest === 'function') {
@@ -73,10 +50,7 @@ export default function Modal (props) {
   }
 
   return (
-    <View
-      style={[styles.modal, style]}
-      onLayout={() => setWindowWidth(getWindowWidth())}
-    >
+    <View style={[styles.modal, style]}>
       <Pressable
         style={[styles.overlay, StyleSheet.absoluteFill]}
         onPress={onPressClose}
@@ -110,7 +84,9 @@ export default function Modal (props) {
           {children}
         </View>
 
-        <View style={styles.footer}>
+        <View
+          style={[styles.footer, { justifyContent: windowWidth < MEDIA.TABLET ? 'center' : 'flex-end' }]}
+        >
           <Button
             style={styles.cancelButton}
             look={BUTTON_LOOK.SECONDARY}
@@ -187,7 +163,6 @@ const styles = StyleSheet.create({
     marginBottom: Platform.select({ ios: 34 }),
     paddingTop: Platform.select({ ios: 80, web: 24 }),
     flexDirection: 'row',
-    justifyContent: deviceWidth < MEDIA.TABLET ? 'center' : 'flex-end',
     borderTopWidth: Platform.select({ web: 1 }),
     borderTopColor: COLOR.LIGHTER_GRAY,
   },

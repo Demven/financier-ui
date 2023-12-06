@@ -3,10 +3,8 @@ import {
   View,
   Image,
   Pressable,
-  Dimensions,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import { MEDIA } from '../styles/media';
 
 AppleButton.propTypes = {
   style: PropTypes.object,

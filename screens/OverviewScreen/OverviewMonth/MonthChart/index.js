@@ -1,14 +1,11 @@
-import {
-  StyleSheet,
-  View,
-} from 'react-native';
 import { useState, useRef } from 'react';
-import PropTypes from 'prop-types';
-import { LineChart } from 'react-native-chart-kit';
+import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { formatDateString } from '../../../../services/date';
+import { LineChart } from 'react-native-chart-kit';
+import PropTypes from 'prop-types';
 import PointInfo from './PointInfo';
 import ChartLegend from './ChartLegend';
+import { formatDateString } from '../../../../services/date';
 import { COLOR } from '../../../../styles/colors';
 
 function daysInMonth (year, month) {
@@ -25,7 +22,11 @@ MonthChart.propTypes = {
   style: PropTypes.object,
   year: PropTypes.number.isRequired,
   monthNumber: PropTypes.number.isRequired,
-  chartView: PropTypes.oneOf([CHART_VIEW.EXPENSES, CHART_VIEW.INCOME, CHART_VIEW.SAVINGS]),
+  chartView: PropTypes.oneOf([
+    CHART_VIEW.EXPENSES,
+    CHART_VIEW.INCOME,
+    CHART_VIEW.SAVINGS,
+  ]),
   setChartView: PropTypes.func,
   expenses: PropTypes.shape({
     1: PropTypes.arrayOf(PropTypes.object),
@@ -246,6 +247,7 @@ export default function MonthChart (props) {
         withHorizontalLabels={false}
         withVerticalLines={false}
         withHorizontalLines={false}
+        withVerticalLabels={false}
         withShadow
         bezier
         fromZero
@@ -256,7 +258,6 @@ export default function MonthChart (props) {
         width={chartWidth}
         height={chartHeight}
         daysInMonth={daysNumber}
-        month
       />
     </View>
   );
@@ -270,8 +271,5 @@ const styles = StyleSheet.create({
 
   chart: {
     width: '100%',
-    position: 'absolute',
-    left: 0,
-    top: 0,
   },
 });

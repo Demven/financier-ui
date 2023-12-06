@@ -1,52 +1,54 @@
-import { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { useRef, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { FONT } from '../../../../styles/fonts';
 import { COLOR } from '../../../../styles/colors';
-import { MEDIA } from "../../../../styles/media";
+import { MEDIA } from '../../../../styles/media';
 
 ChartLegend.propTypes = {
   style: PropTypes.any,
   daysInMonth: PropTypes.number,
   chartWidth: PropTypes.number,
   chartHeight: PropTypes.number,
-  month: PropTypes.bool,
 };
 
 export default function ChartLegend (props) {
   const {
     style,
     daysInMonth,
-    month,
   } = props;
 
   const [legendWidth, setLegendWidth] = useState(0);
   const [horizontalLineWidth, setHorizontalLineWidth] = useState(0);
 
+  const windowWidth = useSelector(state => state.ui.windowWidth);
+
   const chartLegendRef = useRef();
   const horizontalLineRef = useRef();
 
-  useEffect(() => {
-    onResizeLegend();
-  }, [chartLegendRef?.current]);
+  function onLayout () {
+    const updatedWindowWidth = Dimensions.get('window').width;
 
-  function onResizeLegend () {
     if (chartLegendRef?.current?.offsetWidth) {
       setLegendWidth(chartLegendRef.current.offsetWidth);
     }
-  }
 
-  function onResizeHorizontalLine () {
     if (horizontalLineRef?.current?.offsetWidth) {
-      setHorizontalLineWidth(horizontalLineRef.current.offsetWidth);
+      setHorizontalLineWidth(horizontalLineRef.current.offsetWidth + (
+        updatedWindowWidth < MEDIA.MEDIUM_DESKTOP
+          ? updatedWindowWidth < MEDIA.DESKTOP ? 0 : 2
+          : 1
+      ));
     }
   }
 
-  const screenWidth = Dimensions.get('window').width;
-
-  console.info('screenWidth', screenWidth);
-
-  const weekPaddingLeft = screenWidth < (MEDIA.MEDIUM_DESKTOP + 40*2) ? 0 : 4;
+  const weekPaddingLeft = windowWidth < (MEDIA.MEDIUM_DESKTOP + 40*2) ? 0 : 4;
 
   return (
     <View
@@ -54,20 +56,19 @@ export default function ChartLegend (props) {
         styles.chartLegend,
         {
           top: (legendWidth / 21 * 9) + 11,
-          paddingRight: screenWidth < (MEDIA.MEDIUM_DESKTOP + 40*2) ? 17 : 20,
+          paddingRight: windowWidth < (MEDIA.MEDIUM_DESKTOP + 40*2) ? 17 : 20,
         },
         style,
       ]}
       ref={chartLegendRef}
-      onLayout={onResizeLegend}
+      onLayout={onLayout}
     >
       <View
         style={styles.horizontalLineContainer}
         ref={horizontalLineRef}
-        onLayout={onResizeHorizontalLine}
       >
         <View style={[styles.horizontalLine, {
-          width: horizontalLineWidth + (screenWidth < MEDIA.MEDIUM_DESKTOP ? (screenWidth < MEDIA.DESKTOP ? 4 : 2) : 1)
+          width: horizontalLineWidth,
         }]} />
       </View>
 

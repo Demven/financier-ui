@@ -1,4 +1,9 @@
-import { Circle, G, Rect, Text } from 'react-native-svg';
+import {
+  Circle,
+  G,
+  Rect,
+  Text,
+} from 'react-native-svg';
 import PropTypes from 'prop-types';
 import { FONT } from '../../../../styles/fonts';
 

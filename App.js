@@ -1,10 +1,15 @@
-import { Platform, StyleSheet, View, Dimensions } from 'react-native';
+import {
+  Platform,
+  StyleSheet,
+  View,
+  Dimensions,
+} from 'react-native';
 import { useCallback, useEffect } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Provider, useDispatch } from 'react-redux';
+import { useSelector, Provider, useDispatch } from 'react-redux';
 import 'react-native-gesture-handler';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
@@ -28,6 +33,7 @@ import { setSettingsAction } from './redux/reducers/account';
 import { setCategoriesAction } from './redux/reducers/categories';
 import { setExpensesAction } from './redux/reducers/expenses';
 import { setInvestmentsAction, setSavingsAction } from './redux/reducers/savings';
+import { setWindowWidthAction } from './redux/reducers/ui';
 import { setIncomesAction } from './redux/reducers/incomes';
 import { store } from './redux/store';
 import { MEDIA } from './styles/media';
@@ -38,12 +44,12 @@ const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 const BottomTabs = createBottomTabNavigator();
 
-const deviceWidth = Dimensions.get('window').width;
-
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
 function OverviewScreens () {
+  const windowWidth = useSelector(state => state.ui.windowWidth);
+
   return (
     <BottomTabs.Navigator
       initialRouteName='OverviewMonths'
@@ -52,7 +58,7 @@ function OverviewScreens () {
         headerTintColor: COLOR.BLACK,
         tabBarStyle: {
           backgroundColor: COLOR.WHITE,
-          display: deviceWidth >= MEDIA.DESKTOP ? 'none' : undefined,
+          display: windowWidth >= MEDIA.DESKTOP ? 'none' : undefined,
         },
         tabBarActiveTintColor: COLOR.BLACK,
         headerShown: false,
@@ -120,6 +126,8 @@ function OverviewScreens () {
 }
 
 function CategoriesScreens () {
+  const windowWidth = useSelector(state => state.ui.windowWidth);
+
   return (
     <BottomTabs.Navigator
       initialRouteName='CategoriesMonths'
@@ -128,7 +136,7 @@ function CategoriesScreens () {
         headerTintColor: 'black',
         tabBarStyle: {
           backgroundColor: 'white',
-          display: deviceWidth >= MEDIA.TABLET ? 'none' : undefined,
+          display: windowWidth >= MEDIA.TABLET ? 'none' : undefined,
         },
         tabBarActiveTintColor: 'black',
         headerShown: false,
@@ -195,6 +203,8 @@ function CategoriesScreens () {
 }
 
 function SavingsScreens () {
+  const windowWidth = useSelector(state => state.ui.windowWidth);
+
   return (
     <BottomTabs.Navigator
       initialRouteName='SavingsMonths'
@@ -203,7 +213,7 @@ function SavingsScreens () {
         headerTintColor: COLOR.BLACK,
         tabBarStyle: {
           backgroundColor: COLOR.WHITE,
-          display: deviceWidth >= MEDIA.TABLET ? 'none' : undefined,
+          display: windowWidth >= MEDIA.TABLET ? 'none' : undefined,
         },
         tabBarActiveTintColor: COLOR.BLACK,
         headerShown: false,
@@ -270,6 +280,8 @@ function SavingsScreens () {
 }
 
 function DrawerNavigator () {
+  const windowWidth = useSelector(state => state.ui.windowWidth);
+
   return (
     <Drawer.Navigator
       initialRouteName='Overview'
@@ -289,7 +301,7 @@ function DrawerNavigator () {
         headerTintColor: COLOR.BLACK,
         sceneContainerStyle: { backgroundColor: COLOR.WHITE, flexGrow: 1 },
         drawerContentStyle: { paddingTop: 16, paddingLeft: 16, backgroundColor: COLOR.WHITE },
-        drawerItemStyle: styles.drawerItemStyle,
+        drawerItemStyle: [styles.drawerItemStyle, { paddingVertical: windowWidth >= MEDIA.DESKTOP ? 2 : 4 }],
         drawerLabelStyle: styles.drawerLabelStyle,
         drawerActiveTintColor: COLOR.BLACK,
         drawerInactiveTintColor: COLOR.BLACK,
@@ -377,6 +389,10 @@ function Navigator () {
     initializeRedux();
   }, [navigation]);
 
+  function onLayout () {
+    dispatch(setWindowWidthAction(Dimensions.get('window').width));
+  }
+
   async function checkIfLoggedIn () {
     const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
@@ -425,70 +441,75 @@ function Navigator () {
   };
 
   return (
-    <Stack.Navigator
-      initialRouteName='Drawer'
-      screenOptions={{
-        headerStyle: { backgroundColor: COLOR.WHITE },
-        headerTitleStyle: styles.headerTitleStyle,
-        headerTintColor: COLOR.BLACK,
-        contentStyle: { backgroundColor: COLOR.WHITE, flexGrow: 1 },
-      }}
+    <View
+      style={{ flexGrow: 1 }}
+      onLayout={onLayout}
     >
-      <Stack.Screen
-        name='Drawer'
-        component={DrawerNavigator}
-        options={{
-          headerShown: false,
+      <Stack.Navigator
+        initialRouteName='Drawer'
+        screenOptions={{
+          headerStyle: { backgroundColor: COLOR.WHITE },
+          headerTitleStyle: styles.headerTitleStyle,
+          headerTintColor: COLOR.BLACK,
+          contentStyle: { backgroundColor: COLOR.WHITE, flexGrow: 1 },
         }}
-      />
+      >
+        <Stack.Screen
+          name='Drawer'
+          component={DrawerNavigator}
+          options={{
+            headerShown: false,
+          }}
+        />
 
-      <Stack.Screen
-        name='SignIn'
-        component={SignInScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
+        <Stack.Screen
+          name='SignIn'
+          component={SignInScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
 
-      <Stack.Screen
-        name='Expense'
-        component={ExpenseScreen}
-        initialParams={{
-          preselectedCategory: 'first', // 'first' or 'last'
-        }}
-        options={{
-          title: 'Add an Expense',
-          ...modalScreenOptions,
-        }}
-      />
+        <Stack.Screen
+          name='Expense'
+          component={ExpenseScreen}
+          initialParams={{
+            preselectedCategory: 'first', // 'first' or 'last'
+          }}
+          options={{
+            title: 'Add an Expense',
+            ...modalScreenOptions,
+          }}
+        />
 
-      <Stack.Screen
-        name='Saving'
-        component={SavingScreen}
-        options={{
-          title: 'Add a Saving',
-          ...modalScreenOptions,
-        }}
-      />
+        <Stack.Screen
+          name='Saving'
+          component={SavingScreen}
+          options={{
+            title: 'Add a Saving',
+            ...modalScreenOptions,
+          }}
+        />
 
-      <Stack.Screen
-        name='Income'
-        component={IncomeScreen}
-        options={{
-          title: 'Add an Income',
-          ...modalScreenOptions,
-        }}
-      />
+        <Stack.Screen
+          name='Income'
+          component={IncomeScreen}
+          options={{
+            title: 'Add an Income',
+            ...modalScreenOptions,
+          }}
+        />
 
-      <Stack.Screen
-        name='Category'
-        component={CategoryScreen}
-        options={{
-          title: 'Create a Category',
-          ...modalScreenOptions,
-        }}
-      />
-    </Stack.Navigator>
+        <Stack.Screen
+          name='Category'
+          component={CategoryScreen}
+          options={{
+            title: 'Create a Category',
+            ...modalScreenOptions,
+          }}
+        />
+      </Stack.Navigator>
+    </View>
   );
 }
 
@@ -500,7 +521,8 @@ export default function App () {
     [FONT.NOTO_SERIF.BOLD]: require('./assets/fonts/NotoSerif/NotoSerif-Bold.ttf'),
   });
 
-  const onLayoutRootView = useCallback(async () => {
+
+  const checkIfNeedToHideSplashScreen = useCallback(async () => {
     if (fontsLoaded) {
       await SplashScreen.hideAsync();
     }
@@ -513,7 +535,7 @@ export default function App () {
   return (
     <View
       style={styles.app}
-      onLayout={onLayoutRootView}
+      onLayout={checkIfNeedToHideSplashScreen}
     >
       <StatusBar style='dark' />
 
@@ -546,7 +568,6 @@ const styles = StyleSheet.create({
   },
 
   drawerItemStyle: {
-    paddingVertical: deviceWidth >= MEDIA.DESKTOP ? 2 : 4,
     paddingLeft: 22,
     paddingRight: 12,
     margin: 0,

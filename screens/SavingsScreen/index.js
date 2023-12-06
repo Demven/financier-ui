@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
-import { setSelectedTab } from '../../redux/reducers/ui';
+import { setSelectedTabAction } from '../../redux/reducers/ui';
 
 export default function SavingsScreen () {
   const dispatch = useDispatch();
@@ -13,7 +13,7 @@ export default function SavingsScreen () {
 
   useEffect(() => {
     if (overviewType !== selectedTab) {
-      dispatch(setSelectedTab({ selectedTab: overviewType }));
+      dispatch(setSelectedTabAction({ selectedTab: overviewType }));
     }
   }, [route]);
 
