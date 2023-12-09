@@ -44,7 +44,7 @@ export default function HeaderLeft (props) {
 
       <HeaderTitle
         style={[styles.headerTitle, {
-          marginTop: windowWidth < MEDIA.TABLET ? 8 : 2,
+          marginTop: windowWidth < MEDIA.TABLET ? 4 : 2,
           marginLeft: windowWidth < MEDIA.TABLET ? 16 : 41,
           fontSize: windowWidth < MEDIA.TABLET ? 18 : 20,
           lineHeight: windowWidth < MEDIA.TABLET ? 18 : 26,

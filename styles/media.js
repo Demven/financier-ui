@@ -1,4 +1,5 @@
 export const MEDIA = {
+  WIDE_MOBILE: 500,
   TABLET: 768,
   DESKTOP: 1024,
   MEDIUM_DESKTOP: 1280,

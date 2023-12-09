@@ -40,11 +40,17 @@ export default function ChartLegend (props) {
     }
 
     if (horizontalLineRef?.current?.offsetWidth) {
-      setHorizontalLineWidth(horizontalLineRef.current.offsetWidth + (
-        updatedWindowWidth < MEDIA.MEDIUM_DESKTOP
-          ? updatedWindowWidth < MEDIA.DESKTOP ? 0 : 2
-          : 1
-      ));
+      const horizontalLineWidthAdjustment = updatedWindowWidth < MEDIA.MEDIUM_DESKTOP
+        ? updatedWindowWidth < MEDIA.DESKTOP
+          ? updatedWindowWidth < MEDIA.TABLET
+            ? updatedWindowWidth > MEDIA.WIDE_MOBILE
+              ? (horizontalLineRef.current.offsetWidth * 0.005)
+              : (horizontalLineRef.current.offsetWidth * 0.01)
+            : -(horizontalLineRef.current.offsetWidth * 0.01)
+          : 2
+        : 1;
+
+      setHorizontalLineWidth(horizontalLineRef.current.offsetWidth + horizontalLineWidthAdjustment);
     }
   }
 

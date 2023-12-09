@@ -7,6 +7,7 @@ import PointInfo from './PointInfo';
 import ChartLegend from './ChartLegend';
 import { formatDateString } from '../../../../services/date';
 import { COLOR } from '../../../../styles/colors';
+import { MEDIA } from '../../../../styles/media';
 
 function daysInMonth (year, month) {
   return new Date(year, month, 0).getDate();

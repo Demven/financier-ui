@@ -34,11 +34,15 @@ export default function OverviewScreen () {
     }
   }, [route]);
 
+  const overviewScreenPadding = windowWidth < (MEDIA.MEDIUM_DESKTOP + 40 * 2)
+    ? windowWidth < MEDIA.TABLET ? 0 : 24
+    : 40;
+
   return (
     <ScrollView style={{ flexGrow: 1 }}>
       <View
         style={[styles.overviewScreen, {
-          paddingHorizontal: windowWidth < (MEDIA.MEDIUM_DESKTOP + 40*2) ? 24 : 40,
+          paddingHorizontal: overviewScreenPadding,
         }]}
       >
         <View style={styles.listContainer}>
