@@ -189,9 +189,6 @@ export default function MonthChart (props) {
   const savingsAndInvestmentsGroupedByDay = mergeGroupedByDay(savingsGroupedByDay, investmentsGroupedByDay);
   const savingsPoints = getChartPoints(savingsAndInvestmentsGroupedByDay);
 
-  console.info('chartWidth', chartWidth);
-  console.info('chartHeight', chartHeight);
-
   return (
     <View
       style={[styles.monthChart, style]}
