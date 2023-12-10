@@ -49,7 +49,11 @@ export default function OverviewScreen () {
           {months.map((monthNumber, index) => (
             <OverviewMonth
               key={index}
-              style={[styles.overviewMonth, index === 0 && { marginTop: 0 }]}
+              style={[styles.overviewMonth, {
+                marginTop: index === 0
+                  ? 0
+                  : windowWidth < MEDIA.TABLET ? 80 : 60,
+              }]}
               year={selectedYear}
               monthNumber={monthNumber}
               expenses={expenses[monthNumber]}
