@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { LineChart } from 'react-native-chart-kit';
@@ -7,7 +7,6 @@ import PointInfo from './PointInfo';
 import ChartLegend from './ChartLegend';
 import { formatDateString } from '../../../../services/date';
 import { COLOR } from '../../../../styles/colors';
-import { MEDIA } from '../../../../styles/media';
 
 function daysInMonth (year, month) {
   return new Date(year, month, 0).getDate();
@@ -20,7 +19,7 @@ export const CHART_VIEW = {
 };
 
 MonthChart.propTypes = {
-  style: PropTypes.object,
+  style: PropTypes.any,
   year: PropTypes.number.isRequired,
   monthNumber: PropTypes.number.isRequired,
   chartView: PropTypes.oneOf([
@@ -70,8 +69,6 @@ export default function MonthChart (props) {
 
   const currencySymbol = useSelector(state => state.account.currencySymbol);
 
-  const chartRef = useRef(null);
-
   const [chartWidth, setChartWidth] = useState(0);
   const [chartHeight, setChartHeight] = useState(0);
 
@@ -84,11 +81,11 @@ export default function MonthChart (props) {
     color: COLOR.DARK_GRAY,
   });
 
-  function onResizeChart () {
-    const chartWidth = chartRef.current.offsetWidth;
+  function onLayout (event) {
+    const { width } = event.nativeEvent.layout;
 
-    setChartWidth(chartWidth);
-    setChartHeight(Math.floor(chartWidth / 16 * 9));
+    setChartWidth(width);
+    setChartHeight(Math.floor(width / 16 * 9));
   }
 
   const daysNumber = daysInMonth(year, monthNumber);
@@ -192,11 +189,13 @@ export default function MonthChart (props) {
   const savingsAndInvestmentsGroupedByDay = mergeGroupedByDay(savingsGroupedByDay, investmentsGroupedByDay);
   const savingsPoints = getChartPoints(savingsAndInvestmentsGroupedByDay);
 
+  console.info('chartWidth', chartWidth);
+  console.info('chartHeight', chartHeight);
+
   return (
     <View
       style={[styles.monthChart, style]}
-      ref={chartRef}
-      onLayout={onResizeChart}
+      onLayout={onLayout}
     >
       <LineChart
         style={styles.chart}

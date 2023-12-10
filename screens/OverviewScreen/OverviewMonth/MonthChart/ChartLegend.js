@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import {
   View,
   Text,
@@ -29,29 +29,28 @@ export default function ChartLegend (props) {
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
-  const chartLegendRef = useRef();
-  const horizontalLineRef = useRef();
+  function onChartLegendLayout (event) {
+    const { width } = event.nativeEvent.layout;
 
-  function onLayout () {
+    setLegendWidth(width);
+  }
+
+  function onHorizontalLineLayout (event) {
+    const { width } = event.nativeEvent.layout;
+
     const updatedWindowWidth = Dimensions.get('window').width;
 
-    if (chartLegendRef?.current?.offsetWidth) {
-      setLegendWidth(chartLegendRef.current.offsetWidth);
-    }
+    const horizontalLineWidthAdjustment = updatedWindowWidth < MEDIA.MEDIUM_DESKTOP
+      ? updatedWindowWidth < MEDIA.DESKTOP
+        ? updatedWindowWidth < MEDIA.TABLET
+          ? updatedWindowWidth > MEDIA.WIDE_MOBILE
+            ? (width * 0.005)
+            : (width * 0.01)
+          : -(width * 0.01)
+        : 2
+      : 1;
 
-    if (horizontalLineRef?.current?.offsetWidth) {
-      const horizontalLineWidthAdjustment = updatedWindowWidth < MEDIA.MEDIUM_DESKTOP
-        ? updatedWindowWidth < MEDIA.DESKTOP
-          ? updatedWindowWidth < MEDIA.TABLET
-            ? updatedWindowWidth > MEDIA.WIDE_MOBILE
-              ? (horizontalLineRef.current.offsetWidth * 0.005)
-              : (horizontalLineRef.current.offsetWidth * 0.01)
-            : -(horizontalLineRef.current.offsetWidth * 0.01)
-          : 2
-        : 1;
-
-      setHorizontalLineWidth(horizontalLineRef.current.offsetWidth + horizontalLineWidthAdjustment);
-    }
+    setHorizontalLineWidth(width + horizontalLineWidthAdjustment);
   }
 
   const weekPaddingLeft = windowWidth < (MEDIA.MEDIUM_DESKTOP + 40*2) ? 0 : 4;
@@ -66,12 +65,11 @@ export default function ChartLegend (props) {
         },
         style,
       ]}
-      ref={chartLegendRef}
-      onLayout={onLayout}
+      onLayout={onChartLegendLayout}
     >
       <View
         style={styles.horizontalLineContainer}
-        ref={horizontalLineRef}
+        onLayout={onHorizontalLineLayout}
       >
         <View style={[styles.horizontalLine, {
           width: horizontalLineWidth,
