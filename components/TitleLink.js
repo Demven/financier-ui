@@ -14,7 +14,7 @@ TitleLink.propTypes = {
   style: PropTypes.any,
   textStyle: PropTypes.any,
   underlineGap: PropTypes.number,
-  onPress: PropTypes.func,
+  onPress: PropTypes.func, // without onPress will work as a simple Text node
   children: PropTypes.any.isRequired,
 };
 
@@ -45,8 +45,8 @@ export default function TitleLink (props) {
       >
         <Text
           style={[styles.text, textStyle]}
-          onMouseEnter={() => setHighlighted(true)}
-          onMouseLeave={() => setHighlighted(false)}
+          onMouseEnter={onPress ? () => setHighlighted(true) : undefined}
+          onMouseLeave={onPress ? () => setHighlighted(false) : undefined}
         >
           {children}
         </Text>

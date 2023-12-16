@@ -5,7 +5,7 @@ import {
   Text,
 } from 'react-native-svg';
 import PropTypes from 'prop-types';
-import { FONT } from '../../../../styles/fonts';
+import { FONT } from '../../styles/fonts';
 
 const MIN_SPACE = 24;
 

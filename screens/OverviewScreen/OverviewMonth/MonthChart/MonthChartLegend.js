@@ -11,14 +11,14 @@ import { FONT } from '../../../../styles/fonts';
 import { COLOR } from '../../../../styles/colors';
 import { MEDIA } from '../../../../styles/media';
 
-ChartLegend.propTypes = {
+MonthChartLegend.propTypes = {
   style: PropTypes.any,
   daysInMonth: PropTypes.number,
   chartWidth: PropTypes.number,
   chartHeight: PropTypes.number,
 };
 
-export default function ChartLegend (props) {
+export default function MonthChartLegend (props) {
   const {
     style,
     daysInMonth,
@@ -58,7 +58,7 @@ export default function ChartLegend (props) {
   return (
     <View
       style={[
-        styles.chartLegend,
+        styles.monthChartLegend,
         {
           top: (legendWidth / 21 * 9) + 11,
           paddingRight: windowWidth < (MEDIA.MEDIUM_DESKTOP + 40*2) ? 17 : 20,
@@ -98,7 +98,7 @@ export default function ChartLegend (props) {
 }
 
 const styles = StyleSheet.create({
-  chartLegend: {
+  monthChartLegend: {
     width: '100%',
     flexGrow: 1,
     paddingLeft: 65,

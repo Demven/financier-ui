@@ -3,39 +3,62 @@ import {
   View,
   Text,
 } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
-import { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import MonthChart, { CHART_VIEW } from './MonthChart';
+import WeekChart, { CHART_VIEW } from './WeekChart';
 import TitleLink from '../../../components/TitleLink';
-import { MONTH_NAME } from '../../../services/date';
+import { MONTH_NAME, getDaysInMonth } from '../../../services/date';
 import { FONT } from '../../../styles/fonts';
 import { COLOR } from '../../../styles/colors';
 import { MEDIA } from '../../../styles/media';
 
-OverviewMonth.propTypes = {
+OverviewWeek.propTypes = {
   style: PropTypes.any,
   year: PropTypes.number.isRequired,
   monthNumber: PropTypes.number.isRequired,
+  weekNumber: PropTypes.number.isRequired,
   expenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
   incomes: PropTypes.object, // weeks -> incomes { [1]: [], [2]: [] }
   savings: PropTypes.object, // weeks -> savings { [1]: [], [2]: [] }
   investments: PropTypes.object, // weeks -> investments { [1]: [], [2]: [] }
 };
 
-export default function OverviewMonth (props) {
+const WEEK_NAME = {
+  [1]: 'Week 1',
+  [2]: 'Week 2',
+  [3]: 'Week 3',
+  [4]: 'Week 4',
+};
+
+function getWeekRange (weekNumber, daysInMonth) {
+  const range = {
+    [1]: '1 - 7',
+    [2]: '8 - 14',
+    [3]: '15 - 21',
+    [4]: `22 - ${daysInMonth}`,
+  };
+
+  return range[weekNumber];
+}
+
+export default function OverviewWeek (props) {
   const {
     style,
     year,
     monthNumber,
+    weekNumber,
     expenses = {},
     incomes = {},
     savings = {},
     investments = {},
   } = props;
 
-  const navigation = useNavigation();
+  const currentWeekIncomes = incomes?.[weekNumber] || [];
+  const currentWeekExpenses = expenses?.[weekNumber] || [];
+  const currentWeekSavings = savings?.[weekNumber] || [];
+  const currentWeekInvestments = investments?.[weekNumber] || [];
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
@@ -46,15 +69,18 @@ export default function OverviewMonth (props) {
   }
 
   function getTotalAmount (items) {
-    return Object
+    return items.reduce((total, item) => {
+      const amount = item.amount || (item.shares * item.pricePerShare);
+      return total + amount;
+    }, 0);
+  }
+
+  function getPreviousWeeksTotalAmount (items) {
+    const weekKeys = Object
       .keys(items)
-      .flatMap(week => {
-        return (items[week] || []).reduce((total, item) => {
-          const amount = item.amount || (item.shares * item.pricePerShare);
-          return total + amount;
-        }, 0);
-      })
-      .reduce((total, weekTotal) => total + weekTotal, 0);
+      .filter(weekKey => weekKey < weekNumber) || [];
+
+    return weekKeys.reduce((total, weekKey) => total + getTotalAmount(items[weekKey] || []), 0);
   }
 
   function getAmountColor (amount) {
@@ -63,16 +89,43 @@ export default function OverviewMonth (props) {
     return isPositive ? COLOR.GREEN : COLOR.RED;
   }
 
-  const totalIncomes = getTotalAmount(incomes);
-  const totalExpenses = getTotalAmount(expenses);
-  const totalSavingsAndInvestments = (getTotalAmount(savings) + getTotalAmount(investments)) || 0;
-  const savingsPercent = Math.floor(totalSavingsAndInvestments * 100 / totalIncomes);
+  const totalIncomes = getTotalAmount(currentWeekIncomes);
+  const previousWeeksTotalIncomes = getPreviousWeeksTotalAmount(incomes);
 
-  const totalExcludingSavings = totalIncomes - totalExpenses;
-  const total = totalExcludingSavings - totalSavingsAndInvestments;
+  const totalExpenses = getTotalAmount(currentWeekExpenses);
+  const previousWeeksTotalExpenses = getPreviousWeeksTotalAmount(expenses);
+
+  const totalSavingsAndInvestments = (getTotalAmount(currentWeekSavings) + getTotalAmount(currentWeekInvestments)) || 0;
+  const previousWeeksTotalSavings = getPreviousWeeksTotalAmount(savings);
+  const previousWeeksTotalInvestments = getPreviousWeeksTotalAmount(investments);
+
+  const totalExcludingSavings = (totalIncomes + previousWeeksTotalIncomes) - (totalExpenses + previousWeeksTotalExpenses);
+  const total = totalExcludingSavings - totalSavingsAndInvestments - previousWeeksTotalSavings - previousWeeksTotalInvestments;
 
   const totalExcludingSavingsColor = getAmountColor(totalExcludingSavings);
   const totalColor = getAmountColor(total);
+
+  useEffect(() => {
+    if (chartView === CHART_VIEW.INCOME && !totalIncomes) {
+      if (totalExpenses) {
+        setChartView(CHART_VIEW.EXPENSES);
+      } else if (totalSavingsAndInvestments) {
+        setChartView(CHART_VIEW.SAVINGS);
+      }
+    } else if (chartView === CHART_VIEW.EXPENSES && !totalExpenses) {
+      if (totalIncomes) {
+        setChartView(CHART_VIEW.INCOME);
+      } else if (totalSavingsAndInvestments) {
+        setChartView(CHART_VIEW.SAVINGS);
+      }
+    } else if (chartView === CHART_VIEW.SAVINGS && !totalSavingsAndInvestments) {
+      if (totalIncomes) {
+        setChartView(CHART_VIEW.INCOME);
+      } else if (totalExpenses) {
+        setChartView(CHART_VIEW.EXPENSES);
+      }
+    }
+  }, [totalIncomes, totalExpenses, totalSavingsAndInvestments]);
 
   const columnWidth = windowWidth < MEDIA.DESKTOP
     ? '100%'
@@ -97,14 +150,19 @@ export default function OverviewMonth (props) {
     : 0;
 
   return (
-    <View style={[styles.overviewMonth, style]}>
-      <TitleLink
-        style={[styles.subtitleLink, { paddingLeft: subtitlePaddingLeft }]}
-        textStyle={[styles.subtitleLinkText, { fontSize: subtitleFontSize }]}
-        onPress={() => navigation.navigate('OverviewWeeks', { monthNumber })}
-      >
-        {MONTH_NAME[monthNumber]}
-      </TitleLink>
+    <View style={[styles.overviewWeek, style]}>
+      <View style={styles.titleContainer}>
+        <TitleLink
+          style={[styles.subtitleLink, { paddingLeft: subtitlePaddingLeft }]}
+          textStyle={[styles.subtitleLinkText, { fontSize: subtitleFontSize }]}
+        >
+          {WEEK_NAME[weekNumber]}
+        </TitleLink>
+
+        <Text style={styles.weekRangeText}>
+          {MONTH_NAME[monthNumber].substring(0, 3)} {(getWeekRange(weekNumber, getDaysInMonth(year, monthNumber)))}
+        </Text>
+      </View>
 
       <View style={[
         styles.content,
@@ -113,7 +171,7 @@ export default function OverviewMonth (props) {
           alignItems: windowWidth < MEDIA.DESKTOP ? 'center' : 'flex-start',
         },
       ]}>
-        <MonthChart
+        <WeekChart
           style={[styles.chart, {
             width: chartWidth,
             marginLeft: chartMarginLeft,
@@ -122,10 +180,15 @@ export default function OverviewMonth (props) {
           chartView={chartView}
           setChartView={setChartView}
           monthNumber={monthNumber}
-          expenses={expenses}
-          incomes={incomes}
-          savings={savings}
-          investments={investments}
+          weekNumber={weekNumber}
+          incomes={currentWeekIncomes}
+          previousWeeksTotalIncomes={previousWeeksTotalIncomes}
+          expenses={currentWeekExpenses}
+          previousWeeksTotalExpenses={previousWeeksTotalExpenses}
+          savings={currentWeekSavings}
+          previousWeeksTotalSavings={previousWeeksTotalSavings}
+          investments={currentWeekInvestments}
+          previousWeeksTotalInvestments={previousWeeksTotalInvestments}
         />
 
         <View style={[
@@ -197,7 +260,7 @@ export default function OverviewMonth (props) {
                 underlineGap={2}
                 onPress={() => setChartView(CHART_VIEW.SAVINGS)}
               >
-                Savings
+                Savings / Investments
               </TitleLink>
 
               <Text style={[
@@ -210,15 +273,9 @@ export default function OverviewMonth (props) {
             </View>
           )}
 
-          {!!savingsPercent && (
-            <View style={[styles.statRow, { marginTop: 12 }]}>
-              <Text style={[styles.statValue, styles.smallerText]}>({savingsPercent}%)</Text>
-            </View>
-          )}
-
           <View style={styles.underline} />
 
-          {!!totalSavingsAndInvestments && (
+          {!!(totalSavingsAndInvestments || previousWeeksTotalSavings || previousWeeksTotalInvestments) && (
             <View style={styles.statRow}>
               <Text style={[styles.statName, styles.smallerText]}>(Excluding Savings)</Text>
 
@@ -259,8 +316,13 @@ export default function OverviewMonth (props) {
 }
 
 const styles = StyleSheet.create({
-  overviewMonth: {
+  overviewWeek: {
     flexGrow: 1,
+  },
+
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
   },
 
   subtitleLink: {
@@ -268,6 +330,14 @@ const styles = StyleSheet.create({
   },
   subtitleLinkText: {
     fontFamily: FONT.NOTO_SERIF.BOLD,
+  },
+
+  weekRangeText: {
+    fontFamily: FONT.NOTO_SERIF.REGULAR,
+    fontSize: 21,
+    lineHeight: 21,
+    marginLeft: 32,
+    paddingBottom: 12,
   },
 
   content: {

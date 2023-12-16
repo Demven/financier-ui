@@ -1,16 +1,12 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { LineChart } from 'react-native-chart-kit';
 import PropTypes from 'prop-types';
 import PointInfo from '../../../../components/Chart/PointInfo';
-import { formatDateString } from '../../../../services/date';
-import MonthChartLegend from './MonthChartLegend';
+import { formatDateString, getDaysInMonth } from '../../../../services/date';
+import WeekChartLegend from './WeekChartLegend';
 import { COLOR } from '../../../../styles/colors';
-
-function daysInMonth (year, month) {
-  return new Date(year, month, 0).getDate();
-}
 
 export const CHART_VIEW = {
   INCOME: 'income',
@@ -18,40 +14,50 @@ export const CHART_VIEW = {
   SAVINGS: 'savings',
 };
 
+const DAYS_IN_WEEK = 7;
+
 MonthChart.propTypes = {
   style: PropTypes.any,
   year: PropTypes.number.isRequired,
   monthNumber: PropTypes.number.isRequired,
+  weekNumber: PropTypes.number.isRequired,
   chartView: PropTypes.oneOf([
     CHART_VIEW.EXPENSES,
     CHART_VIEW.INCOME,
     CHART_VIEW.SAVINGS,
   ]),
   setChartView: PropTypes.func,
-  expenses: PropTypes.shape({
-    1: PropTypes.arrayOf(PropTypes.object),
-    2: PropTypes.arrayOf(PropTypes.object),
-    3: PropTypes.arrayOf(PropTypes.object),
-    4: PropTypes.arrayOf(PropTypes.object),
-  }).isRequired,
-  incomes: PropTypes.shape({
-    1: PropTypes.arrayOf(PropTypes.object),
-    2: PropTypes.arrayOf(PropTypes.object),
-    3: PropTypes.arrayOf(PropTypes.object),
-    4: PropTypes.arrayOf(PropTypes.object),
-  }).isRequired,
-  savings: PropTypes.shape({
-    1: PropTypes.arrayOf(PropTypes.object),
-    2: PropTypes.arrayOf(PropTypes.object),
-    3: PropTypes.arrayOf(PropTypes.object),
-    4: PropTypes.arrayOf(PropTypes.object),
-  }).isRequired,
-  investments: PropTypes.shape({
-    1: PropTypes.arrayOf(PropTypes.object),
-    2: PropTypes.arrayOf(PropTypes.object),
-    3: PropTypes.arrayOf(PropTypes.object),
-    4: PropTypes.arrayOf(PropTypes.object),
-  }).isRequired,
+  expenses: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    categoryId: PropTypes.string.isRequired,
+    dateString: PropTypes.string.isRequired, // e.g. '2023-09-01'
+    amount: PropTypes.number.isRequired,
+  })),
+  previousWeeksTotalExpenses: PropTypes.number.isRequired,
+  incomes: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    dateString: PropTypes.string.isRequired,
+    amount: PropTypes.number.isRequired,
+  })),
+  previousWeeksTotalIncomes: PropTypes.number.isRequired,
+  savings: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    dateString: PropTypes.string.isRequired,
+    amount: PropTypes.number.isRequired,
+  })),
+  previousWeeksTotalSavings: PropTypes.number.isRequired,
+  investments: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    dateString: PropTypes.string.isRequired,
+    ticker: PropTypes.string.isRequired,
+    pricePerShares: PropTypes.number.isRequired,
+    shares: PropTypes.number.isRequired,
+  })),
+  previousWeeksTotalInvestments: PropTypes.number.isRequired,
 };
 
 export default function MonthChart (props) {
@@ -59,18 +65,27 @@ export default function MonthChart (props) {
     style,
     year,
     monthNumber,
+    weekNumber,
     chartView,
     setChartView = () => {},
-    expenses = {},
-    incomes = {},
-    savings = {},
-    investments = {},
+    expenses = [],
+    previousWeeksTotalExpenses = 0,
+    incomes = [],
+    previousWeeksTotalIncomes = 0,
+    savings = [],
+    previousWeeksTotalSavings = 0,
+    investments = [],
+    previousWeeksTotalInvestments = 0,
   } = props;
 
   const currencySymbol = useSelector(state => state.account.currencySymbol);
 
+  const chartRef = useRef();
+
   const [chartWidth, setChartWidth] = useState(0);
   const [chartHeight, setChartHeight] = useState(0);
+  const [realChartWidth, setRealChartWidth] = useState(0);
+  const [realChartHeight, setRealChartHeight] = useState(0);
 
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [selectedPointData, setSelectedPointData] = useState({
@@ -86,28 +101,35 @@ export default function MonthChart (props) {
 
     setChartWidth(width);
     setChartHeight(Math.floor(width / 16 * 9));
+
+    if (chartRef.current) {
+      const { width = 0, height = 0 } = chartRef.current.querySelector('svg > g > g:nth-child(7)')?.getBoundingClientRect() || {};
+      setRealChartWidth(width);
+      setRealChartHeight(height);
+    }
   }
 
-  const daysNumber = daysInMonth(year, monthNumber);
+  const daysInMonthNumber = getDaysInMonth(year, monthNumber);
+  const daysInWeek = weekNumber === 4
+    ? 7 + (daysInMonthNumber - 28)
+    : 7;
 
-  function groupByDay (groupedByWeeks) {
-    const items = Object
-      .keys(groupedByWeeks)
-      .flatMap(weekNumber => groupedByWeeks?.[weekNumber]);
-    const groupedByDay = Array.from(new Array(daysNumber));
+  function groupByDay (week) {
+    const groupedByDay = new Array(daysInWeek).fill([]);
 
-    items.forEach(item => {
-      const [, , day] = item?.dateString?.split('-')?.map(string => Number(string)) || [];
+    week.forEach(item => {
+      const [, , dayOfMonth] = item?.dateString?.split('-')?.map(string => Number(string)) || [];
+      const dayOfWeek = dayOfMonthToDayOfWeek(dayOfMonth);
 
-      groupedByDay[day - 1] = Array.isArray(groupedByDay[day - 1])
-        ? [...groupedByDay[day - 1], item]
+      groupedByDay[dayOfWeek - 1] = Array.isArray(groupedByDay[dayOfWeek - 1])
+        ? [...groupedByDay[dayOfWeek - 1], item]
         : [item];
     });
 
     return groupedByDay;
   }
 
-  function mergeGroupedByDay (groupedByDay1, groupedByDay2) {
+  function mergeGroupedByDay (groupedByDay1 = [], groupedByDay2 = []) {
     return groupedByDay1.map((byDay1, index) => {
       const byDay2 = groupedByDay2[index] || [];
 
@@ -117,28 +139,44 @@ export default function MonthChart (props) {
     });
   }
 
+  function dayOfMonthToDayOfWeek (dayOfMonth) {
+    const isFourthWeek = dayOfMonth / DAYS_IN_WEEK > 3;
+    const remainder = dayOfMonth % DAYS_IN_WEEK;
+
+    // 1 - 7 -> 1 - 7
+    // 8 - 14 -> 1 - 7
+    // 15 - 21 -> 1 - 7
+    // 22 - 31 -> 1 - 10
+    return isFourthWeek
+      ? dayOfMonth - (DAYS_IN_WEEK * 3)
+      : remainder === 0 ? 7 : remainder;
+  }
+
   function getAmount (item) {
     return item?.shares
       ? parseFloat((item.shares * item.pricePerShare).toFixed(2)) || 0
       : item?.amount || 0;
   }
 
-  function getChartPoints (groupedByDay) {
-    let totalOfPreviousDays = 0;
+  function getChartPoints (groupedByDay, startingPoint = 0) {
+    let totalOfPreviousDays = startingPoint;
 
-    return groupedByDay.map(itemsByDay => {
-      if (!itemsByDay?.length) {
-        return totalOfPreviousDays;
-      }
+    return [
+      startingPoint,
+      ...groupedByDay.map(itemsByDay => {
+        if (!itemsByDay?.length) {
+          return totalOfPreviousDays;
+        }
 
-      const dayTotal = itemsByDay.reduce((total, item) => {
-        return total + getAmount(item);
-      }, 0);
+        const dayTotal = itemsByDay.reduce((total, item) => {
+          return total + getAmount(item);
+        }, 0);
 
-      totalOfPreviousDays = totalOfPreviousDays + dayTotal;
+        totalOfPreviousDays = totalOfPreviousDays + dayTotal;
 
-      return parseFloat(totalOfPreviousDays.toFixed(2));
-    });
+        return parseFloat(totalOfPreviousDays.toFixed(2));
+      }),
+    ];
   }
 
   function onPointClick ({ index, value, dataset, x, y }) {
@@ -153,8 +191,10 @@ export default function MonthChart (props) {
 
     setChartView(clickedChartViewType);
 
+    const dayOfMonth = ((weekNumber - 1) * DAYS_IN_WEEK) + index + 1;
+
     setSelectedPointData({
-      title: formatDateString(`${year}-${`0${monthNumber}`.slice(-2)}-${`0${index + 1}`.slice(-2)}`),
+      title: formatDateString(`${year}-${`0${monthNumber}`.slice(-2)}-${`0${dayOfMonth}`.slice(-2)}`),
       subTitle: `${[clickedChartViewType[0].toUpperCase()]}${clickedChartViewType.slice(1)}:  ${currencySymbol}${value.toFixed(2)}`,
       x,
       y,
@@ -179,19 +219,20 @@ export default function MonthChart (props) {
   }
 
   const expensesGroupedByDay = groupByDay(expenses);
-  const expensesPoints = getChartPoints(expensesGroupedByDay);
+  const expensesPoints = getChartPoints(expensesGroupedByDay, previousWeeksTotalExpenses);
 
   const incomesGroupedByDay = groupByDay(incomes);
-  const incomesPoints = getChartPoints(incomesGroupedByDay);
+  const incomesPoints = getChartPoints(incomesGroupedByDay, previousWeeksTotalIncomes);
 
   const savingsGroupedByDay = groupByDay(savings);
   const investmentsGroupedByDay = groupByDay(investments);
   const savingsAndInvestmentsGroupedByDay = mergeGroupedByDay(savingsGroupedByDay, investmentsGroupedByDay);
-  const savingsPoints = getChartPoints(savingsAndInvestmentsGroupedByDay);
+  const savingsPoints = getChartPoints(savingsAndInvestmentsGroupedByDay, previousWeeksTotalSavings + previousWeeksTotalInvestments);
 
   return (
     <View
       style={[styles.monthChart, style]}
+      ref={chartRef}
       onLayout={onLayout}
     >
       <LineChart
@@ -215,7 +256,7 @@ export default function MonthChart (props) {
               data: savingsPoints,
               color: (opacity = 1) => getSavingsColor(opacity, chartView),
             },
-          ],
+          ].filter(Boolean),
         }}
         chartConfig={{
           decimalPlaces: 2,
@@ -251,10 +292,10 @@ export default function MonthChart (props) {
         transparent
       />
 
-      <MonthChartLegend
-        width={chartWidth}
-        height={chartHeight}
-        daysInMonth={daysNumber}
+      <WeekChartLegend
+        daysInWeek={daysInWeek}
+        chartWidth={realChartWidth}
+        chartHeight={realChartHeight}
       />
     </View>
   );
