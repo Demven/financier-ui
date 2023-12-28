@@ -540,7 +540,45 @@ export default function App () {
       <StatusBar style='dark' />
 
       <Provider store={store}>
-        <NavigationContainer>
+        <NavigationContainer
+          linking={{
+            config: {
+              screens: {
+                Drawer: '',
+                Overview: {
+                  initialRouteName: 'Overview',
+                  screens: {
+                    OverviewMonths: 'overview/months',
+                    OverviewWeeks: 'overview/weeks',
+                    OverviewYears: 'overview/years',
+                  },
+                },
+                Categories: {
+                  initialRouteName: 'Categories',
+                  screens: {
+                    CategoriesMonths: 'categories/months',
+                    CategoriesWeeks: 'categories/weeks',
+                    CategoriesYears: 'categories/years',
+                  },
+                },
+                Savings: {
+                  initialRouteName: 'Savings',
+                  screens: {
+                    SavingsMonths: 'savings/months',
+                    SavingsWeeks: 'savings/weeks',
+                    SavingsYears: 'savings/years',
+                  },
+                },
+                Settings: 'settings',
+                SignIn: 'sign-in',
+                Expense: 'expense/:id?',
+                Saving: 'saving/:id?',
+                Income: 'income/:id?',
+                Category: 'category/:id?',
+              },
+            },
+          }}
+        >
           <Navigator />
         </NavigationContainer>
       </Provider>
@@ -581,5 +619,5 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontFamily: FONT.NOTO_SERIF.BOLD,
     fontSize: 18,
-  }
+  },
 });
