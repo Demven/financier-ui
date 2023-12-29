@@ -65,6 +65,6 @@ const styles = StyleSheet.create({
   headerTabs: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    bottom: -9,
+    bottom: -5,
   },
 });

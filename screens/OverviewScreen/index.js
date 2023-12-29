@@ -83,6 +83,7 @@ export default function OverviewScreen () {
   const overviewScreenPadding = windowWidth < (MEDIA.MEDIUM_DESKTOP + 40 * 2)
     ? windowWidth < MEDIA.TABLET ? 0 : 24
     : 40;
+  const listContainerPaddingTop = windowWidth < MEDIA.TABLET ? 24 : 40;
 
   return (
     <ScrollView style={{ flexGrow: 1 }}>
@@ -91,7 +92,7 @@ export default function OverviewScreen () {
           paddingHorizontal: overviewScreenPadding,
         }]}
       >
-        <View style={styles.listContainer}>
+        <View style={[styles.listContainer, { paddingTop: listContainerPaddingTop }]}>
           {selectedTab === TAB.WEEKS && (
             renderWeeks()
           )}
@@ -115,7 +116,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     width: '100%',
     maxWidth: 1280,
-    paddingTop: 40,
     paddingBottom: 80,
     alignSelf: 'center',
   },

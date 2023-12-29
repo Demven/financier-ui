@@ -3,9 +3,11 @@ import {
   Text,
   StyleSheet,
 } from 'react-native';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { FONT } from '../../../../styles/fonts';
 import { COLOR } from '../../../../styles/colors';
+import { MEDIA } from '../../../../styles/media';
 
 WeekChartLegend.propTypes = {
   style: PropTypes.any,
@@ -23,6 +25,8 @@ export default function WeekChartLegend (props) {
     chartHeight,
     daysInWeek,
   } = props;
+
+  const windowWidth = useSelector(state => state.ui.windowWidth);
 
   return (
     <View
@@ -51,7 +55,7 @@ export default function WeekChartLegend (props) {
             ]}
           >
             <Text style={styles.label}>
-              Day {index + 1}
+              {windowWidth > MEDIA.WIDE_MOBILE ? 'Day ' : ''}{index + 1}
             </Text>
           </View>
         ))}

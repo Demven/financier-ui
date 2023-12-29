@@ -33,6 +33,6 @@ const styles = StyleSheet.create({
   },
   headerCornerMenu: {
     marginRight: 12,
-    marginTop: 4,
+    marginTop: 9,
   },
 });

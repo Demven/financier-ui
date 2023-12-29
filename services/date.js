@@ -24,3 +24,9 @@ export function formatDateString (dateString) {
 export function getDaysInMonth (year, month) {
   return new Date(year, month, 0).getDate();
 }
+
+export function getDaysInWeek (weekNumber, daysInMonth) {
+  return weekNumber === 4
+    ? 7 + (daysInMonth - 28)
+    : 7;
+}

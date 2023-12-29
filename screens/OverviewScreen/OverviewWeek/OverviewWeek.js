@@ -3,13 +3,12 @@ import {
   View,
   Text,
 } from 'react-native';
-import { useRoute } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import WeekChart, { CHART_VIEW } from './WeekChart';
 import TitleLink from '../../../components/TitleLink';
-import { MONTH_NAME, getDaysInMonth } from '../../../services/date';
+import { MONTH_NAME, getDaysInMonth, getDaysInWeek } from '../../../services/date';
 import { FONT } from '../../../styles/fonts';
 import { COLOR } from '../../../styles/colors';
 import { MEDIA } from '../../../styles/media';
@@ -89,6 +88,9 @@ export default function OverviewWeek (props) {
     return isPositive ? COLOR.GREEN : COLOR.RED;
   }
 
+  const daysInMonthNumber = getDaysInMonth(year, monthNumber);
+  const daysInWeek = getDaysInWeek(weekNumber, daysInMonthNumber);
+
   const totalIncomes = getTotalAmount(currentWeekIncomes);
   const previousWeeksTotalIncomes = getPreviousWeeksTotalAmount(incomes);
 
@@ -131,23 +133,43 @@ export default function OverviewWeek (props) {
     ? '100%'
     : '50%';
   const chartWidth = windowWidth < MEDIA.TABLET
-    ? '102%'
+    ? windowWidth < MEDIA.WIDE_MOBILE
+      ? daysInWeek > 7 ? '108%' : '110%'
+      : daysInWeek > 7 ? '109%' : '112%'
     : windowWidth < MEDIA.DESKTOP
-      ? '103%'
+      ? windowWidth < MEDIA.WIDE_TABLET
+        ? daysInWeek > 7 ? '109%' : '112%'
+        : daysInWeek > 7 ? '109%' : '113%'
       : columnWidth;
   const chartMarginLeft = windowWidth < MEDIA.TABLET
-    ? -50
+    ? windowWidth < MEDIA.WIDE_MOBILE
+      ? windowWidth < MEDIA.MOBILE
+        ? daysInWeek > 7 ? -29 : -18 // mobile
+        : daysInWeek > 7 ? -23 : -8 // wide-mobile
+      : daysInWeek > 7 ? -8 : 12
     : windowWidth < MEDIA.DESKTOP
-      ? -40
-      : -58;
+      ? windowWidth < MEDIA.WIDE_TABLET
+        ? daysInWeek > 7 ? 1 : 37 // wide-tablet
+        : daysInWeek > 7 ? 23 : 55 // tablet
+      : -58; // desktop
+  const chartMarginTop = windowWidth < MEDIA.TABLET
+    ? 16
+    : windowWidth < MEDIA.DESKTOP ? 24 : 40;
 
   const subtitleFontSize = windowWidth < MEDIA.DESKTOP
-    ?  windowWidth < MEDIA.TABLET ? 33 : 36
+    ? windowWidth < MEDIA.TABLET ? 33 : 36
     : 40;
   const subtitlePaddingLeft = windowWidth < MEDIA.DESKTOP ? 28 : 0;
+
   const statsMarginTop = windowWidth < MEDIA.DESKTOP
-    ? windowWidth < MEDIA.TABLET ? 0 : -40
-    : 0;
+    ? windowWidth < MEDIA.TABLET
+      ? windowWidth < MEDIA.WIDE_MOBILE
+        ? windowWidth < MEDIA.MOBILE
+          ? 0 // mobile
+          : -8 // wide-mobile
+        : -24 // wide-mobile
+      : -54 // tablet
+    : 0; // desktop
 
   return (
     <View style={[styles.overviewWeek, style]}>
@@ -164,20 +186,19 @@ export default function OverviewWeek (props) {
         </Text>
       </View>
 
-      <View style={[
-        styles.content,
-        {
-          flexDirection: windowWidth < MEDIA.DESKTOP ? 'column' : 'row',
-          alignItems: windowWidth < MEDIA.DESKTOP ? 'center' : 'flex-start',
-        },
-      ]}>
+      <View style={[styles.content, {
+        flexDirection: windowWidth < MEDIA.DESKTOP ? 'column' : 'row',
+        alignItems: windowWidth < MEDIA.DESKTOP ? 'center' : 'flex-start',
+      }]}>
         <WeekChart
           style={[styles.chart, {
             width: chartWidth,
             marginLeft: chartMarginLeft,
+            marginTop: chartMarginTop,
           }]}
           year={year}
           chartView={chartView}
+          daysInWeek={daysInWeek}
           setChartView={setChartView}
           monthNumber={monthNumber}
           weekNumber={weekNumber}
@@ -191,16 +212,13 @@ export default function OverviewWeek (props) {
           previousWeeksTotalInvestments={previousWeeksTotalInvestments}
         />
 
-        <View style={[
-          styles.stats,
-          {
-            width: columnWidth,
-            marginTop: statsMarginTop,
-            paddingTop: windowWidth < MEDIA.DESKTOP ? 0 : 48,
-            paddingLeft: windowWidth < MEDIA.DESKTOP ? 32 : 40,
-            paddingRight: windowWidth < MEDIA.DESKTOP ? 32 : 0,
-          },
-        ]}>
+        <View style={[styles.stats, {
+          width: columnWidth,
+          marginTop: statsMarginTop,
+          paddingTop: windowWidth < MEDIA.DESKTOP ? 0 : 44,
+          paddingLeft: windowWidth < MEDIA.DESKTOP ? 32 : 40,
+          paddingRight: windowWidth < MEDIA.DESKTOP ? 32 : 0,
+        }]}>
           {!!totalIncomes && (
             <View style={[styles.statRow, { marginTop: 0 }]}>
               <TitleLink
@@ -226,7 +244,7 @@ export default function OverviewWeek (props) {
           )}
 
           {!!totalExpenses && (
-            <View style={styles.statRow}>
+            <View style={[styles.statRow, !totalIncomes && { marginTop: 0 }]}>
               <TitleLink
                 textStyle={[
                   styles.statName,
@@ -250,7 +268,7 @@ export default function OverviewWeek (props) {
           )}
 
           {!!totalSavingsAndInvestments && (
-            <View style={styles.statRow}>
+            <View style={[styles.statRow, (!totalIncomes && !totalExpenses) && { marginTop: 0 }]}>
               <TitleLink
                 textStyle={[
                   styles.statName,
@@ -344,14 +362,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 
-  chart: {
-    marginTop: 40,
-  },
+  chart: {},
 
-  stats: {
-    paddingTop: 48,
-    paddingLeft: 40,
-  },
+  stats: {},
   statRow: {
     marginTop: 20,
     flexDirection: 'row',

@@ -84,17 +84,25 @@ export default function OverviewMonth (props) {
       : columnWidth;
   const chartMarginLeft = windowWidth < MEDIA.TABLET
     ? -50
-    : windowWidth < MEDIA.DESKTOP
-      ? -40
-      : -58;
+    : (windowWidth < MEDIA.DESKTOP ? -40 : -58);
+  const chartMarginTop = windowWidth < MEDIA.TABLET
+    ? 16
+    : (windowWidth < MEDIA.DESKTOP ? 24 : 40);
 
   const subtitleFontSize = windowWidth < MEDIA.DESKTOP
     ?  windowWidth < MEDIA.TABLET ? 33 : 36
     : 40;
   const subtitlePaddingLeft = windowWidth < MEDIA.DESKTOP ? 28 : 0;
+
   const statsMarginTop = windowWidth < MEDIA.DESKTOP
-    ? windowWidth < MEDIA.TABLET ? 0 : -40
-    : 0;
+    ? windowWidth < MEDIA.TABLET
+      ? windowWidth < MEDIA.WIDE_MOBILE
+        ? windowWidth < MEDIA.MOBILE
+          ? 0 // mobile
+          : 8 // wide-mobile
+        : -16 // wide-mobile
+      : -54 // tablet
+    : 0; // desktop
 
   return (
     <View style={[styles.overviewMonth, style]}>
@@ -106,17 +114,15 @@ export default function OverviewMonth (props) {
         {MONTH_NAME[monthNumber]}
       </TitleLink>
 
-      <View style={[
-        styles.content,
-        {
-          flexDirection: windowWidth < MEDIA.DESKTOP ? 'column' : 'row',
-          alignItems: windowWidth < MEDIA.DESKTOP ? 'center' : 'flex-start',
-        },
-      ]}>
+      <View style={[styles.content, {
+        flexDirection: windowWidth < MEDIA.DESKTOP ? 'column' : 'row',
+        alignItems: windowWidth < MEDIA.DESKTOP ? 'center' : 'flex-start',
+      }]}>
         <MonthChart
           style={[styles.chart, {
             width: chartWidth,
             marginLeft: chartMarginLeft,
+            marginTop: chartMarginTop,
           }]}
           year={year}
           chartView={chartView}
@@ -128,16 +134,13 @@ export default function OverviewMonth (props) {
           investments={investments}
         />
 
-        <View style={[
-          styles.stats,
-          {
-            width: columnWidth,
-            marginTop: statsMarginTop,
-            paddingTop: windowWidth < MEDIA.DESKTOP ? 0 : 48,
-            paddingLeft: windowWidth < MEDIA.DESKTOP ? 32 : 40,
-            paddingRight: windowWidth < MEDIA.DESKTOP ? 32 : 0,
-          },
-        ]}>
+        <View style={[styles.stats, {
+          width: columnWidth,
+          marginTop: statsMarginTop,
+          paddingTop: windowWidth < MEDIA.DESKTOP ? 0 : 48,
+          paddingLeft: windowWidth < MEDIA.DESKTOP ? 32 : 40,
+          paddingRight: windowWidth < MEDIA.DESKTOP ? 32 : 0,
+        }]}>
           {!!totalIncomes && (
             <View style={[styles.statRow, { marginTop: 0 }]}>
               <TitleLink
@@ -274,9 +277,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 
-  chart: {
-    marginTop: 40,
-  },
+  chart: {},
 
   stats: {
     paddingTop: 48,

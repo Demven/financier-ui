@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { LineChart } from 'react-native-chart-kit';
 import PropTypes from 'prop-types';
 import PointInfo from '../../../../components/Chart/PointInfo';
-import { formatDateString, getDaysInMonth } from '../../../../services/date';
+import { formatDateString } from '../../../../services/date';
 import WeekChartLegend from './WeekChartLegend';
 import { COLOR } from '../../../../styles/colors';
 
@@ -21,6 +21,7 @@ MonthChart.propTypes = {
   year: PropTypes.number.isRequired,
   monthNumber: PropTypes.number.isRequired,
   weekNumber: PropTypes.number.isRequired,
+  daysInWeek: PropTypes.number.isRequired,
   chartView: PropTypes.oneOf([
     CHART_VIEW.EXPENSES,
     CHART_VIEW.INCOME,
@@ -66,6 +67,7 @@ export default function MonthChart (props) {
     year,
     monthNumber,
     weekNumber,
+    daysInWeek,
     chartView,
     setChartView = () => {},
     expenses = [],
@@ -108,11 +110,6 @@ export default function MonthChart (props) {
       setRealChartHeight(height);
     }
   }
-
-  const daysInMonthNumber = getDaysInMonth(year, monthNumber);
-  const daysInWeek = weekNumber === 4
-    ? 7 + (daysInMonthNumber - 28)
-    : 7;
 
   function groupByDay (week) {
     const groupedByDay = new Array(daysInWeek).fill([]);
