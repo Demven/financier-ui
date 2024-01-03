@@ -18,7 +18,9 @@ export default function HeaderRight ({ style }) {
         <HeaderTabs style={styles.headerTabs} />
       )}
 
-      <HeaderCornerMenu style={styles.headerCornerMenu} />
+      <HeaderCornerMenu style={[styles.headerCornerMenu, {
+        marginTop: windowWidth >= MEDIA.DESKTOP ? 9 : 0,
+      }]} />
     </View>
   );
 }
@@ -33,6 +35,5 @@ const styles = StyleSheet.create({
   },
   headerCornerMenu: {
     marginRight: 12,
-    marginTop: 9,
   },
 });

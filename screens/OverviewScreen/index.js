@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -6,10 +6,11 @@ import {
 } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
-import { setSelectedTabAction } from '../../redux/reducers/ui';
+import { setSelectedTabAction, setSelectedYearAction } from '../../redux/reducers/ui';
 import OverviewMonth from './OverviewMonth/OverviewMonth';
 import OverviewWeek from './OverviewWeek/OverviewWeek';
 import { TAB } from '../../components/HeaderTabs';
+import HeaderDropdown from '../../components/HeaderDropdown';
 import { COLOR } from '../../styles/colors';
 import { MEDIA } from '../../styles/media';
 
@@ -20,10 +21,25 @@ export default function OverviewScreen () {
 
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const selectedYear = useSelector(state => state.ui.selectedYear);
-  const expenses = useSelector(state => state.expenses.expenses[selectedYear]);
-  const incomes = useSelector(state => state.incomes.incomes[selectedYear]);
-  const savings = useSelector(state => state.savings.savings[selectedYear]);
-  const investments = useSelector(state => state.savings.investments[selectedYear]);
+  const expenses = useSelector(state => state.expenses.expenses[selectedYear]) || {};
+  const incomes = useSelector(state => state.incomes.incomes[selectedYear]) || {};
+  const savings = useSelector(state => state.savings.savings[selectedYear]) || {};
+  const investments = useSelector(state => state.savings.investments[selectedYear]) || {};
+
+  const expensesYears = useSelector(state => Object.keys(state.expenses.expenses));
+  const incomesYears = useSelector(state => Object.keys(state.incomes.incomes));
+  const savingsYears = useSelector(state => Object.keys(state.savings.savings));
+  const investmentsYears = useSelector(state => Object.keys(state.savings.investments));
+
+  const yearsToSelect = useMemo(() => {
+    return Array.from(new Set([
+      new Date().getFullYear(),
+      ...expensesYears,
+      ...incomesYears,
+      ...savingsYears,
+      ...investmentsYears,
+    ]))
+  }, [expensesYears, incomesYears, savingsYears, investmentsYears]);
 
   const months = Object
     .keys(expenses)
@@ -92,6 +108,15 @@ export default function OverviewScreen () {
           paddingHorizontal: overviewScreenPadding,
         }]}
       >
+        {windowWidth < MEDIA.TABLET && (
+          <HeaderDropdown
+            style={styles.yearsDropdown}
+            selectedValue={selectedYear}
+            values={yearsToSelect}
+            onSelect={(selectedYear) => dispatch(setSelectedYearAction({ selectedYear }))}
+          />
+        )}
+
         <View style={[styles.listContainer, { paddingTop: listContainerPaddingTop }]}>
           {selectedTab === TAB.WEEKS && (
             renderWeeks()
@@ -110,6 +135,13 @@ const styles = StyleSheet.create({
   overviewScreen: {
     height: '100%',
     backgroundColor: COLOR.WHITE,
+  },
+
+  yearsDropdown: {
+    position: 'absolute',
+    right: 8,
+    top: 36,
+    zIndex: 1,
   },
 
   listContainer: {

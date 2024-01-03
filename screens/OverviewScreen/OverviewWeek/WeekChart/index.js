@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, ScrollView } from 'react-native';
 import { useSelector } from 'react-redux';
 import { LineChart } from 'react-native-chart-kit';
 import PropTypes from 'prop-types';
@@ -104,10 +104,13 @@ export default function MonthChart (props) {
     setChartWidth(width);
     setChartHeight(Math.floor(width / 16 * 9));
 
-    if (chartRef.current) {
-      const { width = 0, height = 0 } = chartRef.current.querySelector('svg > g > g:nth-child(7)')?.getBoundingClientRect() || {};
-      setRealChartWidth(width);
-      setRealChartHeight(height);
+    if (Platform.OS === 'web') {
+      const { width = 0, height = 0 } = chartRef?.current?.querySelector('svg > g > g:nth-child(7)')?.getBoundingClientRect() || {};
+
+      if (width && height) {
+        setRealChartWidth(width);
+        setRealChartHeight(height);
+      }
     }
   }
 
@@ -227,7 +230,7 @@ export default function MonthChart (props) {
   const savingsPoints = getChartPoints(savingsAndInvestmentsGroupedByDay, previousWeeksTotalSavings + previousWeeksTotalInvestments);
 
   return (
-    <View
+    <ScrollView
       style={[styles.monthChart, style]}
       ref={chartRef}
       onLayout={onLayout}
@@ -290,11 +293,11 @@ export default function MonthChart (props) {
       />
 
       <WeekChartLegend
+        chartWidth={realChartWidth || chartWidth}
+        chartHeight={realChartHeight || chartHeight}
         daysInWeek={daysInWeek}
-        chartWidth={realChartWidth}
-        chartHeight={realChartHeight}
       />
-    </View>
+    </ScrollView>
   );
 }
 

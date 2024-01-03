@@ -181,7 +181,9 @@ export default function OverviewWeek (props) {
           {WEEK_NAME[weekNumber]}
         </TitleLink>
 
-        <Text style={styles.weekRangeText}>
+        <Text style={[styles.weekRangeText, {
+          paddingBottom: windowWidth >= MEDIA.DESKTOP ? 12 : 14,
+        }]}>
           {MONTH_NAME[monthNumber].substring(0, 3)} {(getWeekRange(weekNumber, getDaysInMonth(year, monthNumber)))}
         </Text>
       </View>
@@ -355,7 +357,6 @@ const styles = StyleSheet.create({
     fontSize: 21,
     lineHeight: 21,
     marginLeft: 32,
-    paddingBottom: 12,
   },
 
   content: {

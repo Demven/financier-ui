@@ -2,6 +2,7 @@ import {
   View,
   Text,
   StyleSheet,
+  Platform,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -30,14 +31,17 @@ export default function WeekChartLegend (props) {
 
   return (
     <View
-      style={[
-        styles.weekChartLegend,
-        {
-          width: chartWidth,
-          top: chartHeight + LEGEND_HEIGHT,
-        },
-        style,
-      ]}
+      style={[styles.weekChartLegend, {
+        width: Platform.OS === 'web' ? chartWidth : '100%',
+        top: Platform.OS === 'web'
+          ? chartHeight + LEGEND_HEIGHT
+          : (chartWidth / 21 * 9) + 12,
+        paddingRight: Platform.OS === 'web'
+          ? 0
+          : windowWidth < (MEDIA.MEDIUM_DESKTOP + 40 * 2)
+            ? daysInWeek > 7 ? 94 : 112
+            : 20,
+      }, style]}
     >
       <View style={styles.horizontalLineContainer}>
         <View style={styles.horizontalLine} />
@@ -46,6 +50,7 @@ export default function WeekChartLegend (props) {
       <View style={styles.weeks}>
         {Array.from(new Array(daysInWeek)).map((_, index) => (
           <View
+            key={index}
             style={[
               styles.week,
               {
@@ -66,7 +71,6 @@ export default function WeekChartLegend (props) {
 
 const styles = StyleSheet.create({
   weekChartLegend: {
-    width: '100%',
     flexGrow: 1,
     marginLeft: 65,
     position: 'absolute',

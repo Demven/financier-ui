@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useRef, useState } from 'react';
+import { Platform, ScrollView, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import { LineChart } from 'react-native-chart-kit';
 import PropTypes from 'prop-types';
@@ -69,8 +69,12 @@ export default function MonthChart (props) {
 
   const currencySymbol = useSelector(state => state.account.currencySymbol);
 
+  const chartRef = useRef();
+
   const [chartWidth, setChartWidth] = useState(0);
   const [chartHeight, setChartHeight] = useState(0);
+  const [realChartWidth, setRealChartWidth] = useState(0);
+  const [realChartHeight, setRealChartHeight] = useState(0);
 
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [selectedPointData, setSelectedPointData] = useState({
@@ -86,6 +90,15 @@ export default function MonthChart (props) {
 
     setChartWidth(width);
     setChartHeight(Math.floor(width / 16 * 9));
+
+    if (Platform.OS === 'web') {
+      const { width = 0, height = 0 } = chartRef?.current?.querySelector('svg > g > g:nth-child(7)')?.getBoundingClientRect() || {};
+
+      if (width && height) {
+        setRealChartWidth(width);
+        setRealChartHeight(height);
+      }
+    }
   }
 
   const daysNumber = daysInMonth(year, monthNumber);
@@ -190,9 +203,10 @@ export default function MonthChart (props) {
   const savingsPoints = getChartPoints(savingsAndInvestmentsGroupedByDay);
 
   return (
-    <View
+    <ScrollView
       style={[styles.monthChart, style]}
       onLayout={onLayout}
+      ref={chartRef}
     >
       <LineChart
         style={styles.chart}
@@ -252,11 +266,11 @@ export default function MonthChart (props) {
       />
 
       <MonthChartLegend
-        width={chartWidth}
-        height={chartHeight}
+        chartWidth={realChartWidth || chartWidth}
+        chartHeight={realChartHeight || chartHeight}
         daysInMonth={daysNumber}
       />
-    </View>
+    </ScrollView>
   );
 }
 

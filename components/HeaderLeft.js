@@ -1,4 +1,9 @@
-import { View, StyleSheet } from 'react-native';
+import { useMemo } from 'react';
+import {
+  View,
+  StyleSheet,
+  Platform,
+} from 'react-native';
 import PropTypes from 'prop-types';
 import { HeaderTitle } from '@react-navigation/elements';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,13 +20,6 @@ HeaderLeft.propTypes = {
   simplified: PropTypes.bool,
 };
 
-const YEARS = [
-  2023,
-  2022,
-  2021,
-  2020,
-];
-
 export default function HeaderLeft (props) {
   const {
     style,
@@ -29,8 +27,23 @@ export default function HeaderLeft (props) {
     simplified = false,
   } = props;
 
-  const selectedYear = useSelector(state => state.ui.selectedYear);
   const windowWidth = useSelector(state => state.ui.windowWidth);
+  const selectedYear = useSelector(state => state.ui.selectedYear);
+
+  const expensesYears = useSelector(state => Object.keys(state.expenses.expenses));
+  const incomesYears = useSelector(state => Object.keys(state.incomes.incomes));
+  const savingsYears = useSelector(state => Object.keys(state.savings.savings));
+  const investmentsYears = useSelector(state => Object.keys(state.savings.investments));
+
+  const yearsToSelect = useMemo(() => {
+    return Array.from(new Set([
+      new Date().getFullYear(),
+      ...expensesYears,
+      ...incomesYears,
+      ...savingsYears,
+      ...investmentsYears,
+    ]))
+  }, [expensesYears, incomesYears, savingsYears, investmentsYears]);
 
   const dispatch = useDispatch();
 
@@ -44,7 +57,9 @@ export default function HeaderLeft (props) {
 
       <HeaderTitle
         style={[styles.headerTitle, {
-          marginTop: windowWidth < MEDIA.TABLET ? 4 : 2,
+          marginTop: windowWidth < MEDIA.TABLET
+            ? Platform.OS === 'ios' ? 8 : 4
+            : 2,
           marginLeft: windowWidth < MEDIA.TABLET ? 16 : 41,
           fontSize: windowWidth < MEDIA.TABLET ? 18 : 20,
           lineHeight: windowWidth < MEDIA.TABLET ? 18 : 26,
@@ -57,7 +72,7 @@ export default function HeaderLeft (props) {
         <HeaderDropdown
           style={styles.headerDropdown}
           selectedValue={selectedYear}
-          values={YEARS}
+          values={yearsToSelect}
           onSelect={(selectedYear) => dispatch(setSelectedYearAction({ selectedYear }))}
         />
       )}

@@ -3,7 +3,7 @@ import {
   View,
   Text,
   StyleSheet,
-  Dimensions,
+  Dimensions, Platform,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -13,27 +13,24 @@ import { MEDIA } from '../../../../styles/media';
 
 MonthChartLegend.propTypes = {
   style: PropTypes.any,
-  daysInMonth: PropTypes.number,
   chartWidth: PropTypes.number,
   chartHeight: PropTypes.number,
+  daysInMonth: PropTypes.number,
 };
+
+const LEGEND_HEIGHT = 16;
 
 export default function MonthChartLegend (props) {
   const {
     style,
+    chartWidth,
+    chartHeight,
     daysInMonth,
   } = props;
 
-  const [legendWidth, setLegendWidth] = useState(0);
   const [horizontalLineWidth, setHorizontalLineWidth] = useState(0);
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
-
-  function onChartLegendLayout (event) {
-    const { width } = event.nativeEvent.layout;
-
-    setLegendWidth(width);
-  }
 
   function onHorizontalLineLayout (event) {
     const { width } = event.nativeEvent.layout;
@@ -53,25 +50,27 @@ export default function MonthChartLegend (props) {
     setHorizontalLineWidth(width + horizontalLineWidthAdjustment);
   }
 
-  const weekPaddingLeft = windowWidth < (MEDIA.MEDIUM_DESKTOP + 40*2) ? 0 : 4;
+  const weekPaddingLeft = windowWidth < (MEDIA.MEDIUM_DESKTOP + (40 * 2)) ? 0 : 4;
 
   return (
     <View
-      style={[
-        styles.monthChartLegend,
-        {
-          top: (legendWidth / 21 * 9) + 11,
-          paddingRight: windowWidth < (MEDIA.MEDIUM_DESKTOP + 40*2) ? 17 : 20,
-        },
-        style,
-      ]}
-      onLayout={onChartLegendLayout}
+      style={[styles.monthChartLegend, {
+        width: Platform.OS === 'web' ? chartWidth : '100%',
+        top: Platform.OS === 'web'
+          ? chartHeight + LEGEND_HEIGHT
+          : (chartWidth / 21 * 9) + 11,
+        paddingRight: Platform.OS === 'web'
+          ? 0
+          : windowWidth < (MEDIA.MEDIUM_DESKTOP + 40 * 2)
+            ? 17
+            : 20,
+      }, style]}
     >
       <View
         style={styles.horizontalLineContainer}
-        onLayout={onHorizontalLineLayout}
+        onLayout={Platform.OS === 'web' ? undefined : onHorizontalLineLayout}
       >
-        <View style={[styles.horizontalLine, {
+        <View style={[styles.horizontalLine, Platform.OS !== 'web' && {
           width: horizontalLineWidth,
         }]} />
       </View>
@@ -99,11 +98,11 @@ export default function MonthChartLegend (props) {
 
 const styles = StyleSheet.create({
   monthChartLegend: {
-    width: '100%',
     flexGrow: 1,
     paddingLeft: 65,
     position: 'absolute',
     left: 0,
+    boxSizing: 'content-box',
   },
 
   horizontalLineContainer: {

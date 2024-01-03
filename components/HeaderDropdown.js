@@ -1,5 +1,11 @@
 import { useState } from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Pressable,
+  Platform,
+} from 'react-native';
 import PropTypes from 'prop-types';
 import Icon, { ICON_COLLECTION } from './Icon';
 import { COLOR } from '../styles/colors';
@@ -27,51 +33,67 @@ export default function HeaderDropdown (props) {
     setOpened(!opened);
   }
 
+  const listValues = values.filter(value => value !== selectedValue);
+  const disabled = !listValues?.length;
+
   return (
     <View
       style={[styles.headerDropdown, style]}
-      onMouseEnter={() => setOpened(true)}
-      onMouseLeave={() => setOpened(false)}
+      onMouseEnter={!disabled ? () => setOpened(true) : undefined}
+      onMouseLeave={!disabled > 0 ? () => setOpened(false) : undefined}
     >
       <Pressable
-        style={({ pressed }) => [styles.selectedItem, pressed && styles.selectedItemPressed]}
+        style={({ pressed }) => [
+          styles.selectedItem,
+          pressed && styles.selectedItemPressed,
+          disabled && styles.selectedItemDisabled,
+        ]}
         onPress={toggleDropDown}
       >
         <View style={styles.selectedItemContainer}>
-          <Text style={styles.selectedItemValue}>{selectedValue}</Text>
+          <Text style={[styles.selectedItemValue, disabled && styles.selectedItemValueDisabled]}>
+            {selectedValue}
+          </Text>
 
-          <Icon
-            style={styles.arrowIcon}
-            name={opened ? 'caret-up' : 'caret-down'}
-            collection={ICON_COLLECTION.IONICONS}
-            size={20}
-            color={COLOR.BLACK}
-          />
+          {!disabled && (
+            <Icon
+              style={[styles.arrowIcon, {
+                marginTop: Platform.OS === 'ios' ? -4 : 5,
+              }]}
+              name={opened ? 'caret-up' : 'caret-down'}
+              collection={ICON_COLLECTION.IONICONS}
+              size={20}
+              color={COLOR.BLACK}
+            />
+          )}
         </View>
       </Pressable>
 
-      {opened && (
-        <View style={styles.list}>
-          {values
-            .filter(value => value !== selectedValue)
-            .map((value, index) => (
-              <Pressable
-                key={index}
-                style={({ pressed }) => [pressed && styles.listItemPressed]}
-                onPress={() => onSelect(value)}
-              >
-                <View style={[styles.listItem, highlightedItemIndex === index && styles.listItemHighlighted]}>
-                  <Text
-                    style={styles.listItemText}
-                    onMouseEnter={() => setHighlightedItemIndex(index)}
-                    onMouseLeave={() => setHighlightedItemIndex(undefined)}
-                  >
-                    {value}
-                  </Text>
-                </View>
-              </Pressable>
-            ))
-          }
+      {(opened && !disabled) && (
+        <View style={[styles.list, {
+          top: Platform.OS === 'ios' ? -12 : 0,
+          paddingTop: Platform.OS === 'ios' ? 72 : 60,
+        }]}>
+          {listValues.map((value, index) => (
+            <Pressable
+              key={index}
+              style={({ pressed }) => [pressed && styles.listItemPressed]}
+              onPress={() => {
+                onSelect(value);
+                setOpened(false);
+              }}
+            >
+              <View style={[styles.listItem, highlightedItemIndex === index && styles.listItemHighlighted]}>
+                <Text
+                  style={styles.listItemText}
+                  onMouseEnter={() => setHighlightedItemIndex(index)}
+                  onMouseLeave={() => setHighlightedItemIndex(undefined)}
+                >
+                  {value}
+                </Text>
+              </View>
+            </Pressable>
+          ))}
         </View>
       )}
     </View>
@@ -90,6 +112,9 @@ const styles = StyleSheet.create({
   selectedItemPressed: {
     opacity: 0.7,
   },
+  selectedItemDisabled: {
+    cursor: 'default',
+  },
 
   selectedItemContainer: {
     width: '100%',
@@ -106,17 +131,17 @@ const styles = StyleSheet.create({
     fontSize: 22,
     lineHeight: 22,
   },
+  selectedItemValueDisabled: {
+    marginLeft: 'auto',
+  },
 
   arrowIcon: {
     marginLeft: 8,
-    marginTop: 5,
   },
 
   list: {
     width: '100%',
     position: 'absolute',
-    top: 0,
-    paddingTop: 60,
     paddingBottom: 16,
     backgroundColor: COLOR.WHITE,
     alignItems: 'center',
