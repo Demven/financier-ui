@@ -16,6 +16,7 @@ HeaderDropdown.propTypes = {
   selectedValue: PropTypes.any.isRequired,
   values: PropTypes.arrayOf(PropTypes.any).isRequired,
   onSelect: PropTypes.func.isRequired,
+  onLayout: PropTypes.func,
 };
 
 export default function HeaderDropdown (props) {
@@ -24,6 +25,7 @@ export default function HeaderDropdown (props) {
     selectedValue,
     values,
     onSelect,
+    onLayout,
   } = props;
 
   const [opened, setOpened] = useState(false);
@@ -41,6 +43,7 @@ export default function HeaderDropdown (props) {
       style={[styles.headerDropdown, style]}
       onMouseEnter={!disabled ? () => setOpened(true) : undefined}
       onMouseLeave={!disabled > 0 ? () => setOpened(false) : undefined}
+      onLayout={onLayout}
     >
       <Pressable
         style={({ pressed }) => [

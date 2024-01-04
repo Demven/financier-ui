@@ -2,7 +2,7 @@ import { View, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import HeaderTabs from './HeaderTabs';
-import HeaderCornerMenu from './HeaderCornerMenu';
+import AddNewEntryMenu from './AddNewEntryMenu';
 import { MEDIA } from '../styles/media';
 
 HeaderRight.propTypes = {
@@ -18,7 +18,7 @@ export default function HeaderRight ({ style }) {
         <HeaderTabs style={styles.headerTabs} />
       )}
 
-      <HeaderCornerMenu style={[styles.headerCornerMenu, {
+      <AddNewEntryMenu style={[styles.addNewEntryMenu, {
         marginTop: windowWidth >= MEDIA.DESKTOP ? 9 : 0,
       }]} />
     </View>
@@ -30,10 +30,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'right',
   },
+
   headerTabs: {
     marginRight: 8,
   },
-  headerCornerMenu: {
+
+  addNewEntryMenu: {
     marginRight: 12,
   },
 });

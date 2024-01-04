@@ -39,11 +39,12 @@ const MENU_ITEMS = [
   },
 ];
 
-HeaderCornerMenu.propTypes = {
+AddNewEntryMenu.propTypes = {
   style: PropTypes.object,
+  alwaysShowLabel: PropTypes.bool,
 };
 
-export default function HeaderCornerMenu ({ style }) {
+export default function AddNewEntryMenu ({ style, alwaysShowLabel }) {
   const [opened, setOpened] = useState(false);
   const [highlightedItemIndex, setHighlightedItemIndex] = useState(undefined);
 
@@ -62,7 +63,7 @@ export default function HeaderCornerMenu ({ style }) {
 
   return (
     <View
-      style={[styles.headerCornerMenu, style]}
+      style={[styles.addNewEntryMenu, style]}
       onMouseEnter={() => setOpened(true)}
       onMouseLeave={() => setOpened(false)}
     >
@@ -71,7 +72,7 @@ export default function HeaderCornerMenu ({ style }) {
         onPress={toggleDropDown}
       >
         <View style={styles.iconContainer}>
-          {opened && (
+          {(opened || alwaysShowLabel) && (
             <Text style={styles.addText}>Add New</Text>
           )}
 
@@ -126,7 +127,7 @@ export default function HeaderCornerMenu ({ style }) {
 }
 
 const styles = StyleSheet.create({
-  headerCornerMenu: {
+  addNewEntryMenu: {
     width: 148,
     position: 'relative',
   },

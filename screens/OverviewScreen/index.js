@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -9,6 +9,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setSelectedTabAction, setSelectedYearAction } from '../../redux/reducers/ui';
 import OverviewMonth from './OverviewMonth/OverviewMonth';
 import OverviewWeek from './OverviewWeek/OverviewWeek';
+import OverviewPlaceholder from './OverviewPlaceholder/OverviewPlaceholder';
 import { TAB } from '../../components/HeaderTabs';
 import HeaderDropdown from '../../components/HeaderDropdown';
 import { COLOR } from '../../styles/colors';
@@ -30,6 +31,8 @@ export default function OverviewScreen () {
   const incomesYears = useSelector(state => Object.keys(state.incomes.incomes));
   const savingsYears = useSelector(state => Object.keys(state.savings.savings));
   const investmentsYears = useSelector(state => Object.keys(state.savings.investments));
+
+  const [yearDropdownWidth, setYearDropdownWidth] = useState(0);
 
   const yearsToSelect = useMemo(() => {
     return Array.from(new Set([
@@ -56,6 +59,12 @@ export default function OverviewScreen () {
       dispatch(setSelectedTabAction({ selectedTab: overviewType }));
     }
   }, [route]);
+
+  function onYearDropdownLayout (event) {
+    const { width } = event.nativeEvent.layout;
+
+    setYearDropdownWidth(width);
+  }
 
   function renderWeeks () {
     return [1, 2, 3, 4].map((weekNumber, index) => (
@@ -101,8 +110,13 @@ export default function OverviewScreen () {
     : 40;
   const listContainerPaddingTop = windowWidth < MEDIA.TABLET ? 24 : 40;
 
+  const noData = !Object.keys(expenses).length
+    && !Object.keys(incomes).length
+    && !Object.keys(savings).length
+    && !Object.keys(investments).length;
+
   return (
-    <ScrollView style={{ flexGrow: 1 }}>
+    <ScrollView style={{ flexGrow: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
       <View
         style={[styles.overviewScreen, {
           paddingHorizontal: overviewScreenPadding,
@@ -110,19 +124,25 @@ export default function OverviewScreen () {
       >
         {windowWidth < MEDIA.TABLET && (
           <HeaderDropdown
-            style={styles.yearsDropdown}
+            style={[styles.yearsDropdown, noData && {
+              right: '50%',
+              transform: [{translateX: yearDropdownWidth / 2}],
+            }]}
             selectedValue={selectedYear}
             values={yearsToSelect}
             onSelect={(selectedYear) => dispatch(setSelectedYearAction({ selectedYear }))}
+            onLayout={onYearDropdownLayout}
           />
         )}
 
         <View style={[styles.listContainer, { paddingTop: listContainerPaddingTop }]}>
-          {selectedTab === TAB.WEEKS && (
+          {noData && <OverviewPlaceholder />}
+
+          {!noData && selectedTab === TAB.WEEKS && (
             renderWeeks()
           )}
 
-          {selectedTab === TAB.MONTHS && (
+          {!noData && selectedTab === TAB.MONTHS && (
             renderMonths()
           )}
         </View>
@@ -135,6 +155,7 @@ const styles = StyleSheet.create({
   overviewScreen: {
     height: '100%',
     backgroundColor: COLOR.WHITE,
+    flexGrow: 1,
   },
 
   yearsDropdown: {
