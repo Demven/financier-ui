@@ -9,6 +9,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setSelectedTabAction, setSelectedYearAction } from '../../redux/reducers/ui';
 import OverviewMonth from './OverviewMonth/OverviewMonth';
 import OverviewWeek from './OverviewWeek/OverviewWeek';
+import OverviewYear from './OverviewYear/OverviewYear';
 import OverviewPlaceholder from './OverviewPlaceholder/OverviewPlaceholder';
 import { TAB } from '../../components/HeaderTabs';
 import HeaderDropdown from '../../components/HeaderDropdown';
@@ -22,15 +23,15 @@ export default function OverviewScreen () {
 
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const selectedYear = useSelector(state => state.ui.selectedYear);
-  const expenses = useSelector(state => state.expenses.expenses[selectedYear]) || {};
-  const incomes = useSelector(state => state.incomes.incomes[selectedYear]) || {};
-  const savings = useSelector(state => state.savings.savings[selectedYear]) || {};
-  const investments = useSelector(state => state.savings.investments[selectedYear]) || {};
+  const expenses = useSelector(state => state.expenses.expenses) || {};
+  const incomes = useSelector(state => state.incomes.incomes) || {};
+  const savings = useSelector(state => state.savings.savings) || {};
+  const investments = useSelector(state => state.savings.investments) || {};
 
-  const expensesYears = useSelector(state => Object.keys(state.expenses.expenses));
-  const incomesYears = useSelector(state => Object.keys(state.incomes.incomes));
-  const savingsYears = useSelector(state => Object.keys(state.savings.savings));
-  const investmentsYears = useSelector(state => Object.keys(state.savings.investments));
+  const expensesYears = Object.keys(expenses);
+  const incomesYears = Object.keys(incomes);
+  const savingsYears = Object.keys(savings);
+  const investmentsYears = Object.keys(investments);
 
   const [yearDropdownWidth, setYearDropdownWidth] = useState(0);
 
@@ -45,7 +46,7 @@ export default function OverviewScreen () {
   }, [expensesYears, incomesYears, savingsYears, investmentsYears]);
 
   const months = Object
-    .keys(expenses)
+    .keys(expenses[selectedYear] || {})
     .map(monthString => Number(monthString))
     .reverse();
   const latestMonthNumber = months[0];
@@ -71,17 +72,15 @@ export default function OverviewScreen () {
       <OverviewWeek
         key={index}
         style={[styles.overview, {
-          marginTop: index === 0
-            ? 0
-            : windowWidth < MEDIA.TABLET ? 80 : 60,
+          paddingTop: windowWidth < MEDIA.TABLET ? 40 : 24,
         }]}
         year={selectedYear}
         monthNumber={monthNumber}
         weekNumber={weekNumber}
-        expenses={expenses?.[monthNumber]}
-        incomes={incomes?.[monthNumber]}
-        savings={savings?.[monthNumber]}
-        investments={investments?.[monthNumber]}
+        expenses={expenses?.[selectedYear]?.[monthNumber]}
+        incomes={incomes?.[selectedYear]?.[monthNumber]}
+        savings={savings?.[selectedYear]?.[monthNumber]}
+        investments={investments?.[selectedYear]?.[monthNumber]}
       />
     ));
   }
@@ -91,18 +90,34 @@ export default function OverviewScreen () {
       <OverviewMonth
         key={index}
         style={[styles.overview, {
-          marginTop: index === 0
-            ? 0
-            : windowWidth < MEDIA.TABLET ? 80 : 60,
+          paddingTop: windowWidth < MEDIA.TABLET ? 40 : 24,
         }]}
         year={selectedYear}
         monthNumber={monthNumber}
-        expenses={expenses[monthNumber]}
-        incomes={incomes[monthNumber]}
-        savings={savings[monthNumber]}
-        investments={investments[monthNumber]}
+        expenses={expenses?.[selectedYear]?.[monthNumber]}
+        incomes={incomes?.[selectedYear]?.[monthNumber]}
+        savings={savings?.[selectedYear]?.[monthNumber]}
+        investments={investments?.[selectedYear]?.[monthNumber]}
       />
     ));
+  }
+
+  function renderYears () {
+    return yearsToSelect
+      .map(yearString => Number(yearString))
+      .map((yearNumber, index) => (
+        <OverviewYear
+          key={index}
+          style={[styles.overview, {
+            paddingTop: windowWidth < MEDIA.TABLET ? 40 : 24,
+          }]}
+          year={yearNumber}
+          expenses={expenses[yearNumber]}
+          incomes={incomes[yearNumber]}
+          savings={savings[yearNumber]}
+          investments={investments[yearNumber]}
+        />
+      ));
   }
 
   const overviewScreenPadding = windowWidth < (MEDIA.MEDIUM_DESKTOP + 40 * 2)
@@ -110,19 +125,24 @@ export default function OverviewScreen () {
     : 40;
   const listContainerPaddingTop = windowWidth < MEDIA.TABLET ? 24 : 40;
 
-  const noData = !Object.keys(expenses).length
-    && !Object.keys(incomes).length
-    && !Object.keys(savings).length
-    && !Object.keys(investments).length;
+  const noData = !Object.keys(expenses[selectedYear] || {}).length
+    && !Object.keys(incomes[selectedYear] || {}).length
+    && !Object.keys(savings[selectedYear] || {}).length
+    && !Object.keys(investments[selectedYear] || {}).length;
+
+  const hideYearSelector = selectedTab === TAB.YEARS;
 
   return (
-    <ScrollView style={{ flexGrow: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
+    <ScrollView
+      style={{ flexGrow: 1 }}
+      contentContainerStyle={{ flexGrow: 1 }}
+    >
       <View
         style={[styles.overviewScreen, {
           paddingHorizontal: overviewScreenPadding,
         }]}
       >
-        {windowWidth < MEDIA.TABLET && (
+        {(windowWidth < MEDIA.TABLET && !hideYearSelector) && (
           <HeaderDropdown
             style={[styles.yearsDropdown, noData && {
               right: '50%',
@@ -144,6 +164,10 @@ export default function OverviewScreen () {
 
           {!noData && selectedTab === TAB.MONTHS && (
             renderMonths()
+          )}
+
+          {!noData && selectedTab === TAB.YEARS && (
+            renderYears()
           )}
         </View>
       </View>
@@ -173,7 +197,5 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 
-  overview: {
-    marginTop: 60,
-  },
+  overview: {},
 });

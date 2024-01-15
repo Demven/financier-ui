@@ -1,16 +1,12 @@
-import { useRef, useState } from 'react';
-import { Platform, ScrollView, StyleSheet } from 'react-native';
+import { useState, useRef } from 'react';
+import { Platform, StyleSheet, ScrollView } from 'react-native';
 import { useSelector } from 'react-redux';
 import { LineChart } from 'react-native-chart-kit';
 import PropTypes from 'prop-types';
 import PointInfo from '../../../../components/Chart/PointInfo';
-import { formatDateString } from '../../../../services/date';
-import MonthChartLegend from './MonthChartLegend';
+import { MONTH_NAME } from '../../../../services/date';
+import YearChartLegend from './YearChartLegend';
 import { COLOR } from '../../../../styles/colors';
-
-function daysInMonth (year, month) {
-  return new Date(year, month, 0).getDate();
-}
 
 export const CHART_VIEW = {
   INCOME: 'income',
@@ -18,53 +14,33 @@ export const CHART_VIEW = {
   SAVINGS: 'savings',
 };
 
-MonthChart.propTypes = {
+const MONTHS_IN_YEAR = 12;
+
+YearChart.propTypes = {
   style: PropTypes.any,
   year: PropTypes.number.isRequired,
-  monthNumber: PropTypes.number.isRequired,
   chartView: PropTypes.oneOf([
     CHART_VIEW.EXPENSES,
     CHART_VIEW.INCOME,
     CHART_VIEW.SAVINGS,
   ]),
   setChartView: PropTypes.func,
-  expenses: PropTypes.shape({
-    1: PropTypes.arrayOf(PropTypes.object),
-    2: PropTypes.arrayOf(PropTypes.object),
-    3: PropTypes.arrayOf(PropTypes.object),
-    4: PropTypes.arrayOf(PropTypes.object),
-  }).isRequired,
-  incomes: PropTypes.shape({
-    1: PropTypes.arrayOf(PropTypes.object),
-    2: PropTypes.arrayOf(PropTypes.object),
-    3: PropTypes.arrayOf(PropTypes.object),
-    4: PropTypes.arrayOf(PropTypes.object),
-  }).isRequired,
-  savings: PropTypes.shape({
-    1: PropTypes.arrayOf(PropTypes.object),
-    2: PropTypes.arrayOf(PropTypes.object),
-    3: PropTypes.arrayOf(PropTypes.object),
-    4: PropTypes.arrayOf(PropTypes.object),
-  }).isRequired,
-  investments: PropTypes.shape({
-    1: PropTypes.arrayOf(PropTypes.object),
-    2: PropTypes.arrayOf(PropTypes.object),
-    3: PropTypes.arrayOf(PropTypes.object),
-    4: PropTypes.arrayOf(PropTypes.object),
-  }).isRequired,
+  expenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
+  incomes: PropTypes.object, // weeks -> incomes { [1]: [], [2]: [] }
+  savings: PropTypes.object, // weeks -> savings { [1]: [], [2]: [] }
+  investments: PropTypes.object, // weeks -> investments { [1]: [], [2]: [] }
 };
 
-export default function MonthChart (props) {
+export default function YearChart (props) {
   const {
     style,
     year,
-    monthNumber,
     chartView,
     setChartView = () => {},
-    expenses = {},
-    incomes = {},
-    savings = {},
-    investments = {},
+    expenses,
+    incomes,
+    savings,
+    investments,
   } = props;
 
   const currencySymbol = useSelector(state => state.account.currencySymbol);
@@ -101,32 +77,28 @@ export default function MonthChart (props) {
     }
   }
 
-  const daysNumber = daysInMonth(year, monthNumber);
+  function groupByMonth (yearItems) {
+    const groupedByMonth = new Array(MONTHS_IN_YEAR).fill([]);
 
-  function groupByDay (groupedByWeeks) {
-    const items = Object
-      .keys(groupedByWeeks)
-      .flatMap(weekNumber => groupedByWeeks?.[weekNumber]);
-    const groupedByDay = Array.from(new Array(daysNumber));
-
-    items.forEach(item => {
-      const [, , day] = item?.dateString?.split('-')?.map(string => Number(string)) || [];
-
-      groupedByDay[day - 1] = Array.isArray(groupedByDay[day - 1])
-        ? [...groupedByDay[day - 1], item]
-        : [item];
+    Object.keys(yearItems).forEach(monthNumber => {
+      groupedByMonth[monthNumber - 1] = [
+        ...(yearItems[monthNumber][1] || []),
+        ...(yearItems[monthNumber][2] || []),
+        ...(yearItems[monthNumber][3] || []),
+        ...(yearItems[monthNumber][4] || []),
+      ];
     });
 
-    return groupedByDay;
+    return groupedByMonth;
   }
 
-  function mergeGroupedByDay (groupedByDay1, groupedByDay2) {
-    return groupedByDay1.map((byDay1, index) => {
-      const byDay2 = groupedByDay2[index] || [];
+  function mergeGroupedByMonth (groupedByMonth1 = [], groupedByMonth2 = []) {
+    return groupedByMonth1.map((byMonth1, index) => {
+      const byMonth2 = groupedByMonth2[index] || [];
 
-      return Array.isArray(byDay1)
-        ? [...byDay1, ...byDay2]
-        : byDay2;
+      return Array.isArray(byMonth1)
+        ? [...byMonth1, ...byMonth2]
+        : byMonth2;
     });
   }
 
@@ -136,22 +108,25 @@ export default function MonthChart (props) {
       : item?.amount || 0;
   }
 
-  function getChartPoints (groupedByDay) {
-    let totalOfPreviousDays = 0;
+  function getChartPoints (groupedByMonth) {
+    let totalOfPreviousMonths = 0;
 
-    return groupedByDay.map(itemsByDay => {
-      if (!itemsByDay?.length) {
-        return totalOfPreviousDays;
-      }
+    return [
+      totalOfPreviousMonths,
+      ...groupedByMonth.map(itemsByMonth => {
+        if (!itemsByMonth?.length) {
+          return totalOfPreviousMonths;
+        }
 
-      const dayTotal = itemsByDay.reduce((total, item) => {
-        return total + getAmount(item);
-      }, 0);
+        const monthTotal = itemsByMonth.reduce((total, item) => {
+          return total + getAmount(item);
+        }, 0);
 
-      totalOfPreviousDays = totalOfPreviousDays + dayTotal;
+        totalOfPreviousMonths = totalOfPreviousMonths + monthTotal;
 
-      return parseFloat(totalOfPreviousDays.toFixed(2));
-    });
+        return parseFloat(totalOfPreviousMonths.toFixed(2));
+      })
+    ];
   }
 
   function onPointClick ({ index, value, dataset, x, y }) {
@@ -167,7 +142,7 @@ export default function MonthChart (props) {
     setChartView(clickedChartViewType);
 
     setSelectedPointData({
-      title: formatDateString(`${year}-${`0${monthNumber}`.slice(-2)}-${`0${index + 1}`.slice(-2)}`),
+      title: index === 0 ? `Start of ${year}` : `${MONTH_NAME[index]}, ${year}`,
       subTitle: `${[clickedChartViewType[0].toUpperCase()]}${clickedChartViewType.slice(1)}:  ${currencySymbol}${value.toFixed(2)}`,
       x,
       y,
@@ -191,22 +166,22 @@ export default function MonthChart (props) {
     return `rgba(42, 113, 40, ${opacity * (chartView === CHART_VIEW.SAVINGS ? 3 : 1)})`;
   }
 
-  const expensesGroupedByDay = groupByDay(expenses);
-  const expensesPoints = getChartPoints(expensesGroupedByDay);
+  const expensesGroupedByMonth = groupByMonth(expenses);
+  const expensesPoints = getChartPoints(expensesGroupedByMonth);
 
-  const incomesGroupedByDay = groupByDay(incomes);
-  const incomesPoints = getChartPoints(incomesGroupedByDay);
+  const incomesGroupedByMonth = groupByMonth(incomes);
+  const incomesPoints = getChartPoints(incomesGroupedByMonth);
 
-  const savingsGroupedByDay = groupByDay(savings);
-  const investmentsGroupedByDay = groupByDay(investments);
-  const savingsAndInvestmentsGroupedByDay = mergeGroupedByDay(savingsGroupedByDay, investmentsGroupedByDay);
-  const savingsPoints = getChartPoints(savingsAndInvestmentsGroupedByDay);
+  const savingsGroupedByMonth = groupByMonth(savings);
+  const investmentsGroupedByMonth = groupByMonth(investments);
+  const savingsAndInvestmentsGroupedByMonth = mergeGroupedByMonth(savingsGroupedByMonth, investmentsGroupedByMonth);
+  const savingsPoints = getChartPoints(savingsAndInvestmentsGroupedByMonth);
 
   return (
     <ScrollView
       style={[styles.monthChart, style]}
-      onLayout={onLayout}
       ref={chartRef}
+      onLayout={onLayout}
     >
       <LineChart
         style={styles.chart}
@@ -229,7 +204,7 @@ export default function MonthChart (props) {
               data: savingsPoints,
               color: (opacity = 1) => getSavingsColor(opacity, chartView),
             },
-          ],
+          ].filter(Boolean),
         }}
         chartConfig={{
           decimalPlaces: 2,
@@ -265,10 +240,9 @@ export default function MonthChart (props) {
         transparent
       />
 
-      <MonthChartLegend
+      <YearChartLegend
         chartWidth={realChartWidth || chartWidth}
         chartHeight={realChartHeight || chartHeight}
-        daysInMonth={daysNumber}
       />
     </ScrollView>
   );

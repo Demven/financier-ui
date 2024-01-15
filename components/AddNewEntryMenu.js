@@ -40,7 +40,7 @@ const MENU_ITEMS = [
 ];
 
 AddNewEntryMenu.propTypes = {
-  style: PropTypes.object,
+  style: PropTypes.any,
   alwaysShowLabel: PropTypes.bool,
 };
 

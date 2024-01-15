@@ -11,6 +11,7 @@ import { useDrawerStatus } from '@react-navigation/drawer';
 import Logo from './Logo';
 import HeaderDropdown from './HeaderDropdown';
 import { setSelectedYearAction } from '../redux/reducers/ui';
+import { TAB } from './HeaderTabs';
 import { FONT } from '../styles/fonts';
 import { MEDIA } from '../styles/media';
 
@@ -29,6 +30,8 @@ export default function HeaderLeft (props) {
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
   const selectedYear = useSelector(state => state.ui.selectedYear);
+  const selectedTab = useSelector(state => state.ui.selectedTab);
+  const hideYearSelector = selectedTab === TAB.YEARS;
 
   const expensesYears = useSelector(state => Object.keys(state.expenses.expenses));
   const incomesYears = useSelector(state => Object.keys(state.incomes.incomes));
@@ -68,7 +71,7 @@ export default function HeaderLeft (props) {
         {title}
       </HeaderTitle>
 
-      {(windowWidth >= MEDIA.TABLET && !simplified) && (
+      {(windowWidth >= MEDIA.TABLET && !simplified && !hideYearSelector) && (
         <HeaderDropdown
           style={styles.headerDropdown}
           selectedValue={selectedYear}

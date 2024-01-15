@@ -4,54 +4,53 @@ import {
   Text,
 } from 'react-native';
 import { useSelector } from 'react-redux';
-import { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import MonthChart, { CHART_VIEW } from './MonthChart';
+import YearChart, { CHART_VIEW } from './YearChart';
 import TitleLink from '../../../components/TitleLink';
-import { MONTH_NAME } from '../../../services/date';
 import { formatAmount, getAmountColor } from '../../../services/amount';
 import { FONT } from '../../../styles/fonts';
 import { COLOR } from '../../../styles/colors';
 import { MEDIA } from '../../../styles/media';
 
-OverviewMonth.propTypes = {
+OverviewYear.propTypes = {
   style: PropTypes.any,
   year: PropTypes.number.isRequired,
-  monthNumber: PropTypes.number.isRequired,
   expenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
   incomes: PropTypes.object, // weeks -> incomes { [1]: [], [2]: [] }
   savings: PropTypes.object, // weeks -> savings { [1]: [], [2]: [] }
   investments: PropTypes.object, // weeks -> investments { [1]: [], [2]: [] }
 };
 
-export default function OverviewMonth (props) {
+export default function OverviewYear (props) {
   const {
     style,
     year,
-    monthNumber,
     expenses = {},
     incomes = {},
     savings = {},
     investments = {},
   } = props;
 
-  const navigation = useNavigation();
-
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
   const [chartView, setChartView] = useState(CHART_VIEW.INCOME);
 
-  function getTotalAmount (items) {
-    return Object
-      .keys(items)
-      .flatMap(week => {
-        return (items[week] || []).reduce((total, item) => {
+  function getTotalAmount (yearItems) {
+    return Object.keys(yearItems)
+      .map(monthNumber => ([
+        ...(yearItems[monthNumber]?.[1] || []),
+        ...(yearItems[monthNumber]?.[2] || []),
+        ...(yearItems[monthNumber]?.[3] || []),
+        ...(yearItems[monthNumber]?.[4] || []),
+      ]))
+      .map(flatMonthData => {
+        return flatMonthData.reduce((total, item) => {
           const amount = item.amount || (item.shares * item.pricePerShare);
           return total + amount;
         }, 0);
       })
-      .reduce((total, weekTotal) => total + weekTotal, 0);
+      .reduce((monthTotal, yearTotal) => monthTotal + yearTotal, 0);
   }
 
   const totalIncomes = getTotalAmount(incomes);
@@ -59,11 +58,35 @@ export default function OverviewMonth (props) {
   const totalSavingsAndInvestments = (getTotalAmount(savings) + getTotalAmount(investments)) || 0;
   const savingsPercent = Math.floor(totalSavingsAndInvestments * 100 / totalIncomes);
 
+  // TODO: savingsPercent
+
   const totalExcludingSavings = totalIncomes - totalExpenses;
   const total = totalExcludingSavings - totalSavingsAndInvestments;
 
   const totalExcludingSavingsColor = getAmountColor(totalExcludingSavings);
   const totalColor = getAmountColor(total);
+
+  useEffect(() => {
+    if (chartView === CHART_VIEW.INCOME && !totalIncomes) {
+      if (totalExpenses) {
+        setChartView(CHART_VIEW.EXPENSES);
+      } else if (totalSavingsAndInvestments) {
+        setChartView(CHART_VIEW.SAVINGS);
+      }
+    } else if (chartView === CHART_VIEW.EXPENSES && !totalExpenses) {
+      if (totalIncomes) {
+        setChartView(CHART_VIEW.INCOME);
+      } else if (totalSavingsAndInvestments) {
+        setChartView(CHART_VIEW.SAVINGS);
+      }
+    } else if (chartView === CHART_VIEW.SAVINGS && !totalSavingsAndInvestments) {
+      if (totalIncomes) {
+        setChartView(CHART_VIEW.INCOME);
+      } else if (totalExpenses) {
+        setChartView(CHART_VIEW.EXPENSES);
+      }
+    }
+  }, [totalIncomes, totalExpenses, totalSavingsAndInvestments]);
 
   const columnWidth = windowWidth < MEDIA.DESKTOP
     ? '100%'
@@ -81,7 +104,7 @@ export default function OverviewMonth (props) {
     : (windowWidth < MEDIA.DESKTOP ? 24 : 40);
 
   const subtitleFontSize = windowWidth < MEDIA.DESKTOP
-    ?  windowWidth < MEDIA.TABLET ? 33 : 36
+    ? windowWidth < MEDIA.TABLET ? 33 : 36
     : 40;
   const subtitlePaddingLeft = windowWidth < MEDIA.DESKTOP ? 28 : 0;
 
@@ -90,26 +113,33 @@ export default function OverviewMonth (props) {
       ? windowWidth < MEDIA.WIDE_MOBILE
         ? windowWidth < MEDIA.MOBILE
           ? 0 // mobile
-          : 8 // wide-mobile
-        : -16 // wide-mobile
+          : -8 // wide-mobile
+        : -24 // wide-mobile
       : -54 // tablet
     : 0; // desktop
 
+  const isEmptyYear = !totalIncomes && !totalExpenses && !totalSavingsAndInvestments;
+
+  if (isEmptyYear) {
+    return null;
+  }
+
   return (
-    <View style={[styles.overviewMonth, style]}>
-      <TitleLink
-        style={[styles.subtitleLink, { paddingLeft: subtitlePaddingLeft }]}
-        textStyle={[styles.subtitleLinkText, { fontSize: subtitleFontSize }]}
-        onPress={() => navigation.navigate('OverviewWeeks', { monthNumber })}
-      >
-        {MONTH_NAME[monthNumber]}
-      </TitleLink>
+    <View style={[styles.overviewYear, style]}>
+      <View style={styles.titleContainer}>
+        <TitleLink
+          style={[styles.subtitleLink, { paddingLeft: subtitlePaddingLeft }]}
+          textStyle={[styles.subtitleLinkText, { fontSize: subtitleFontSize }]}
+        >
+          {year}
+        </TitleLink>
+      </View>
 
       <View style={[styles.content, {
         flexDirection: windowWidth < MEDIA.DESKTOP ? 'column' : 'row',
         alignItems: windowWidth < MEDIA.DESKTOP ? 'center' : 'flex-start',
       }]}>
-        <MonthChart
+        <YearChart
           style={[styles.chart, {
             width: chartWidth,
             marginLeft: chartMarginLeft,
@@ -118,9 +148,8 @@ export default function OverviewMonth (props) {
           year={year}
           chartView={chartView}
           setChartView={setChartView}
-          monthNumber={monthNumber}
-          expenses={expenses}
           incomes={incomes}
+          expenses={expenses}
           savings={savings}
           investments={investments}
         />
@@ -128,7 +157,7 @@ export default function OverviewMonth (props) {
         <View style={[styles.stats, {
           width: columnWidth,
           marginTop: statsMarginTop,
-          paddingTop: windowWidth < MEDIA.DESKTOP ? 0 : 48,
+          paddingTop: windowWidth < MEDIA.DESKTOP ? 0 : 24,
           paddingLeft: windowWidth < MEDIA.DESKTOP ? 32 : 40,
           paddingRight: windowWidth < MEDIA.DESKTOP ? 32 : 0,
         }]}>
@@ -157,7 +186,7 @@ export default function OverviewMonth (props) {
           )}
 
           {!!totalExpenses && (
-            <View style={styles.statRow}>
+            <View style={[styles.statRow, !totalIncomes && { marginTop: 0 }]}>
               <TitleLink
                 textStyle={[
                   styles.statName,
@@ -181,7 +210,7 @@ export default function OverviewMonth (props) {
           )}
 
           {!!totalSavingsAndInvestments && (
-            <View style={styles.statRow}>
+            <View style={[styles.statRow, (!totalIncomes && !totalExpenses) && { marginTop: 0 }]}>
               <TitleLink
                 textStyle={[
                   styles.statName,
@@ -191,7 +220,7 @@ export default function OverviewMonth (props) {
                 underlineGap={2}
                 onPress={() => setChartView(CHART_VIEW.SAVINGS)}
               >
-                Savings
+                Savings / Investments
               </TitleLink>
 
               <Text style={[
@@ -201,12 +230,6 @@ export default function OverviewMonth (props) {
               ]}>
                 {formatAmount(totalSavingsAndInvestments)}
               </Text>
-            </View>
-          )}
-
-          {!!savingsPercent && (
-            <View style={[styles.statRow, { marginTop: 12 }]}>
-              <Text style={[styles.statValue, styles.smallerText]}>({savingsPercent}%)</Text>
             </View>
           )}
 
@@ -253,8 +276,13 @@ export default function OverviewMonth (props) {
 }
 
 const styles = StyleSheet.create({
-  overviewMonth: {
+  overviewYear: {
     flexGrow: 1,
+  },
+
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
   },
 
   subtitleLink: {
@@ -268,12 +296,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 
-  chart: {},
-
-  stats: {
-    paddingTop: 48,
-    paddingLeft: 40,
+  chart: {
+    marginTop: 16,
   },
+
+  stats: {},
   statRow: {
     marginTop: 20,
     flexDirection: 'row',

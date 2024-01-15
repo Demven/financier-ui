@@ -261,7 +261,7 @@ export default function MonthChart (props) {
         chartConfig={{
           decimalPlaces: 2,
           strokeWidth: 6,
-          fillShadowGradientOpacity: 0.5,
+          fillShadowGradientOpacity: 0,
           useShadowColorFromDataset: true,
           color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
           labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,

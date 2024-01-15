@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import WeekChart, { CHART_VIEW } from './WeekChart';
 import TitleLink from '../../../components/TitleLink';
 import { MONTH_NAME, getDaysInMonth, getDaysInWeek } from '../../../services/date';
+import { formatAmount, getAmountColor } from '../../../services/amount';
 import { FONT } from '../../../styles/fonts';
 import { COLOR } from '../../../styles/colors';
 import { MEDIA } from '../../../styles/media';
@@ -63,10 +64,6 @@ export default function OverviewWeek (props) {
 
   const [chartView, setChartView] = useState(CHART_VIEW.INCOME);
 
-  function formatAmount (number) {
-    return `${Math.sign(number) === -1 ? '- ' : '+'}${parseFloat(Math.abs(number).toFixed(2)).toLocaleString()}`;
-  }
-
   function getTotalAmount (items) {
     return items.reduce((total, item) => {
       const amount = item.amount || (item.shares * item.pricePerShare);
@@ -80,12 +77,6 @@ export default function OverviewWeek (props) {
       .filter(weekKey => weekKey < weekNumber) || [];
 
     return weekKeys.reduce((total, weekKey) => total + getTotalAmount(items[weekKey] || []), 0);
-  }
-
-  function getAmountColor (amount) {
-    const isPositive = amount >= 0;
-
-    return isPositive ? COLOR.GREEN : COLOR.RED;
   }
 
   const daysInMonthNumber = getDaysInMonth(year, monthNumber);
