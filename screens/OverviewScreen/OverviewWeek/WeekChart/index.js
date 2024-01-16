@@ -4,8 +4,9 @@ import { useSelector } from 'react-redux';
 import { LineChart } from 'react-native-chart-kit';
 import PropTypes from 'prop-types';
 import PointInfo from '../../../../components/Chart/PointInfo';
-import { formatDateString } from '../../../../services/date';
+import Loader from '../../../../components/Loader';
 import WeekChartLegend from './WeekChartLegend';
+import { formatDateString } from '../../../../services/date';
 import { COLOR } from '../../../../styles/colors';
 
 export const CHART_VIEW = {
@@ -83,6 +84,8 @@ export default function MonthChart (props) {
   const currencySymbol = useSelector(state => state.account.currencySymbol);
 
   const chartRef = useRef();
+
+  const [loading, setLoading] = useState(true);
 
   const [chartWidth, setChartWidth] = useState(0);
   const [chartHeight, setChartHeight] = useState(0);
@@ -231,10 +234,16 @@ export default function MonthChart (props) {
 
   return (
     <ScrollView
-      style={[styles.monthChart, style]}
+      style={[styles.weekChart, style]}
       ref={chartRef}
       onLayout={onLayout}
     >
+      <Loader
+        loading={loading}
+        setLoading={setLoading}
+        timeout={1000}
+      />
+
       <LineChart
         style={styles.chart}
         width={chartWidth}
@@ -302,7 +311,7 @@ export default function MonthChart (props) {
 }
 
 const styles = StyleSheet.create({
-  monthChart: {
+  weekChart: {
     flexGrow: 1,
     position: 'relative',
   },

@@ -115,7 +115,7 @@ export default function OverviewMonth (props) {
             marginLeft: chartMarginLeft,
             marginTop: chartMarginTop,
           }]}
-          year={year}
+          year={Number(year)}
           chartView={chartView}
           setChartView={setChartView}
           monthNumber={monthNumber}

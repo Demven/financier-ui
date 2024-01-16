@@ -58,8 +58,6 @@ export default function OverviewYear (props) {
   const totalSavingsAndInvestments = (getTotalAmount(savings) + getTotalAmount(investments)) || 0;
   const savingsPercent = Math.floor(totalSavingsAndInvestments * 100 / totalIncomes);
 
-  // TODO: savingsPercent
-
   const totalExcludingSavings = totalIncomes - totalExpenses;
   const total = totalExcludingSavings - totalSavingsAndInvestments;
 
@@ -99,9 +97,6 @@ export default function OverviewYear (props) {
   const chartMarginLeft = windowWidth < MEDIA.TABLET
     ? -50
     : (windowWidth < MEDIA.DESKTOP ? -40 : -58);
-  const chartMarginTop = windowWidth < MEDIA.TABLET
-    ? 16
-    : (windowWidth < MEDIA.DESKTOP ? 24 : 40);
 
   const subtitleFontSize = windowWidth < MEDIA.DESKTOP
     ? windowWidth < MEDIA.TABLET ? 33 : 36
@@ -143,7 +138,6 @@ export default function OverviewYear (props) {
           style={[styles.chart, {
             width: chartWidth,
             marginLeft: chartMarginLeft,
-            marginTop: chartMarginTop,
           }]}
           year={year}
           chartView={chartView}
@@ -230,6 +224,12 @@ export default function OverviewYear (props) {
               ]}>
                 {formatAmount(totalSavingsAndInvestments)}
               </Text>
+            </View>
+          )}
+
+          {!!savingsPercent && (
+            <View style={[styles.statRow, { marginTop: 12 }]}>
+              <Text style={[styles.statValue, styles.smallerText]}>({savingsPercent}%)</Text>
             </View>
           )}
 

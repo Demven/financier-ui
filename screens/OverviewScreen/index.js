@@ -125,10 +125,14 @@ export default function OverviewScreen () {
     : 40;
   const listContainerPaddingTop = windowWidth < MEDIA.TABLET ? 24 : 40;
 
-  const noData = !Object.keys(expenses[selectedYear] || {}).length
+  const noDataForSelectedYear = !Object.keys(expenses[selectedYear] || {}).length
     && !Object.keys(incomes[selectedYear] || {}).length
     && !Object.keys(savings[selectedYear] || {}).length
     && !Object.keys(investments[selectedYear] || {}).length;
+  const noDataForAnyYear = !Object.keys(expenses).length
+    && !Object.keys(incomes).length
+    && !Object.keys(savings).length
+    && !Object.keys(investments).length;
 
   const hideYearSelector = selectedTab === TAB.YEARS;
 
@@ -144,7 +148,7 @@ export default function OverviewScreen () {
       >
         {(windowWidth < MEDIA.TABLET && !hideYearSelector) && (
           <HeaderDropdown
-            style={[styles.yearsDropdown, noData && {
+            style={[styles.yearsDropdown, noDataForSelectedYear && {
               right: '50%',
               transform: [{translateX: yearDropdownWidth / 2}],
             }]}
@@ -156,17 +160,19 @@ export default function OverviewScreen () {
         )}
 
         <View style={[styles.listContainer, { paddingTop: listContainerPaddingTop }]}>
-          {noData && <OverviewPlaceholder />}
+          {((noDataForSelectedYear && selectedTab !== TAB.YEARS)
+            || (noDataForAnyYear && selectedTab === TAB.YEARS)
+            ) && <OverviewPlaceholder />}
 
-          {!noData && selectedTab === TAB.WEEKS && (
+          {!noDataForSelectedYear && selectedTab === TAB.WEEKS && (
             renderWeeks()
           )}
 
-          {!noData && selectedTab === TAB.MONTHS && (
+          {!noDataForSelectedYear && selectedTab === TAB.MONTHS && (
             renderMonths()
           )}
 
-          {!noData && selectedTab === TAB.YEARS && (
+          {!noDataForAnyYear && selectedTab === TAB.YEARS && (
             renderYears()
           )}
         </View>

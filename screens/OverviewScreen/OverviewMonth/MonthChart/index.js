@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { LineChart } from 'react-native-chart-kit';
 import PropTypes from 'prop-types';
 import PointInfo from '../../../../components/Chart/PointInfo';
+import Loader from '../../../../components/Loader';
 import { formatDateString } from '../../../../services/date';
 import MonthChartLegend from './MonthChartLegend';
 import { COLOR } from '../../../../styles/colors';
@@ -66,6 +67,8 @@ export default function MonthChart (props) {
     savings = {},
     investments = {},
   } = props;
+
+  const [loading, setLoading] = useState(true);
 
   const currencySymbol = useSelector(state => state.account.currencySymbol);
 
@@ -208,6 +211,12 @@ export default function MonthChart (props) {
       onLayout={onLayout}
       ref={chartRef}
     >
+      <Loader
+        loading={loading}
+        setLoading={setLoading}
+        timeout={1000}
+      />
+
       <LineChart
         style={styles.chart}
         width={chartWidth}
