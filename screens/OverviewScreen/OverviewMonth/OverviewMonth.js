@@ -81,8 +81,10 @@ export default function OverviewMonth (props) {
     : (windowWidth < MEDIA.DESKTOP ? 24 : 40);
 
   const subtitleFontSize = windowWidth < MEDIA.DESKTOP
-    ?  windowWidth < MEDIA.TABLET ? 33 : 36
-    : 40;
+    ? windowWidth < MEDIA.TABLET
+      ? 28 // mobile
+      : 36 // tablet
+    : 40; // desktop
   const subtitlePaddingLeft = windowWidth < MEDIA.DESKTOP ? 28 : 0;
 
   const statsMarginTop = windowWidth < MEDIA.DESKTOP
@@ -99,7 +101,11 @@ export default function OverviewMonth (props) {
     <View style={[styles.overviewMonth, style]}>
       <TitleLink
         style={[styles.subtitleLink, { paddingLeft: subtitlePaddingLeft }]}
-        textStyle={[styles.subtitleLinkText, { fontSize: subtitleFontSize }]}
+        textStyle={[styles.subtitleLinkText, {
+          fontSize: subtitleFontSize,
+          lineHeight: windowWidth < MEDIA.MOBILE ? 35 : undefined,
+        }]}
+        alwaysHighlighted
         onPress={() => navigation.navigate('OverviewWeeks', { monthNumber })}
       >
         {MONTH_NAME[monthNumber]}

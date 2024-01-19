@@ -72,7 +72,9 @@ export default function OverviewScreen () {
       <OverviewWeek
         key={index}
         style={[styles.overview, {
-          paddingTop: windowWidth < MEDIA.TABLET ? 40 : 24,
+          paddingTop: index === 0
+            ? 0
+            : windowWidth < MEDIA.TABLET ? 40 : 24,
         }]}
         year={selectedYear}
         monthNumber={monthNumber}
@@ -90,7 +92,9 @@ export default function OverviewScreen () {
       <OverviewMonth
         key={index}
         style={[styles.overview, {
-          paddingTop: windowWidth < MEDIA.TABLET ? 40 : 24,
+          paddingTop: index === 0
+            ? 0
+            : windowWidth < MEDIA.TABLET ? 40 : 24,
         }]}
         year={selectedYear}
         monthNumber={monthNumber}
@@ -109,7 +113,9 @@ export default function OverviewScreen () {
         <OverviewYear
           key={index}
           style={[styles.overview, {
-            paddingTop: windowWidth < MEDIA.TABLET ? 40 : 24,
+            paddingTop: index === 0
+              ? 0
+              : windowWidth < MEDIA.TABLET ? 40 : 24,
           }]}
           year={yearNumber}
           expenses={expenses[yearNumber]}
@@ -148,7 +154,9 @@ export default function OverviewScreen () {
       >
         {(windowWidth < MEDIA.TABLET && !hideYearSelector) && (
           <HeaderDropdown
-            style={[styles.yearsDropdown, noDataForSelectedYear && {
+            style={[styles.yearsDropdown, {
+              top: windowWidth < MEDIA.MOBILE ? 28 : 36,
+            }, noDataForSelectedYear && {
               right: '50%',
               transform: [{translateX: yearDropdownWidth / 2}],
             }]}
@@ -191,7 +199,6 @@ const styles = StyleSheet.create({
   yearsDropdown: {
     position: 'absolute',
     right: 8,
-    top: 36,
     zIndex: 1,
   },
 

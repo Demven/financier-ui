@@ -15,6 +15,7 @@ TitleLink.propTypes = {
   textStyle: PropTypes.any,
   underlineGap: PropTypes.number,
   onPress: PropTypes.func, // without onPress will work as a simple Text node
+  alwaysHighlighted: PropTypes.bool,
   children: PropTypes.any.isRequired,
 };
 
@@ -25,6 +26,7 @@ export default function TitleLink (props) {
     style,
     textStyle,
     underlineGap = UNDERLINE_GAP,
+    alwaysHighlighted,
     onPress,
     children,
   } = props;
@@ -33,14 +35,23 @@ export default function TitleLink (props) {
 
   return (
     <Pressable
-      style={({ pressed }) => [styles.titleLink, style, pressed && styles.titleLinkPressed]}
+      style={({ pressed }) => [
+        styles.titleLink,
+        {
+          cursor: onPress ? 'pointer' : 'auto',
+        },
+        style,
+        (pressed && onPress) && styles.titleLinkPressed,
+      ]}
       onPress={onPress}
     >
       <View
         style={[
           styles.container,
           { paddingVertical: underlineGap },
-          highlighted && { borderBottomColor: COLOR.BLACK }
+          (highlighted || alwaysHighlighted) && {
+            borderBottomColor: alwaysHighlighted && !highlighted ? COLOR.LIGHT_GRAY : COLOR.BLACK,
+          }
         ]}
       >
         <Text

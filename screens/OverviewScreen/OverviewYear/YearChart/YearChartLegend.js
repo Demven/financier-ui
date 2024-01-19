@@ -56,7 +56,10 @@ export default function YearChartLegend (props) {
               index === MONTHS_IN_YEAR - 1 && { borderRightWidth: 0, paddingLeft: 0 },
             ]}
           >
-            <Text style={styles.label}>
+            <Text style={[styles.label, {
+              fontSize: windowWidth < MEDIA.WIDE_MOBILE ? 10 : 12,
+              lineHeight: windowWidth < MEDIA.WIDE_MOBILE ? 10 : 12,
+            }]}>
               {MONTH_NAME[index + 1].substring(0, 3)}
             </Text>
           </View>
@@ -111,8 +114,6 @@ const styles = StyleSheet.create({
 
   label: {
     fontFamily: FONT.NOTO_SERIF.REGULAR,
-    fontSize: 12,
-    lineHeight: 12,
     color: COLOR.LIGHT_GRAY,
     textAlign: 'center',
   },

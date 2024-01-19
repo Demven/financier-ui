@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import YearChart, { CHART_VIEW } from './YearChart';
 import TitleLink from '../../../components/TitleLink';
@@ -31,6 +32,8 @@ export default function OverviewYear (props) {
     savings = {},
     investments = {},
   } = props;
+
+  const navigation = useNavigation();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
@@ -90,17 +93,25 @@ export default function OverviewYear (props) {
     ? '100%'
     : '50%';
   const chartWidth = windowWidth < MEDIA.TABLET
-    ? '102%'
+    ? windowWidth < MEDIA.MOBILE
+      ? '106%' // mobile
+      : '106%' // wide-mobile
     : windowWidth < MEDIA.DESKTOP
-      ? '103%'
-      : columnWidth;
+      ? '107%' // tablet
+      : columnWidth; // desktop
   const chartMarginLeft = windowWidth < MEDIA.TABLET
-    ? -50
-    : (windowWidth < MEDIA.DESKTOP ? -40 : -58);
+    ? windowWidth < MEDIA.MOBILE
+      ? -35 // mobile
+      : -27 // wide-mobile
+    : windowWidth < MEDIA.DESKTOP
+      ? 0 // tablet
+      : -58; // desktop
 
   const subtitleFontSize = windowWidth < MEDIA.DESKTOP
-    ? windowWidth < MEDIA.TABLET ? 33 : 36
-    : 40;
+    ? windowWidth < MEDIA.TABLET
+      ? 28 // mobile
+      : 36 // tablet
+    : 40; // desktop
   const subtitlePaddingLeft = windowWidth < MEDIA.DESKTOP ? 28 : 0;
 
   const statsMarginTop = windowWidth < MEDIA.DESKTOP
@@ -124,7 +135,12 @@ export default function OverviewYear (props) {
       <View style={styles.titleContainer}>
         <TitleLink
           style={[styles.subtitleLink, { paddingLeft: subtitlePaddingLeft }]}
-          textStyle={[styles.subtitleLinkText, { fontSize: subtitleFontSize }]}
+          textStyle={[styles.subtitleLinkText, {
+            fontSize: subtitleFontSize,
+            lineHeight: windowWidth < MEDIA.MOBILE ? 35 : undefined,
+          }]}
+          alwaysHighlighted
+          onPress={() => navigation.navigate('OverviewMonths')}
         >
           {year}
         </TitleLink>

@@ -148,8 +148,10 @@ export default function OverviewWeek (props) {
     : windowWidth < MEDIA.DESKTOP ? 24 : 40;
 
   const subtitleFontSize = windowWidth < MEDIA.DESKTOP
-    ? windowWidth < MEDIA.TABLET ? 33 : 36
-    : 40;
+    ? windowWidth < MEDIA.TABLET
+      ? 28 // mobile
+      : 36 // tablet
+    : 40; // desktop
   const subtitlePaddingLeft = windowWidth < MEDIA.DESKTOP ? 28 : 0;
 
   const statsMarginTop = windowWidth < MEDIA.DESKTOP
@@ -167,13 +169,19 @@ export default function OverviewWeek (props) {
       <View style={styles.titleContainer}>
         <TitleLink
           style={[styles.subtitleLink, { paddingLeft: subtitlePaddingLeft }]}
-          textStyle={[styles.subtitleLinkText, { fontSize: subtitleFontSize }]}
+          textStyle={[styles.subtitleLinkText, {
+            fontSize: subtitleFontSize,
+            lineHeight: windowWidth < MEDIA.MOBILE ? 35 : undefined,
+          }]}
         >
           {WEEK_NAME[weekNumber]}
         </TitleLink>
 
         <Text style={[styles.weekRangeText, {
+          marginLeft: windowWidth < MEDIA.WIDE_MOBILE ? 16 : 32,
           paddingBottom: windowWidth >= MEDIA.DESKTOP ? 12 : 14,
+          fontSize: windowWidth < MEDIA.WIDE_MOBILE ? 18 : 21,
+          lineHeight: windowWidth < MEDIA.WIDE_MOBILE ? 18 : 21,
         }]}>
           {MONTH_NAME[monthNumber].substring(0, 3)} {(getWeekRange(weekNumber, getDaysInMonth(year, monthNumber)))}
         </Text>
@@ -345,9 +353,6 @@ const styles = StyleSheet.create({
 
   weekRangeText: {
     fontFamily: FONT.NOTO_SERIF.REGULAR,
-    fontSize: 21,
-    lineHeight: 21,
-    marginLeft: 32,
   },
 
   content: {
