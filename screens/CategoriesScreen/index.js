@@ -13,7 +13,7 @@ export default function CategoriesScreen () {
 
   useEffect(() => {
     if (overviewType !== selectedTab) {
-      dispatch(setSelectedTabAction({ selectedTab: overviewType }));
+      dispatch(setSelectedTabAction(overviewType));
     }
   }, [route]);
 

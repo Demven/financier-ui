@@ -57,7 +57,7 @@ export default function OverviewScreen () {
 
   useEffect(() => {
     if (overviewType !== selectedTab) {
-      dispatch(setSelectedTabAction({ selectedTab: overviewType }));
+      dispatch(setSelectedTabAction(overviewType));
     }
   }, [route]);
 
@@ -162,7 +162,7 @@ export default function OverviewScreen () {
             }]}
             selectedValue={selectedYear}
             values={yearsToSelect}
-            onSelect={(selectedYear) => dispatch(setSelectedYearAction({ selectedYear }))}
+            onSelect={(selectedYear) => dispatch(setSelectedYearAction(Number(selectedYear)))}
             onLayout={onYearDropdownLayout}
           />
         )}

@@ -76,7 +76,7 @@ export default function HeaderLeft (props) {
           style={styles.headerDropdown}
           selectedValue={selectedYear}
           values={yearsToSelect}
-          onSelect={(selectedYear) => dispatch(setSelectedYearAction({ selectedYear }))}
+          onSelect={(selectedYear) => dispatch(setSelectedYearAction(Number(selectedYear)))}
         />
       )}
     </View>

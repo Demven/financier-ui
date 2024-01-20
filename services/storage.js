@@ -2,6 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const STORAGE_KEY = {
   TOKEN: 'token',
+  SELECTED_TAB: 'selectedTab',
+  SELECTED_YEAR: 'selectedYear',
   SETTINGS: 'settings',
   CATEGORIES: 'categories',
   EXPENSES: 'expenses',

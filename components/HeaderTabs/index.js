@@ -18,7 +18,7 @@ export const TAB_NAME = {
   [TAB.MONTHS]: 'Months',
   [TAB.YEARS]: 'Years',
 };
-const TABS = [
+export const TABS = [
   TAB.WEEKS,
   TAB.MONTHS,
   TAB.YEARS,

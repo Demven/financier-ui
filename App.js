@@ -26,14 +26,14 @@ import IncomeScreen from './screens/IncomeScreen';
 import CategoryScreen from './screens/CategoryScreen';
 import HeaderLeft from './components/HeaderLeft';
 import HeaderRight from './components/HeaderRight';
-import { TAB, TAB_NAME } from './components/HeaderTabs';
+import { TAB, TABS, TAB_NAME } from './components/HeaderTabs';
 import DrawerContent from './components/DrawerContent';
 import { STORAGE_KEY, retrieveFromStorage } from './services/storage';
 import { setSettingsAction } from './redux/reducers/account';
 import { setCategoriesAction } from './redux/reducers/categories';
 import { setExpensesAction } from './redux/reducers/expenses';
 import { setInvestmentsAction, setSavingsAction } from './redux/reducers/savings';
-import { setWindowWidthAction } from './redux/reducers/ui';
+import { setWindowWidthAction, setSelectedTabAction, setSelectedYearAction } from './redux/reducers/ui';
 import { setIncomesAction } from './redux/reducers/incomes';
 import { store } from './redux/store';
 import { MEDIA } from './styles/media';
@@ -402,6 +402,16 @@ function Navigator () {
   }
 
   async function initializeRedux () {
+    const selectedTab = await retrieveFromStorage(STORAGE_KEY.SELECTED_TAB);
+    if (selectedTab && TABS.includes(selectedTab)) {
+      dispatch(setSelectedTabAction(selectedTab));
+    }
+
+    const selectedYear = Number(await retrieveFromStorage(STORAGE_KEY.SELECTED_YEAR));
+    if (selectedYear) {
+      dispatch(setSelectedYearAction(selectedYear));
+    }
+
     const settings = await retrieveFromStorage(STORAGE_KEY.SETTINGS);
     if (settings) {
       dispatch(setSettingsAction(settings));

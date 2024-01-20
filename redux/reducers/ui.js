@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { Dimensions } from 'react-native';
 import { TAB } from '../../components/HeaderTabs';
+import { saveToStorage, STORAGE_KEY } from '../../services/storage';
 
 const uiSlice = createSlice({
   name: 'ui',
@@ -16,14 +17,22 @@ const uiSlice = createSlice({
       ...state,
       windowWidth: action.payload,
     }),
-    setSelectedTab: (state, action) => ({
-      ...state,
-      selectedTab: action.payload.selectedTab,
-    }),
-    setSelectedYear: (state, action) => ({
-      ...state,
-      selectedYear: action.payload.selectedYear,
-    }),
+    setSelectedTab: (state, action) => {
+      saveToStorage(STORAGE_KEY.SELECTED_TAB, action.payload);
+
+      return {
+        ...state,
+        selectedTab: action.payload,
+      };
+    },
+    setSelectedYear: (state, action) => {
+      saveToStorage(STORAGE_KEY.SELECTED_YEAR, action.payload);
+
+      return {
+        ...state,
+        selectedYear: action.payload,
+      };
+    },
   },
 });
 
