@@ -8,6 +8,7 @@ import Loader from '../../../../components/Loader';
 import YearChartLegend from './YearChartLegend';
 import { MONTH_NAME } from '../../../../services/date';
 import { COLOR } from '../../../../styles/colors';
+import { MEDIA } from "../../../../styles/media";
 
 export const CHART_VIEW = {
   INCOME: 'income',
@@ -44,6 +45,7 @@ export default function YearChart (props) {
     investments,
   } = props;
 
+  const windowWidth = useSelector(state => state.ui.windowWidth);
   const currencySymbol = useSelector(state => state.account.currencySymbol);
 
   const chartRef = useRef();
@@ -180,6 +182,12 @@ export default function YearChart (props) {
   const savingsAndInvestmentsGroupedByMonth = mergeGroupedByMonth(savingsGroupedByMonth, investmentsGroupedByMonth);
   const savingsPoints = getChartPoints(savingsAndInvestmentsGroupedByMonth);
 
+  const loaderMarginLeft = windowWidth < MEDIA.DESKTOP
+    ? windowWidth < MEDIA.TABLET
+      ? 40 // mobile
+      : 0 // tablet
+    : 0; // desktop
+
   return (
     <ScrollView
       style={[styles.monthChart, style]}
@@ -187,9 +195,10 @@ export default function YearChart (props) {
       onLayout={onLayout}
     >
       <Loader
+        style={{ marginLeft: loaderMarginLeft }}
         loading={loading}
         setLoading={setLoading}
-        timeout={1000}
+        timeout={500}
       />
 
       <LineChart

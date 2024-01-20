@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
+  Platform,
   ScrollView,
   StyleSheet,
   View,
@@ -72,9 +73,7 @@ export default function OverviewScreen () {
       <OverviewWeek
         key={index}
         style={[styles.overview, {
-          paddingTop: index === 0
-            ? 0
-            : windowWidth < MEDIA.TABLET ? 40 : 24,
+          paddingBottom: windowWidth < MEDIA.TABLET ? 80 : 24,
         }]}
         year={selectedYear}
         monthNumber={monthNumber}
@@ -92,9 +91,7 @@ export default function OverviewScreen () {
       <OverviewMonth
         key={index}
         style={[styles.overview, {
-          paddingTop: index === 0
-            ? 0
-            : windowWidth < MEDIA.TABLET ? 40 : 24,
+          paddingBottom: windowWidth < MEDIA.TABLET ? 80 : 24,
         }]}
         year={selectedYear}
         monthNumber={monthNumber}
@@ -113,9 +110,7 @@ export default function OverviewScreen () {
         <OverviewYear
           key={index}
           style={[styles.overview, {
-            paddingTop: index === 0
-              ? 0
-              : windowWidth < MEDIA.TABLET ? 40 : 24,
+            paddingBottom: windowWidth < MEDIA.TABLET ? 80 : 24,
           }]}
           year={yearNumber}
           expenses={expenses[yearNumber]}
@@ -127,7 +122,7 @@ export default function OverviewScreen () {
   }
 
   const overviewScreenPadding = windowWidth < (MEDIA.MEDIUM_DESKTOP + 40 * 2)
-    ? windowWidth < MEDIA.TABLET ? 0 : 24
+    ? windowWidth < MEDIA.TABLET ? 0 : 52
     : 40;
   const listContainerPaddingTop = windowWidth < MEDIA.TABLET ? 24 : 40;
 
@@ -155,7 +150,7 @@ export default function OverviewScreen () {
         {(windowWidth < MEDIA.TABLET && !hideYearSelector) && (
           <HeaderDropdown
             style={[styles.yearsDropdown, {
-              top: windowWidth < MEDIA.MOBILE ? 28 : 36,
+              top: Platform.OS === 'ios' ? 26 : 24,
             }, noDataForSelectedYear && {
               right: '50%',
               transform: [{translateX: yearDropdownWidth / 2}],
@@ -170,7 +165,7 @@ export default function OverviewScreen () {
         <View style={[styles.listContainer, { paddingTop: listContainerPaddingTop }]}>
           {((noDataForSelectedYear && selectedTab !== TAB.YEARS)
             || (noDataForAnyYear && selectedTab === TAB.YEARS)
-            ) && <OverviewPlaceholder />}
+          ) && <OverviewPlaceholder />}
 
           {!noDataForSelectedYear && selectedTab === TAB.WEEKS && (
             renderWeeks()
@@ -206,7 +201,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     width: '100%',
     maxWidth: 1280,
-    paddingBottom: 80,
     alignSelf: 'center',
   },
 

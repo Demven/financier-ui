@@ -112,6 +112,11 @@ export default function OverviewYear (props) {
       ? 28 // mobile
       : 36 // tablet
     : 40; // desktop
+  const subtitleLineHeight = windowWidth < MEDIA.DESKTOP
+    ? windowWidth < MEDIA.TABLET
+      ? 32 // mobile
+      : 40 // tablet
+    : 44; // desktop
   const subtitlePaddingLeft = windowWidth < MEDIA.DESKTOP ? 28 : 0;
 
   const statsMarginTop = windowWidth < MEDIA.DESKTOP
@@ -137,7 +142,7 @@ export default function OverviewYear (props) {
           style={[styles.subtitleLink, { paddingLeft: subtitlePaddingLeft }]}
           textStyle={[styles.subtitleLinkText, {
             fontSize: subtitleFontSize,
-            lineHeight: windowWidth < MEDIA.MOBILE ? 35 : undefined,
+            lineHeight: subtitleLineHeight,
           }]}
           alwaysHighlighted
           onPress={() => navigation.navigate('OverviewMonths')}
@@ -179,7 +184,6 @@ export default function OverviewYear (props) {
                   chartView === CHART_VIEW.INCOME && styles.statNameBold,
                   windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
                 ]}
-                underlineGap={2}
                 onPress={() => setChartView(CHART_VIEW.INCOME)}
               >
                 Income
@@ -203,7 +207,6 @@ export default function OverviewYear (props) {
                   chartView === CHART_VIEW.EXPENSES && styles.statNameBold,
                   windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
                 ]}
-                underlineGap={2}
                 onPress={() => setChartView(CHART_VIEW.EXPENSES)}
               >
                 Expenses
@@ -227,7 +230,6 @@ export default function OverviewYear (props) {
                   chartView === CHART_VIEW.SAVINGS && styles.statNameBold,
                   windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
                 ]}
-                underlineGap={2}
                 onPress={() => setChartView(CHART_VIEW.SAVINGS)}
               >
                 Savings / Investments

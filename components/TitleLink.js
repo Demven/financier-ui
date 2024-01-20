@@ -4,7 +4,6 @@ import {
   Pressable,
   View,
   Text,
-  Platform,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { FONT } from '../styles/fonts';
@@ -13,19 +12,15 @@ import { COLOR } from '../styles/colors';
 TitleLink.propTypes = {
   style: PropTypes.any,
   textStyle: PropTypes.any,
-  underlineGap: PropTypes.number,
   onPress: PropTypes.func, // without onPress will work as a simple Text node
   alwaysHighlighted: PropTypes.bool,
   children: PropTypes.any.isRequired,
 };
 
-const UNDERLINE_GAP = 6;
-
 export default function TitleLink (props) {
   const {
     style,
     textStyle,
-    underlineGap = UNDERLINE_GAP,
     alwaysHighlighted,
     onPress,
     children,
@@ -45,22 +40,23 @@ export default function TitleLink (props) {
       ]}
       onPress={onPress}
     >
-      <View
-        style={[
-          styles.container,
-          { paddingVertical: underlineGap },
-          (highlighted || alwaysHighlighted) && {
-            borderBottomColor: alwaysHighlighted && !highlighted ? COLOR.LIGHT_GRAY : COLOR.BLACK,
-          }
-        ]}
-      >
-        <Text
-          style={[styles.text, textStyle]}
-          onMouseEnter={onPress ? () => setHighlighted(true) : undefined}
-          onMouseLeave={onPress ? () => setHighlighted(false) : undefined}
+      <View style={{ overflow: 'hidden'}}>
+        <View
+          style={[
+            styles.container,
+            (highlighted || alwaysHighlighted) && {
+              borderColor: alwaysHighlighted && !highlighted ? COLOR.LIGHT_GRAY : COLOR.BLACK,
+            },
+          ]}
         >
-          {children}
-        </Text>
+          <Text
+            style={[styles.text, textStyle]}
+            onMouseEnter={onPress ? () => setHighlighted(true) : undefined}
+            onMouseLeave={onPress ? () => setHighlighted(false) : undefined}
+          >
+            {children}
+          </Text>
+        </View>
       </View>
     </Pressable>
   );
@@ -73,9 +69,13 @@ const styles = StyleSheet.create({
   },
 
   container: {
-    borderStyle: Platform.select({ web: 'dashed' }),
-    borderBottomWidth: 3,
-    borderBottomColor: COLOR.TRANSPARENT,
+    padding: 2,
+    borderStyle: 'dotted',
+    borderWidth: 3,
+    borderColor: COLOR.TRANSPARENT,
+    marginTop: -3,
+    marginRight: -3,
+    marginLeft: -3,
   },
 
   text: {

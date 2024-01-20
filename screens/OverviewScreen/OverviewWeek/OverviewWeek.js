@@ -152,6 +152,11 @@ export default function OverviewWeek (props) {
       ? 28 // mobile
       : 36 // tablet
     : 40; // desktop
+  const subtitleLineHeight = windowWidth < MEDIA.DESKTOP
+    ? windowWidth < MEDIA.TABLET
+      ? 32 // mobile
+      : 40 // tablet
+    : 44; // desktop
   const subtitlePaddingLeft = windowWidth < MEDIA.DESKTOP ? 28 : 0;
 
   const statsMarginTop = windowWidth < MEDIA.DESKTOP
@@ -171,7 +176,7 @@ export default function OverviewWeek (props) {
           style={[styles.subtitleLink, { paddingLeft: subtitlePaddingLeft }]}
           textStyle={[styles.subtitleLinkText, {
             fontSize: subtitleFontSize,
-            lineHeight: windowWidth < MEDIA.MOBILE ? 35 : undefined,
+            lineHeight: subtitleLineHeight,
           }]}
         >
           {WEEK_NAME[weekNumber]}
@@ -179,7 +184,7 @@ export default function OverviewWeek (props) {
 
         <Text style={[styles.weekRangeText, {
           marginLeft: windowWidth < MEDIA.WIDE_MOBILE ? 16 : 32,
-          paddingBottom: windowWidth >= MEDIA.DESKTOP ? 12 : 14,
+          paddingBottom: windowWidth >= MEDIA.DESKTOP ? 10 : 8,
           fontSize: windowWidth < MEDIA.WIDE_MOBILE ? 18 : 21,
           lineHeight: windowWidth < MEDIA.WIDE_MOBILE ? 18 : 21,
         }]}>
@@ -228,7 +233,6 @@ export default function OverviewWeek (props) {
                   chartView === CHART_VIEW.INCOME && styles.statNameBold,
                   windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
                 ]}
-                underlineGap={2}
                 onPress={() => setChartView(CHART_VIEW.INCOME)}
               >
                 Income
@@ -252,7 +256,6 @@ export default function OverviewWeek (props) {
                   chartView === CHART_VIEW.EXPENSES && styles.statNameBold,
                   windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
                 ]}
-                underlineGap={2}
                 onPress={() => setChartView(CHART_VIEW.EXPENSES)}
               >
                 Expenses
@@ -276,7 +279,6 @@ export default function OverviewWeek (props) {
                   chartView === CHART_VIEW.SAVINGS && styles.statNameBold,
                   windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
                 ]}
-                underlineGap={2}
                 onPress={() => setChartView(CHART_VIEW.SAVINGS)}
               >
                 Savings / Investments

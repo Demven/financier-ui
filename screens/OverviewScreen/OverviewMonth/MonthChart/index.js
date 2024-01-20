@@ -8,6 +8,7 @@ import Loader from '../../../../components/Loader';
 import { formatDateString } from '../../../../services/date';
 import MonthChartLegend from './MonthChartLegend';
 import { COLOR } from '../../../../styles/colors';
+import { MEDIA } from "../../../../styles/media";
 
 function daysInMonth (year, month) {
   return new Date(year, month, 0).getDate();
@@ -70,6 +71,7 @@ export default function MonthChart (props) {
 
   const [loading, setLoading] = useState(true);
 
+  const windowWidth = useSelector(state => state.ui.windowWidth);
   const currencySymbol = useSelector(state => state.account.currencySymbol);
 
   const chartRef = useRef();
@@ -205,6 +207,12 @@ export default function MonthChart (props) {
   const savingsAndInvestmentsGroupedByDay = mergeGroupedByDay(savingsGroupedByDay, investmentsGroupedByDay);
   const savingsPoints = getChartPoints(savingsAndInvestmentsGroupedByDay);
 
+  const loaderMarginLeft = windowWidth < MEDIA.DESKTOP
+    ? windowWidth < MEDIA.TABLET
+      ? 72 // mobile
+      : 40 // tablet
+    : 0; // desktop
+
   return (
     <ScrollView
       style={[styles.monthChart, style]}
@@ -212,9 +220,10 @@ export default function MonthChart (props) {
       ref={chartRef}
     >
       <Loader
+        style={{ marginLeft: loaderMarginLeft }}
         loading={loading}
         setLoading={setLoading}
-        timeout={1000}
+        timeout={500}
       />
 
       <LineChart

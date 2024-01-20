@@ -12,12 +12,14 @@ import Logo from './Logo';
 import { saveToStorage, STORAGE_KEY } from '../services/storage';
 import { COLOR } from '../styles/colors';
 import { FONT } from '../styles/fonts';
+import { MEDIA } from "../styles/media";
 
 // props are passed by react-navigation
 // Read more here https://reactnavigation.org/docs/drawer-navigator/#drawercontent
 export default function DrawerContent (props) {
   const { navigation } = props;
 
+  const windowWidth = useSelector(state => state.ui.windowWidth);
   const firstName = useSelector(state => state.account.firstName) || '';
   const lastName = useSelector(state => state.account.lastName) || '';
 
@@ -35,7 +37,9 @@ export default function DrawerContent (props) {
 
       <DrawerContentScrollView
         {...props}
-        contentContainerStyle={styles.drawerScrollView}
+        contentContainerStyle={[styles.drawerScrollView, {
+          marginTop: Platform.select({ ios: windowWidth < MEDIA.WIDE_MOBILE ? -54 : 0 }),
+        }]}
       >
         <DrawerItemList {...props} />
       </DrawerContentScrollView>
@@ -78,7 +82,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     position: 'relative',
     padding: 0,
-    marginTop: Platform.select({ ios: -54 }),
   },
 
   drawerFooter: {

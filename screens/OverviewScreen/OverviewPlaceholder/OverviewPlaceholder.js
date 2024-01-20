@@ -3,13 +3,10 @@ import {
   View,
   Text,
 } from 'react-native';
-import { useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import AddNewEntryMenu from '../../../components/AddNewEntryMenu';
 import { FONT } from '../../../styles/fonts';
 import { COLOR } from '../../../styles/colors';
-import { MEDIA } from '../../../styles/media';
 
 OverviewPlaceholder.propTypes = {
   style: PropTypes.any,
@@ -17,8 +14,6 @@ OverviewPlaceholder.propTypes = {
 
 export default function OverviewPlaceholder (props) {
   const { style } = props;
-
-  const windowWidth = useSelector(state => state.ui.windowWidth);
 
   return (
     <View style={[styles.overviewPlaceholder, style]}>
@@ -43,7 +38,7 @@ const styles = StyleSheet.create({
 
   message: {
     width: 300,
-    fontFamily: FONT.LORA.REGULAR,
+    fontFamily: FONT.NOTO_SERIF.REGULAR,
     fontSize: 20,
     lineHeight: 32,
     color: COLOR.GRAY,

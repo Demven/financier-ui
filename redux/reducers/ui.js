@@ -26,7 +26,7 @@ const uiSlice = createSlice({
       };
     },
     setSelectedYear: (state, action) => {
-      saveToStorage(STORAGE_KEY.SELECTED_YEAR, action.payload);
+      saveToStorage(STORAGE_KEY.SELECTED_YEAR, String(action.payload));
 
       return {
         ...state,

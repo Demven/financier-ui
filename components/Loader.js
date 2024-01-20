@@ -4,6 +4,7 @@ import {
   Image,
   Pressable,
 } from 'react-native';
+import { useSelector } from 'react-redux';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -13,11 +14,12 @@ import Animated, {
 } from 'react-native-reanimated';
 import PropTypes from 'prop-types';
 import { COLOR } from '../styles/colors';
+import { MEDIA } from '../styles/media';
 
 Loader.propTypes = {
   style: PropTypes.object,
   loading: PropTypes.bool.isRequired,
-  setLoading: PropTypes.bool.isRequired,
+  setLoading: PropTypes.func.isRequired,
   timeout: PropTypes.number,
 };
 
@@ -28,6 +30,8 @@ export default function Loader (props) {
     setLoading,
     timeout,
   } = props;
+
+  const windowWidth = useSelector(state => state.ui.windowWidth);
 
   const [logoLoaded, setLogoLoaded] = useState(false);
 
@@ -70,7 +74,16 @@ export default function Loader (props) {
 
   return (
     <Pressable style={({ pressed }) => [styles.loader, pressed && styles.loaderPressed]}>
-      <Animated.View style={[styles.logoContainer, animatedOpacityStyles, style]}>
+      <Animated.View style={[
+        styles.logoContainer,
+        {
+          width: windowWidth < MEDIA.DESKTOP ? 80 : 106,
+          height: windowWidth < MEDIA.DESKTOP ? 80 : 106,
+          padding: windowWidth < MEDIA.DESKTOP ? 2 : 8,
+        },
+        animatedOpacityStyles,
+        style,
+      ]}>
         {logoLoaded && (
           <Animated.View
             style={[styles.border, animatedBorderStyles]}
@@ -78,7 +91,10 @@ export default function Loader (props) {
         )}
 
         <Image
-          style={styles.logo}
+          style={[styles.logo, {
+            width: windowWidth < MEDIA.DESKTOP ? 18 : 36,
+            height: windowWidth < MEDIA.DESKTOP ? 22.5 : 45,
+          }]}
           source={require('../assets/images/f.png')}
           onLoad={() => setLogoLoaded(true)}
         />
@@ -102,9 +118,6 @@ const styles = StyleSheet.create({
   },
 
   logoContainer: {
-    height: 106,
-    width: 106,
-    padding: 8,
     alignItems: 'center',
     justifyContent: 'center',
     boxSizing: 'content-box',
@@ -124,8 +137,5 @@ const styles = StyleSheet.create({
     borderRightWidth: 0,
   },
 
-  logo: {
-    height: 45,
-    width: 36,
-  },
+  logo: {},
 });

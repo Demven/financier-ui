@@ -73,7 +73,9 @@ export default function HeaderLeft (props) {
 
       {(windowWidth >= MEDIA.TABLET && !simplified && !hideYearSelector) && (
         <HeaderDropdown
-          style={styles.headerDropdown}
+          style={[styles.headerDropdown, {
+            marginTop: Platform.select({ 'ios': 9 }),
+          }]}
           selectedValue={selectedYear}
           values={yearsToSelect}
           onSelect={(selectedYear) => dispatch(setSelectedYearAction(Number(selectedYear)))}

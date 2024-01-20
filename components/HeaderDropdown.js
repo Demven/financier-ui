@@ -12,7 +12,7 @@ import { COLOR } from '../styles/colors';
 import { FONT } from '../styles/fonts';
 
 HeaderDropdown.propTypes = {
-  style: PropTypes.object,
+  style: PropTypes.any,
   selectedValue: PropTypes.any.isRequired,
   values: PropTypes.arrayOf(PropTypes.any).isRequired,
   onSelect: PropTypes.func.isRequired,

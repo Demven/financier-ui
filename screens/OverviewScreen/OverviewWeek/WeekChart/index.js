@@ -8,6 +8,7 @@ import Loader from '../../../../components/Loader';
 import WeekChartLegend from './WeekChartLegend';
 import { formatDateString } from '../../../../services/date';
 import { COLOR } from '../../../../styles/colors';
+import { MEDIA } from "../../../../styles/media";
 
 export const CHART_VIEW = {
   INCOME: 'income',
@@ -81,6 +82,7 @@ export default function MonthChart (props) {
     previousWeeksTotalInvestments = 0,
   } = props;
 
+  const windowWidth = useSelector(state => state.ui.windowWidth);
   const currencySymbol = useSelector(state => state.account.currencySymbol);
 
   const chartRef = useRef();
@@ -232,6 +234,12 @@ export default function MonthChart (props) {
   const savingsAndInvestmentsGroupedByDay = mergeGroupedByDay(savingsGroupedByDay, investmentsGroupedByDay);
   const savingsPoints = getChartPoints(savingsAndInvestmentsGroupedByDay, previousWeeksTotalSavings + previousWeeksTotalInvestments);
 
+  const loaderMarginLeft = windowWidth < MEDIA.DESKTOP
+    ? windowWidth < MEDIA.TABLET
+      ? 16 // mobile
+      : -24 // tablet
+    : 0; // desktop
+
   return (
     <ScrollView
       style={[styles.weekChart, style]}
@@ -239,9 +247,10 @@ export default function MonthChart (props) {
       onLayout={onLayout}
     >
       <Loader
+        style={{ marginLeft: loaderMarginLeft }}
         loading={loading}
         setLoading={setLoading}
-        timeout={1000}
+        timeout={500}
       />
 
       <LineChart
