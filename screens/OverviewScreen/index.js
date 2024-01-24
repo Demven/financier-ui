@@ -11,7 +11,7 @@ import { setSelectedTabAction, setSelectedYearAction } from '../../redux/reducer
 import OverviewMonth from './OverviewMonth/OverviewMonth';
 import OverviewWeek from './OverviewWeek/OverviewWeek';
 import OverviewYear from './OverviewYear/OverviewYear';
-import OverviewPlaceholder from './OverviewPlaceholder/OverviewPlaceholder';
+import NoDataPlaceholder from '../../components/NoDataPlaceholder';
 import { TAB } from '../../components/HeaderTabs';
 import HeaderDropdown from '../../components/HeaderDropdown';
 import { COLOR } from '../../styles/colors';
@@ -165,7 +165,7 @@ export default function OverviewScreen () {
         <View style={[styles.listContainer, { paddingTop: listContainerPaddingTop }]}>
           {((noDataForSelectedYear && selectedTab !== TAB.YEARS)
             || (noDataForAnyYear && selectedTab === TAB.YEARS)
-          ) && <OverviewPlaceholder />}
+          ) && <NoDataPlaceholder />}
 
           {!noDataForSelectedYear && selectedTab === TAB.WEEKS && (
             renderWeeks()

@@ -4,19 +4,19 @@ import {
   Text,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import AddNewEntryMenu from '../../../components/AddNewEntryMenu';
-import { FONT } from '../../../styles/fonts';
-import { COLOR } from '../../../styles/colors';
+import AddNewEntryMenu from './AddNewEntryMenu';
+import { FONT } from '../styles/fonts';
+import { COLOR } from '../styles/colors';
 
-OverviewPlaceholder.propTypes = {
+NoDataPlaceholder.propTypes = {
   style: PropTypes.any,
 };
 
-export default function OverviewPlaceholder (props) {
+export default function NoDataPlaceholder (props) {
   const { style } = props;
 
   return (
-    <View style={[styles.overviewPlaceholder, style]}>
+    <View style={[styles.noDataPlaceholder, style]}>
       <Text style={styles.message}>
         You don't have data entries for the selected year.
       </Text>
@@ -30,7 +30,7 @@ export default function OverviewPlaceholder (props) {
 }
 
 const styles = StyleSheet.create({
-  overviewPlaceholder: {
+  noDataPlaceholder: {
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',

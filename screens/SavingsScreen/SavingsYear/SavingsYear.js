@@ -4,12 +4,12 @@ import { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import YearChart, { CHART_VIEW } from './YearChart';
-import YearStats from './YearStats'
+import YearStats from './YearStats';
 import TitleLink from '../../../components/TitleLink';
 import { FONT } from '../../../styles/fonts';
 import { MEDIA } from '../../../styles/media';
 
-OverviewYear.propTypes = {
+SavingsYear.propTypes = {
   style: PropTypes.any,
   year: PropTypes.number.isRequired,
   expenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
@@ -18,7 +18,7 @@ OverviewYear.propTypes = {
   investments: PropTypes.object, // weeks -> investments { [1]: [], [2]: [] }
 };
 
-export default function OverviewYear (props) {
+export default function SavingsYear (props) {
   const {
     style,
     year,
@@ -124,7 +124,7 @@ export default function OverviewYear (props) {
   }
 
   return (
-    <View style={[styles.overviewYear, style]}>
+    <View style={[styles.savingsYear, style]}>
       <View style={styles.titleContainer}>
         <TitleLink
           style={[styles.subtitleLink, { paddingLeft: subtitlePaddingLeft }]}
@@ -177,7 +177,7 @@ export default function OverviewYear (props) {
 }
 
 const styles = StyleSheet.create({
-  overviewYear: {
+  savingsYear: {
     flexGrow: 1,
   },
 
