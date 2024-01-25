@@ -7,11 +7,10 @@ import { useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import WeekChart, { CHART_VIEW } from './WeekChart';
+import WeekStats from './WeekStats';
 import TitleLink from '../../../components/TitleLink';
 import { MONTH_NAME, getDaysInMonth, getDaysInWeek } from '../../../services/date';
-import { formatAmount, getAmountColor } from '../../../services/amount';
 import { FONT } from '../../../styles/fonts';
-import { COLOR } from '../../../styles/colors';
 import { MEDIA } from '../../../styles/media';
 
 OverviewWeek.propTypes = {
@@ -91,12 +90,6 @@ export default function OverviewWeek (props) {
   const totalSavingsAndInvestments = (getTotalAmount(currentWeekSavings) + getTotalAmount(currentWeekInvestments)) || 0;
   const previousWeeksTotalSavings = getPreviousWeeksTotalAmount(savings);
   const previousWeeksTotalInvestments = getPreviousWeeksTotalAmount(investments);
-
-  const totalExcludingSavings = (totalIncomes + previousWeeksTotalIncomes) - (totalExpenses + previousWeeksTotalExpenses);
-  const total = totalExcludingSavings - totalSavingsAndInvestments - previousWeeksTotalSavings - previousWeeksTotalInvestments;
-
-  const totalExcludingSavingsColor = getAmountColor(totalExcludingSavings);
-  const totalColor = getAmountColor(total);
 
   useEffect(() => {
     if (chartView === CHART_VIEW.INCOME && !totalIncomes) {
@@ -218,119 +211,24 @@ export default function OverviewWeek (props) {
           previousWeeksTotalInvestments={previousWeeksTotalInvestments}
         />
 
-        <View style={[styles.stats, {
-          width: columnWidth,
-          marginTop: statsMarginTop,
-          paddingTop: windowWidth < MEDIA.DESKTOP ? 0 : 44,
-          paddingLeft: windowWidth < MEDIA.DESKTOP ? 32 : 40,
-          paddingRight: windowWidth < MEDIA.DESKTOP ? 32 : 0,
-        }]}>
-          {!!totalIncomes && (
-            <View style={[styles.statRow, { marginTop: 0 }]}>
-              <TitleLink
-                textStyle={[
-                  styles.statName,
-                  chartView === CHART_VIEW.INCOME && styles.statNameBold,
-                  windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
-                ]}
-                onPress={() => setChartView(CHART_VIEW.INCOME)}
-              >
-                Income
-              </TitleLink>
-
-              <Text style={[
-                styles.statValue,
-                chartView === CHART_VIEW.INCOME && styles.statValueBold,
-                windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
-              ]}>
-                {formatAmount(totalIncomes)}
-              </Text>
-            </View>
-          )}
-
-          {!!totalExpenses && (
-            <View style={[styles.statRow, !totalIncomes && { marginTop: 0 }]}>
-              <TitleLink
-                textStyle={[
-                  styles.statName,
-                  chartView === CHART_VIEW.EXPENSES && styles.statNameBold,
-                  windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
-                ]}
-                onPress={() => setChartView(CHART_VIEW.EXPENSES)}
-              >
-                Expenses
-              </TitleLink>
-
-              <Text style={[
-                styles.statValue,
-                chartView === CHART_VIEW.EXPENSES && styles.statValueBold,
-                windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
-              ]}>
-                {formatAmount(-totalExpenses)}
-              </Text>
-            </View>
-          )}
-
-          {!!totalSavingsAndInvestments && (
-            <View style={[styles.statRow, (!totalIncomes && !totalExpenses) && { marginTop: 0 }]}>
-              <TitleLink
-                textStyle={[
-                  styles.statName,
-                  chartView === CHART_VIEW.SAVINGS && styles.statNameBold,
-                  windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
-                ]}
-                onPress={() => setChartView(CHART_VIEW.SAVINGS)}
-              >
-                Savings / Investments
-              </TitleLink>
-
-              <Text style={[
-                styles.statValue,
-                chartView === CHART_VIEW.SAVINGS && styles.statValueBold,
-                windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
-              ]}>
-                {formatAmount(totalSavingsAndInvestments)}
-              </Text>
-            </View>
-          )}
-
-          <View style={styles.underline} />
-
-          {!!(totalSavingsAndInvestments || previousWeeksTotalSavings || previousWeeksTotalInvestments) && (
-            <View style={styles.statRow}>
-              <Text style={[styles.statName, styles.smallerText]}>(Excluding Savings)</Text>
-
-              <Text style={[
-                styles.statValue,
-                styles.statValueBold,
-                windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
-                { color: totalExcludingSavingsColor },
-              ]}>
-                {formatAmount(totalExcludingSavings)}
-              </Text>
-            </View>
-          )}
-
-          <View style={styles.statRow}>
-            <Text style={[
-              styles.statName,
-              styles.statNameBold,
-              windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
-              { color: totalColor },
-            ]}>
-              Total
-            </Text>
-
-            <Text style={[
-              styles.statValue,
-              styles.statValueBold,
-              windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
-              { color: totalColor },
-            ]}>
-              {formatAmount(total)}
-            </Text>
-          </View>
-        </View>
+        <WeekStats
+          style={[styles.stats, {
+            width: columnWidth,
+            marginTop: statsMarginTop,
+            paddingTop: windowWidth < MEDIA.DESKTOP ? 0 : 44,
+            paddingLeft: windowWidth < MEDIA.DESKTOP ? 32 : 40,
+            paddingRight: windowWidth < MEDIA.DESKTOP ? 32 : 0,
+          }]}
+          chartView={chartView}
+          setChartView={setChartView}
+          totalIncomes={totalIncomes}
+          previousWeeksTotalIncomes={previousWeeksTotalIncomes}
+          totalExpenses={totalExpenses}
+          previousWeeksTotalExpenses={previousWeeksTotalExpenses}
+          totalSavingsAndInvestments={totalSavingsAndInvestments}
+          previousWeeksTotalSavings={previousWeeksTotalSavings}
+          previousWeeksTotalInvestments={previousWeeksTotalInvestments}
+        />
       </View>
     </View>
   );
@@ -362,52 +260,4 @@ const styles = StyleSheet.create({
   },
 
   chart: {},
-
-  stats: {},
-  statRow: {
-    marginTop: 20,
-    flexDirection: 'row',
-  },
-
-  statName: {
-    fontFamily: FONT.NOTO_SERIF.REGULAR,
-    fontSize: 24,
-    lineHeight: 30,
-    color: COLOR.DARK_GRAY,
-  },
-  statNameBold: {
-    fontFamily: FONT.NOTO_SERIF.BOLD,
-  },
-  statNameSmaller: {
-    fontSize: 21,
-    lineHeight: 26,
-  },
-
-  statValue: {
-    marginLeft: 'auto',
-    fontFamily: FONT.NOTO_SERIF.REGULAR,
-    fontSize: 24,
-    lineHeight: 30,
-    color: COLOR.DARK_GRAY,
-    userSelect: 'text',
-  },
-  statValueBold: {
-    fontFamily: FONT.NOTO_SERIF.BOLD,
-  },
-  statValueSmaller: {
-    fontSize: 21,
-    lineHeight: 26,
-  },
-
-  smallerText: {
-    fontSize: 16,
-    lineHeight: 30,
-  },
-
-  underline: {
-    height: 1,
-    marginTop: 12,
-    marginLeft: '50%',
-    backgroundColor: COLOR.BLACK,
-  },
 });
