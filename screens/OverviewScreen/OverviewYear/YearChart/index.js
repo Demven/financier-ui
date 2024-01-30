@@ -3,20 +3,18 @@ import { Platform, StyleSheet, ScrollView } from 'react-native';
 import { useSelector } from 'react-redux';
 import { LineChart } from 'react-native-chart-kit';
 import PropTypes from 'prop-types';
-import PointInfo from '../../../../components/Chart/PointInfo';
+import PointInfo from '../../../../components/chart/PointInfo';
 import Loader from '../../../../components/Loader';
 import YearChartLegend from './YearChartLegend';
-import { MONTH_NAME } from '../../../../services/date';
+import { MONTH_NAME, MONTHS_IN_YEAR } from '../../../../services/date';
 import { COLOR } from '../../../../styles/colors';
-import { MEDIA } from "../../../../styles/media";
+import { MEDIA } from '../../../../styles/media';
 
 export const CHART_VIEW = {
   INCOME: 'income',
   EXPENSES: 'expenses',
   SAVINGS: 'savings',
 };
-
-const MONTHS_IN_YEAR = 12;
 
 YearChart.propTypes = {
   style: PropTypes.any,

@@ -5,7 +5,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import { setSelectedTabAction, setSelectedYearAction } from '../../redux/reducers/ui';
 import OverviewMonth from './OverviewMonth/OverviewMonth';
@@ -19,6 +19,7 @@ import { MEDIA } from '../../styles/media';
 
 export default function OverviewScreen () {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
@@ -36,6 +37,9 @@ export default function OverviewScreen () {
 
   const [yearDropdownWidth, setYearDropdownWidth] = useState(0);
 
+  const route = useRoute();
+  const overviewType = route.params?.type;
+
   const yearsToSelect = useMemo(() => {
     return Array.from(new Set([
       new Date().getFullYear(),
@@ -52,8 +56,6 @@ export default function OverviewScreen () {
     .reverse();
   const latestMonthNumber = months[0];
 
-  const route = useRoute();
-  const overviewType = route.params?.type;
   const monthNumber = route.params?.monthNumber || latestMonthNumber;
 
   useEffect(() => {
@@ -61,6 +63,16 @@ export default function OverviewScreen () {
       dispatch(setSelectedTabAction(overviewType));
     }
   }, [route]);
+
+  useEffect(() => {
+    if (route?.params?.year) {
+      dispatch(setSelectedYearAction(Number(route.params.year)));
+
+      navigation.setParams({
+        year: undefined,
+      });
+    }
+  }, [route?.params?.year])
 
   function onYearDropdownLayout (event) {
     const { width } = event.nativeEvent.layout;

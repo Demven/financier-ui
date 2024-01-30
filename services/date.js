@@ -1,3 +1,5 @@
+export const MONTHS_IN_YEAR = 12;
+
 export const MONTH_NAME = {
   [1]: 'January',
   [2]: 'February',

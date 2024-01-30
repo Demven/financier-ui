@@ -47,14 +47,14 @@ const styles = StyleSheet.create({
     height: '100%',
     color: COLOR.LIGHT_GRAY,
     backgroundColor: 'currentColor',
-    transform: 'rotate(45deg)',
+    transform: [{ rotate: '45deg' }],
     position: 'absolute',
     left: '50%',
     transition: 'transform 0.3s, width 0.3s, color 0.3s',
   },
   iconLeftHover: {
     width: 3,
-    transform: 'scale(1.1) rotate(45deg)',
+    transform: [{ scale: 1.1 }, { rotate: '45deg' }],
     color: COLOR.DARK_GRAY,
   },
 
@@ -63,14 +63,14 @@ const styles = StyleSheet.create({
     height: '100%',
     color: COLOR.LIGHT_GRAY,
     backgroundColor: 'currentColor',
-    transform: 'rotate(-45deg)',
+    transform: [{ rotate: '-45deg' }],
     position: 'absolute',
     left: '50%',
     transition: 'transform 0.3s, width 0.3s, color 0.3s',
   },
   iconRightHover: {
     width: 3,
-    transform: 'scale(1.1) rotate(-45deg)',
+    transform: [{ scale: 1.1 }, { rotate: '-45deg' }],
     color: COLOR.DARK_GRAY,
   },
 });

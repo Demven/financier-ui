@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     transition: Platform.select({ web: 'transform 0.2s' }),
   },
   iconRotate45Degrees: {
-    transform: 'translateY(1px) rotate(45deg)',
+    transform: [{ translateY: 1 }, { rotate: '45deg' }]
   },
 
   addText: {

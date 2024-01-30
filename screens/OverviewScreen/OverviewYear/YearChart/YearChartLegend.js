@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 import { FONT } from '../../../../styles/fonts';
 import { COLOR } from '../../../../styles/colors';
 import { MEDIA } from '../../../../styles/media';
-import { MONTH_NAME } from '../../../../services/date';
+import { MONTH_NAME, MONTHS_IN_YEAR } from '../../../../services/date';
 
 YearChartLegend.propTypes = {
   style: PropTypes.any,
@@ -18,7 +18,6 @@ YearChartLegend.propTypes = {
 };
 
 const LEGEND_HEIGHT = 16;
-const MONTHS_IN_YEAR = 12;
 
 export default function YearChartLegend (props) {
   const {

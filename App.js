@@ -89,6 +89,7 @@ function OverviewScreens () {
         component={OverviewScreen}
         initialParams={{
           type: TAB.MONTHS,
+          year: undefined,
         }}
         options={{
           title: 'Overview',
@@ -224,6 +225,7 @@ function SavingsScreens () {
         component={SavingsScreen}
         initialParams={{
           type: TAB.WEEKS,
+          monthNumber: undefined,
         }}
         options={{
           title: 'Savings',
@@ -243,6 +245,7 @@ function SavingsScreens () {
         component={SavingsScreen}
         initialParams={{
           type: TAB.MONTHS,
+          year: undefined,
         }}
         options={{
           title: 'Savings',

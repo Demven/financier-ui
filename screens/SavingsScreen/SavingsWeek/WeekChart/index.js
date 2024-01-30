@@ -3,7 +3,7 @@ import { Platform, StyleSheet, ScrollView } from 'react-native';
 import { useSelector } from 'react-redux';
 import { LineChart } from 'react-native-chart-kit';
 import PropTypes from 'prop-types';
-import PointInfo from '../../../../components/Chart/PointInfo';
+import PointInfo from '../../../../components/chart/PointInfo';
 import Loader from '../../../../components/Loader';
 import WeekChartLegend from './WeekChartLegend';
 import { formatDateString } from '../../../../services/date';

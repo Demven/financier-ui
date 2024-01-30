@@ -1,19 +1,19 @@
+import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
-import YearChart, { CHART_VIEW } from './YearChart';
+import YearChart from './YearChart';
 import YearStats from './YearStats';
 import TitleLink from '../../../components/TitleLink';
+import { MONTHS_IN_YEAR } from '../../../services/date';
+import { getAmount } from '../../../services/amount';
 import { FONT } from '../../../styles/fonts';
 import { MEDIA } from '../../../styles/media';
 
 SavingsYear.propTypes = {
   style: PropTypes.any,
   year: PropTypes.number.isRequired,
-  expenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
-  incomes: PropTypes.object, // weeks -> incomes { [1]: [], [2]: [] }
   savings: PropTypes.object, // weeks -> savings { [1]: [], [2]: [] }
   investments: PropTypes.object, // weeks -> investments { [1]: [], [2]: [] }
 };
@@ -22,78 +22,68 @@ export default function SavingsYear (props) {
   const {
     style,
     year,
-    expenses = {},
-    incomes = {},
     savings = {},
     investments = {},
   } = props;
 
   const navigation = useNavigation();
 
+  const [selectedMonthIndex, setSelectedMonthIndex] = useState();
+
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
-  const [chartView, setChartView] = useState(CHART_VIEW.INCOME);
+  function groupByMonth (yearItems) {
+    const groupedByMonth = new Array(MONTHS_IN_YEAR).fill([]);
 
-  function getTotalAmount (yearItems) {
-    return Object.keys(yearItems)
-      .map(monthNumber => ([
-        ...(yearItems[monthNumber]?.[1] || []),
-        ...(yearItems[monthNumber]?.[2] || []),
-        ...(yearItems[monthNumber]?.[3] || []),
-        ...(yearItems[monthNumber]?.[4] || []),
-      ]))
-      .map(flatMonthData => {
-        return flatMonthData.reduce((total, item) => {
-          const amount = item.amount || (item.shares * item.pricePerShare);
-          return total + amount;
-        }, 0);
-      })
-      .reduce((monthTotal, yearTotal) => monthTotal + yearTotal, 0);
+    Object.keys(yearItems).forEach(monthNumber => {
+      groupedByMonth[monthNumber - 1] = [
+        ...(yearItems[monthNumber][1] || []),
+        ...(yearItems[monthNumber][2] || []),
+        ...(yearItems[monthNumber][3] || []),
+        ...(yearItems[monthNumber][4] || []),
+      ];
+    });
+
+    return groupedByMonth;
   }
 
-  const totalIncomes = getTotalAmount(incomes);
-  const totalExpenses = getTotalAmount(expenses);
-  const totalSavingsAndInvestments = (getTotalAmount(savings) + getTotalAmount(investments)) || 0;
+  function mergeGroupedByMonth (groupedByMonth1 = [], groupedByMonth2 = []) {
+    return groupedByMonth1.map((byMonth1, index) => {
+      const byMonth2 = groupedByMonth2[index] || [];
 
-  useEffect(() => {
-    if (chartView === CHART_VIEW.INCOME && !totalIncomes) {
-      if (totalExpenses) {
-        setChartView(CHART_VIEW.EXPENSES);
-      } else if (totalSavingsAndInvestments) {
-        setChartView(CHART_VIEW.SAVINGS);
+      return Array.isArray(byMonth1)
+        ? [...byMonth1, ...byMonth2]
+        : byMonth2;
+    });
+  }
+
+  function getSavingsByMonths (groupedByMonth) {
+    return groupedByMonth.map(itemsByMonth => {
+      if (!itemsByMonth?.length) {
+        return 0;
       }
-    } else if (chartView === CHART_VIEW.EXPENSES && !totalExpenses) {
-      if (totalIncomes) {
-        setChartView(CHART_VIEW.INCOME);
-      } else if (totalSavingsAndInvestments) {
-        setChartView(CHART_VIEW.SAVINGS);
-      }
-    } else if (chartView === CHART_VIEW.SAVINGS && !totalSavingsAndInvestments) {
-      if (totalIncomes) {
-        setChartView(CHART_VIEW.INCOME);
-      } else if (totalExpenses) {
-        setChartView(CHART_VIEW.EXPENSES);
-      }
-    }
-  }, [totalIncomes, totalExpenses, totalSavingsAndInvestments]);
+
+      const monthTotal = itemsByMonth.reduce((total, item) => {
+        return total + getAmount(item);
+      }, 0);
+
+      return parseFloat(monthTotal.toFixed(2));
+    });
+  }
+
+  const savingsGroupedByMonth = groupByMonth(savings);
+  const investmentsGroupedByMonth = groupByMonth(investments);
+  const savingsAndInvestmentsGroupedByMonth = mergeGroupedByMonth(savingsGroupedByMonth, investmentsGroupedByMonth);
+  const savingsByMonths = getSavingsByMonths(savingsAndInvestmentsGroupedByMonth);
+
+  const totalSavingsAndInvestments = savingsByMonths.reduce((total, month) => total + month, 0);
 
   const columnWidth = windowWidth < MEDIA.DESKTOP
     ? '100%'
     : '50%';
-  const chartWidth = windowWidth < MEDIA.TABLET
-    ? windowWidth < MEDIA.MOBILE
-      ? '106%' // mobile
-      : '106%' // wide-mobile
-    : windowWidth < MEDIA.DESKTOP
-      ? '107%' // tablet
-      : columnWidth; // desktop
-  const chartMarginLeft = windowWidth < MEDIA.TABLET
-    ? windowWidth < MEDIA.MOBILE
-      ? -35 // mobile
-      : -27 // wide-mobile
-    : windowWidth < MEDIA.DESKTOP
-      ? 0 // tablet
-      : -58; // desktop
+  const chartWidth = windowWidth < MEDIA.DESKTOP
+    ? '100%' // mobile/tablet
+    : columnWidth; // desktop
 
   const subtitleFontSize = windowWidth < MEDIA.DESKTOP
     ? windowWidth < MEDIA.TABLET
@@ -105,19 +95,8 @@ export default function SavingsYear (props) {
       ? 32 // mobile
       : 40 // tablet
     : 44; // desktop
-  const subtitlePaddingLeft = windowWidth < MEDIA.DESKTOP ? 28 : 0;
 
-  const statsMarginTop = windowWidth < MEDIA.DESKTOP
-    ? windowWidth < MEDIA.TABLET
-      ? windowWidth < MEDIA.WIDE_MOBILE
-        ? windowWidth < MEDIA.MOBILE
-          ? 0 // mobile
-          : -8 // wide-mobile
-        : -24 // wide-mobile
-      : -54 // tablet
-    : 0; // desktop
-
-  const isEmptyYear = !totalIncomes && !totalExpenses && !totalSavingsAndInvestments;
+  const isEmptyYear = !totalSavingsAndInvestments;
 
   if (isEmptyYear) {
     return null;
@@ -127,13 +106,13 @@ export default function SavingsYear (props) {
     <View style={[styles.savingsYear, style]}>
       <View style={styles.titleContainer}>
         <TitleLink
-          style={[styles.subtitleLink, { paddingLeft: subtitlePaddingLeft }]}
+          style={styles.subtitleLink}
           textStyle={[styles.subtitleLinkText, {
             fontSize: subtitleFontSize,
             lineHeight: subtitleLineHeight,
           }]}
           alwaysHighlighted
-          onPress={() => navigation.navigate('OverviewMonths')}
+          onPress={() => navigation.navigate('SavingsMonths', { year })}
         >
           {year}
         </TitleLink>
@@ -146,30 +125,22 @@ export default function SavingsYear (props) {
         <YearChart
           style={[styles.chart, {
             width: chartWidth,
-            marginLeft: chartMarginLeft,
           }]}
-          year={year}
-          chartView={chartView}
-          setChartView={setChartView}
-          incomes={incomes}
-          expenses={expenses}
-          savings={savings}
-          investments={investments}
+          savingsByMonths={savingsByMonths}
+          selectedMonthIndex={selectedMonthIndex}
+          onMonthSelected={setSelectedMonthIndex}
         />
 
         <YearStats
           style={{
             width: columnWidth,
-            marginTop: statsMarginTop,
-            paddingTop: windowWidth < MEDIA.DESKTOP ? 0 : 24,
-            paddingLeft: windowWidth < MEDIA.DESKTOP ? 32 : 40,
-            paddingRight: windowWidth < MEDIA.DESKTOP ? 32 : 0,
+            marginTop: windowWidth < MEDIA.DESKTOP ? 40 : 0,
+            paddingLeft: windowWidth < MEDIA.DESKTOP ? 0 : 40,
           }}
-          chartView={chartView}
-          setChartView={setChartView}
-          totalIncomes={totalIncomes}
-          totalExpenses={totalExpenses}
-          totalSavingsAndInvestments={totalSavingsAndInvestments}
+          year={year}
+          savingsByMonths={savingsByMonths}
+          total={totalSavingsAndInvestments}
+          selectedMonthIndex={selectedMonthIndex}
         />
       </View>
     </View>
@@ -198,6 +169,6 @@ const styles = StyleSheet.create({
   },
 
   chart: {
-    marginTop: 16,
+    marginTop: 72,
   },
 });

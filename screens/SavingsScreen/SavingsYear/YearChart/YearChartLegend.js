@@ -2,47 +2,34 @@ import {
   View,
   Text,
   StyleSheet,
-  Platform,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { FONT } from '../../../../styles/fonts';
 import { COLOR } from '../../../../styles/colors';
 import { MEDIA } from '../../../../styles/media';
-import { MONTH_NAME } from '../../../../services/date';
+import { MONTH_NAME, MONTHS_IN_YEAR } from '../../../../services/date';
 
 YearChartLegend.propTypes = {
   style: PropTypes.any,
   chartWidth: PropTypes.number,
-  chartHeight: PropTypes.number,
+  selectedMonthIndex: PropTypes.number,
 };
 
-const LEGEND_HEIGHT = 16;
-const MONTHS_IN_YEAR = 12;
+export const LEGEND_HEIGHT = 18;
+const BORDER_WIDTH = 2;
 
 export default function YearChartLegend (props) {
   const {
     style,
     chartWidth,
-    chartHeight,
+    selectedMonthIndex,
   } = props;
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
   return (
-    <View
-      style={[styles.yearChartLegend, {
-        width: Platform.OS === 'web' ? chartWidth : '100%',
-        top: Platform.OS === 'web'
-          ? chartHeight + LEGEND_HEIGHT
-          : (chartWidth / 21 * 9) + 12,
-        paddingRight: Platform.OS === 'web'
-          ? 0
-          : windowWidth < (MEDIA.MEDIUM_DESKTOP + 40 * 2)
-            ? 100
-            : 20,
-      }, style]}
-    >
+    <View style={[styles.yearChartLegend, style]}>
       <View style={styles.horizontalLineContainer}>
         <View style={styles.horizontalLine} />
       </View>
@@ -53,13 +40,18 @@ export default function YearChartLegend (props) {
             key={index}
             style={[
               styles.month,
+              { width: chartWidth / MONTHS_IN_YEAR },
               index === MONTHS_IN_YEAR - 1 && { borderRightWidth: 0, paddingLeft: 0 },
             ]}
           >
-            <Text style={[styles.label, {
-              fontSize: windowWidth < MEDIA.WIDE_MOBILE ? 10 : 12,
-              lineHeight: windowWidth < MEDIA.WIDE_MOBILE ? 10 : 12,
-            }]}>
+            <Text style={[
+              styles.label,
+              {
+                fontSize: windowWidth < MEDIA.WIDE_MOBILE ? 10 : 12,
+                lineHeight: windowWidth < MEDIA.WIDE_MOBILE ? 10 : 12,
+              },
+              selectedMonthIndex === index && styles.labelSelected,
+            ]}>
               {MONTH_NAME[index + 1].substring(0, 3)}
             </Text>
           </View>
@@ -71,10 +63,11 @@ export default function YearChartLegend (props) {
 
 const styles = StyleSheet.create({
   yearChartLegend: {
+    width: '100%',
     flexGrow: 1,
-    marginLeft: 65,
     position: 'absolute',
     left: 0,
+    bottom: 0,
   },
 
   horizontalLineContainer: {
@@ -105,9 +98,8 @@ const styles = StyleSheet.create({
   },
 
   month: {
-    flexGrow: 1,
+    transform: [{ translateX: BORDER_WIDTH / 2 }],
     paddingTop: 4,
-    paddingLeft: 0,
     borderRightWidth: 2,
     borderRightColor: COLOR.LIGHT_GRAY,
   },
@@ -116,5 +108,9 @@ const styles = StyleSheet.create({
     fontFamily: FONT.NOTO_SERIF.REGULAR,
     color: COLOR.LIGHT_GRAY,
     textAlign: 'center',
+  },
+  labelSelected: {
+    fontFamily: FONT.NOTO_SERIF.BOLD,
+    color: COLOR.DARK_GRAY,
   },
 });

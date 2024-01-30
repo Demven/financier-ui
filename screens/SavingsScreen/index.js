@@ -1,11 +1,15 @@
-import { useEffect, useMemo, useState } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   Platform,
   ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import { setSelectedTabAction, setSelectedYearAction } from '../../redux/reducers/ui';
 import SavingsMonth from './SavingsMonth/SavingsMonth';
@@ -19,6 +23,7 @@ import { MEDIA } from '../../styles/media';
 
 export default function SavingsScreen () {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
@@ -28,6 +33,8 @@ export default function SavingsScreen () {
   const incomes = useSelector(state => state.incomes.incomes) || {};
   const savings = useSelector(state => state.savings.savings) || {};
   const investments = useSelector(state => state.savings.investments) || {};
+
+  console.info('selectedYear', selectedYear);
 
   const expensesYears = Object.keys(expenses);
   const incomesYears = Object.keys(incomes);
@@ -46,14 +53,15 @@ export default function SavingsScreen () {
     ]))
   }, [expensesYears, incomesYears, savingsYears, investmentsYears]);
 
+  const route = useRoute();
+  const overviewType = route.params?.type;
+
   const months = Object
     .keys(expenses[selectedYear] || {})
     .map(monthString => Number(monthString))
     .reverse();
   const latestMonthNumber = months[0];
 
-  const route = useRoute();
-  const overviewType = route.params?.type;
   const monthNumber = route.params?.monthNumber || latestMonthNumber;
 
   useEffect(() => {
@@ -61,6 +69,16 @@ export default function SavingsScreen () {
       dispatch(setSelectedTabAction(overviewType));
     }
   }, [route]);
+
+  useEffect(() => {
+    if (route?.params?.year) {
+      dispatch(setSelectedYearAction(Number(route.params.year)));
+
+      navigation.setParams({
+        year: undefined,
+      });
+    }
+  }, [route?.params?.year])
 
   function onYearDropdownLayout (event) {
     const { width } = event.nativeEvent.layout;
@@ -113,8 +131,6 @@ export default function SavingsScreen () {
             paddingBottom: windowWidth < MEDIA.TABLET ? 80 : 24,
           }]}
           year={yearNumber}
-          expenses={expenses[yearNumber]}
-          incomes={incomes[yearNumber]}
           savings={savings[yearNumber]}
           investments={investments[yearNumber]}
         />

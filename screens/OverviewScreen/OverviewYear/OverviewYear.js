@@ -133,7 +133,7 @@ export default function OverviewYear (props) {
             lineHeight: subtitleLineHeight,
           }]}
           alwaysHighlighted
-          onPress={() => navigation.navigate('OverviewMonths')}
+          onPress={() => navigation.navigate('OverviewMonths', { year })}
         >
           {year}
         </TitleLink>
