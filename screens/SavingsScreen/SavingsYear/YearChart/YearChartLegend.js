@@ -29,7 +29,9 @@ export default function YearChartLegend (props) {
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
   return (
-    <View style={[styles.yearChartLegend, style]}>
+    <View style={[styles.yearChartLegend, {
+      bottom: windowWidth < MEDIA.WIDE_MOBILE ? 2 : 0,
+    }, style]}>
       <View style={styles.horizontalLineContainer}>
         <View style={styles.horizontalLine} />
       </View>

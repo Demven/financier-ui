@@ -83,7 +83,7 @@ export default function BarChart (props) {
                       highlighted && styles.valueHighlighted,
                       focused && styles.valueFocused,
                     ]}>
-                      {point}
+                      {Math.round(point)}
                     </Text>
                   )}
                 </View>
@@ -167,6 +167,7 @@ const styles = StyleSheet.create({
     lineHeight: 10,
     textAlign: 'center',
     color: COLOR.DARK_GRAY,
+    whiteSpace: 'nowrap',
   },
   valueHighlighted: {
     fontSize: 11,

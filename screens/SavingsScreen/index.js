@@ -34,8 +34,6 @@ export default function SavingsScreen () {
   const savings = useSelector(state => state.savings.savings) || {};
   const investments = useSelector(state => state.savings.investments) || {};
 
-  console.info('selectedYear', selectedYear);
-
   const expensesYears = Object.keys(expenses);
   const incomesYears = Object.keys(incomes);
   const savingsYears = Object.keys(savings);
@@ -91,7 +89,7 @@ export default function SavingsScreen () {
       <SavingsWeek
         key={index}
         style={[styles.overview, {
-          paddingBottom: windowWidth < MEDIA.TABLET ? 80 : 24,
+          paddingBottom: windowWidth < MEDIA.DESKTOP ? 80 : 40,
         }]}
         year={selectedYear}
         monthNumber={monthNumber}
@@ -109,7 +107,7 @@ export default function SavingsScreen () {
       <SavingsMonth
         key={index}
         style={[styles.overview, {
-          paddingBottom: windowWidth < MEDIA.TABLET ? 80 : 24,
+          paddingBottom: windowWidth < MEDIA.DESKTOP ? 80 : 40,
         }]}
         year={selectedYear}
         monthNumber={monthNumber}
@@ -128,7 +126,7 @@ export default function SavingsScreen () {
         <SavingsYear
           key={index}
           style={[styles.overview, {
-            paddingBottom: windowWidth < MEDIA.TABLET ? 80 : 24,
+            paddingBottom: windowWidth < MEDIA.DESKTOP ? 80 : 40,
           }]}
           year={yearNumber}
           savings={savings[yearNumber]}
@@ -138,8 +136,10 @@ export default function SavingsScreen () {
   }
 
   const overviewScreenPadding = windowWidth < (MEDIA.MEDIUM_DESKTOP + 40 * 2)
-    ? windowWidth < MEDIA.TABLET ? 0 : 52
-    : 40;
+    ? windowWidth < MEDIA.TABLET
+      ? windowWidth < MEDIA.WIDE_MOBILE ? 24 : 32 // tablet/mobile
+      : 52 // desktop
+    : 40; // wide desktop
   const listContainerPaddingTop = windowWidth < MEDIA.TABLET ? 24 : 40;
 
   const noDataForSelectedYear = !Object.keys(expenses[selectedYear] || {}).length

@@ -38,12 +38,6 @@ export default function YearChart (props) {
     setChartHeight(Math.floor(width / 16 * 9));
   }
 
-  const loaderMarginLeft = windowWidth < MEDIA.DESKTOP
-    ? windowWidth < MEDIA.TABLET
-      ? 40 // mobile
-      : 0 // tablet
-    : 0; // desktop
-
   return (
     <View
       style={[styles.monthChart, style]}
@@ -51,7 +45,6 @@ export default function YearChart (props) {
       onLayout={onLayout}
     >
       <Loader
-        style={{ marginLeft: loaderMarginLeft }}
         loading={loading}
         setLoading={setLoading}
         timeout={500}
@@ -83,5 +76,6 @@ const styles = StyleSheet.create({
 
   chart: {
     width: '100%',
+    marginTop: 72,
   },
 });

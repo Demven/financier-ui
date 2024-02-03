@@ -32,19 +32,31 @@ export default function YearStats (props) {
 
   const totalColor = getAmountColor(total);
 
+  const titleFontSize = windowWidth < MEDIA.MEDIUM_DESKTOP
+    ? windowWidth < MEDIA.DESKTOP
+      ? windowWidth < MEDIA.WIDE_MOBILE
+        ? 21 // mobile
+        : 24 // tablet
+      : 26 // desktop
+    : 28; // large desktop
+
   return (
     <View style={[styles.yearStats, style]}>
-      <Text style={[styles.title, {
-        fontSize: windowWidth < MEDIA.DESKTOP ? 28 : 32,
-        lineHeight: windowWidth < MEDIA.DESKTOP ? 28 : 32,
-      }]}>
+      <Text
+        style={[styles.title, {
+          fontSize: titleFontSize,
+          lineHeight: titleFontSize,
+        }]}
+      >
         Months
       </Text>
 
-      <View style={[styles.stats, {
-        marginTop: windowWidth < MEDIA.DESKTOP ? 20 : 32,
-        paddingLeft: windowWidth < MEDIA.DESKTOP ? 16 : 24,
-      }]}>
+      <View
+        style={[styles.stats, {
+          marginTop: windowWidth < MEDIA.DESKTOP ? 24 : 32,
+          paddingLeft: windowWidth < MEDIA.DESKTOP ? 16 : 24,
+        }]}
+      >
         {savingsByMonths.map((total, index) => (
           <View style={[styles.statRow, index === 0 && { marginTop: 0 }]}>
             <TitleLink
@@ -53,7 +65,10 @@ export default function YearStats (props) {
                 windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
                 selectedMonthIndex === index && styles.statNameBold,
               ]}
-              onPress={() => navigation.navigate('SavingsWeeks', { monthNumber: index + 1, year })}
+              onPress={total > 0
+                ? () => navigation.navigate('SavingsWeeks', { monthNumber: index + 1, year })
+                : undefined
+              }
             >
               {MONTH_NAME[index + 1]}
             </TitleLink>

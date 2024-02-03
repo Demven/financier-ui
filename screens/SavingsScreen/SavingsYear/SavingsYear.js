@@ -96,6 +96,12 @@ export default function SavingsYear (props) {
       : 40 // tablet
     : 44; // desktop
 
+  const statsMarginTop = windowWidth < MEDIA.MEDIUM_DESKTOP
+    ? windowWidth < MEDIA.DESKTOP
+      ? 40 // tablet/mobile
+      : -24 // desktop
+    : -20; // large desktop
+
   const isEmptyYear = !totalSavingsAndInvestments;
 
   if (isEmptyYear) {
@@ -118,10 +124,12 @@ export default function SavingsYear (props) {
         </TitleLink>
       </View>
 
-      <View style={[styles.content, {
-        flexDirection: windowWidth < MEDIA.DESKTOP ? 'column' : 'row',
-        alignItems: windowWidth < MEDIA.DESKTOP ? 'center' : 'flex-start',
-      }]}>
+      <View
+        style={[styles.content, {
+          flexDirection: windowWidth < MEDIA.DESKTOP ? 'column' : 'row',
+          alignItems: windowWidth < MEDIA.DESKTOP ? 'center' : 'flex-start',
+        }]}
+      >
         <YearChart
           style={[styles.chart, {
             width: chartWidth,
@@ -134,7 +142,7 @@ export default function SavingsYear (props) {
         <YearStats
           style={{
             width: columnWidth,
-            marginTop: windowWidth < MEDIA.DESKTOP ? 40 : 0,
+            marginTop: statsMarginTop,
             paddingLeft: windowWidth < MEDIA.DESKTOP ? 0 : 40,
           }}
           year={year}
@@ -168,7 +176,5 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 
-  chart: {
-    marginTop: 72,
-  },
+  chart: {},
 });

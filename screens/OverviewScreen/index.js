@@ -85,7 +85,7 @@ export default function OverviewScreen () {
       <OverviewWeek
         key={index}
         style={[styles.overview, {
-          paddingBottom: windowWidth < MEDIA.TABLET ? 80 : 24,
+          paddingBottom: windowWidth < MEDIA.DESKTOP ? 80 : 40,
         }]}
         year={selectedYear}
         monthNumber={monthNumber}
@@ -103,7 +103,7 @@ export default function OverviewScreen () {
       <OverviewMonth
         key={index}
         style={[styles.overview, {
-          paddingBottom: windowWidth < MEDIA.TABLET ? 80 : 24,
+          paddingBottom: windowWidth < MEDIA.DESKTOP ? 80 : 40,
         }]}
         year={selectedYear}
         monthNumber={monthNumber}
@@ -122,7 +122,7 @@ export default function OverviewScreen () {
         <OverviewYear
           key={index}
           style={[styles.overview, {
-            paddingBottom: windowWidth < MEDIA.TABLET ? 80 : 24,
+            paddingBottom: windowWidth < MEDIA.DESKTOP ? 80 : 40,
           }]}
           year={yearNumber}
           expenses={expenses[yearNumber]}

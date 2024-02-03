@@ -65,7 +65,7 @@ export default function HeaderLeft (props) {
             : 2,
           marginLeft: windowWidth < MEDIA.TABLET ? 16 : 41,
           fontSize: windowWidth < MEDIA.TABLET ? 18 : 20,
-          lineHeight: windowWidth < MEDIA.TABLET ? 18 : 26,
+          lineHeight: windowWidth < MEDIA.TABLET ? 22 : 26,
         }]}
       >
         {title}

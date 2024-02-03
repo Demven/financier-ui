@@ -3,6 +3,7 @@ import {
   StyleSheet,
   Image,
   Pressable,
+  Platform,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import Animated, {
@@ -72,6 +73,17 @@ export default function Loader (props) {
 
   if (!loading) return null;
 
+  const containerPadding = windowWidth < MEDIA.DESKTOP
+    ? 2 // tablet/mobile
+    : Platform.OS === 'ios' ? 3 : 8; // desktop
+
+  const logoWidth = windowWidth < MEDIA.DESKTOP
+    ? 18 // tablet/mobile
+    : Platform.OS === 'ios' ? 24 : 36; // desktop
+  const logoHeight = windowWidth < MEDIA.DESKTOP
+    ? 22.5 // tablet/mobile
+    : Platform.OS === 'ios' ? 30 : 45; // desktop
+
   return (
     <Pressable style={({ pressed }) => [styles.loader, pressed && styles.loaderPressed]}>
       <Animated.View style={[
@@ -79,7 +91,7 @@ export default function Loader (props) {
         {
           width: windowWidth < MEDIA.DESKTOP ? 80 : 106,
           height: windowWidth < MEDIA.DESKTOP ? 80 : 106,
-          padding: windowWidth < MEDIA.DESKTOP ? 2 : 8,
+          padding: containerPadding,
         },
         animatedOpacityStyles,
         style,
@@ -92,8 +104,8 @@ export default function Loader (props) {
 
         <Image
           style={[styles.logo, {
-            width: windowWidth < MEDIA.DESKTOP ? 18 : 36,
-            height: windowWidth < MEDIA.DESKTOP ? 22.5 : 45,
+            width: logoWidth,
+            height: logoHeight,
           }]}
           source={require('../assets/images/f.png')}
           onLoad={() => setLogoLoaded(true)}
