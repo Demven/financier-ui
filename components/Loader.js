@@ -86,20 +86,20 @@ export default function Loader (props) {
 
   return (
     <Pressable style={({ pressed }) => [styles.loader, pressed && styles.loaderPressed]}>
-      <Animated.View style={[
-        styles.logoContainer,
-        {
-          width: windowWidth < MEDIA.DESKTOP ? 80 : 106,
-          height: windowWidth < MEDIA.DESKTOP ? 80 : 106,
-          padding: containerPadding,
-        },
-        animatedOpacityStyles,
-        style,
-      ]}>
+      <Animated.View
+        style={[
+          styles.logoContainer,
+          {
+            width: windowWidth < MEDIA.DESKTOP ? 80 : 106,
+            height: windowWidth < MEDIA.DESKTOP ? 80 : 106,
+            padding: containerPadding,
+          },
+          animatedOpacityStyles,
+          style,
+        ]}
+      >
         {logoLoaded && (
-          <Animated.View
-            style={[styles.border, animatedBorderStyles]}
-          />
+          <Animated.View style={[styles.border, animatedBorderStyles]} />
         )}
 
         <Image

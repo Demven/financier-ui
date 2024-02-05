@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { COLOR } from '../../../../styles/colors';
 import { MEDIA } from '../../../../styles/media';
 import TitleLink from '../../../../components/TitleLink';
+import FoldedContainer from '../../../../components/FoldedContainer';
 import { formatAmount, getAmountColor } from '../../../../services/amount';
 import { MONTH_NAME } from '../../../../services/date';
 import { FONT } from '../../../../styles/fonts';
@@ -32,83 +33,74 @@ export default function YearStats (props) {
 
   const totalColor = getAmountColor(total);
 
-  const titleFontSize = windowWidth < MEDIA.MEDIUM_DESKTOP
-    ? windowWidth < MEDIA.DESKTOP
-      ? windowWidth < MEDIA.WIDE_MOBILE
-        ? 21 // mobile
-        : 24 // tablet
-      : 26 // desktop
-    : 28; // large desktop
-
   return (
     <View style={[styles.yearStats, style]}>
-      <Text
-        style={[styles.title, {
-          fontSize: titleFontSize,
-          lineHeight: titleFontSize,
-        }]}
+      <FoldedContainer
+        title={windowWidth >= MEDIA.DESKTOP ? 'Months' : 'See savings by months'}
+        disable={windowWidth >= MEDIA.DESKTOP}
       >
-        Months
-      </Text>
-
-      <View
-        style={[styles.stats, {
-          marginTop: windowWidth < MEDIA.DESKTOP ? 24 : 32,
-          paddingLeft: windowWidth < MEDIA.DESKTOP ? 16 : 24,
-        }]}
-      >
-        {savingsByMonths.map((total, index) => (
-          <View style={[styles.statRow, index === 0 && { marginTop: 0 }]}>
-            <TitleLink
-              textStyle={[
-                styles.statName,
-                windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
-                selectedMonthIndex === index && styles.statNameBold,
-              ]}
-              onPress={total > 0
-                ? () => navigation.navigate('SavingsWeeks', { monthNumber: index + 1, year })
-                : undefined
-              }
+        <View
+          style={[styles.stats, {
+            marginTop: windowWidth < MEDIA.DESKTOP ? 16 : 24,
+            paddingLeft: windowWidth < MEDIA.DESKTOP ? 16 : 24,
+          }]}
+        >
+          {savingsByMonths.map((total, index) => (
+            <View
+              key={index}
+              style={[styles.statRow, index === 0 && { marginTop: 0 }]}
             >
-              {MONTH_NAME[index + 1]}
-            </TitleLink>
+              <TitleLink
+                textStyle={[
+                  styles.statName,
+                  windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
+                  selectedMonthIndex === index && styles.statNameBold,
+                ]}
+                onPress={total > 0
+                  ? () => navigation.navigate('SavingsWeeks', { monthNumber: index + 1, year })
+                  : undefined
+                }
+              >
+                {MONTH_NAME[index + 1]}
+              </TitleLink>
 
-            <Text style={[
-              styles.statValue,
-              windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
-              selectedMonthIndex === index && styles.statValueBold,
-            ]}>
-              {total > 0 ? formatAmount(total) : '–'}
+              <Text style={[
+                styles.statValue,
+                windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
+                selectedMonthIndex === index && styles.statValueBold,
+              ]}>
+                {total > 0 ? formatAmount(total) : '–'}
+              </Text>
+            </View>
+          ))}
+
+          <View style={styles.underline} />
+
+          <View style={styles.statRow}>
+            <Text
+              style={[
+                styles.statName,
+                styles.statNameBold,
+                windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
+                { color: totalColor },
+              ]}
+            >
+              Total
+            </Text>
+
+            <Text
+              style={[
+                styles.statValue,
+                styles.statValueBold,
+                windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
+                { color: totalColor },
+              ]}
+            >
+              {formatAmount(total)}
             </Text>
           </View>
-        ))}
-
-        <View style={styles.underline} />
-
-        <View style={styles.statRow}>
-          <Text
-            style={[
-              styles.statName,
-              styles.statNameBold,
-              windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
-              { color: totalColor },
-            ]}
-          >
-            Total
-          </Text>
-
-          <Text
-            style={[
-              styles.statValue,
-              styles.statValueBold,
-              windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
-              { color: totalColor },
-            ]}
-          >
-            {formatAmount(total)}
-          </Text>
         </View>
-      </View>
+      </FoldedContainer>
     </View>
   );
 }
@@ -116,10 +108,6 @@ export default function YearStats (props) {
 const styles = StyleSheet.create({
   yearStats: {
     width: '100%',
-  },
-
-  title: {
-    fontFamily: FONT.NOTO_SERIF.BOLD,
   },
 
   stats: {},
