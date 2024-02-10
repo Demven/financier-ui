@@ -107,12 +107,10 @@ export default function SavingsScreen () {
       <SavingsMonth
         key={index}
         style={[styles.overview, {
-          paddingBottom: windowWidth < MEDIA.DESKTOP ? 80 : 40,
+          paddingBottom: 80,
         }]}
         year={selectedYear}
         monthNumber={monthNumber}
-        expenses={expenses?.[selectedYear]?.[monthNumber]}
-        incomes={incomes?.[selectedYear]?.[monthNumber]}
         savings={savings?.[selectedYear]?.[monthNumber]}
         investments={investments?.[selectedYear]?.[monthNumber]}
       />

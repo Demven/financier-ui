@@ -1,15 +1,13 @@
-import {
-  StyleSheet,
-  View,
-} from 'react-native';
-import { useSelector } from 'react-redux';
 import { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
-import MonthChart, { CHART_VIEW } from './MonthChart';
+import MonthChart from './MonthChart';
 import MonthStats from './MonthStats';
 import TitleLink from '../../../components/TitleLink';
 import { MONTH_NAME } from '../../../services/date';
+import { getMonthChartPointsByWeek, mergeGroupedByWeek } from '../../../services/dataItems';
 import { FONT } from '../../../styles/fonts';
 import { MEDIA } from '../../../styles/media';
 
@@ -17,8 +15,6 @@ SavingsMonth.propTypes = {
   style: PropTypes.any,
   year: PropTypes.number.isRequired,
   monthNumber: PropTypes.number.isRequired,
-  expenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
-  incomes: PropTypes.object, // weeks -> incomes { [1]: [], [2]: [] }
   savings: PropTypes.object, // weeks -> savings { [1]: [], [2]: [] }
   investments: PropTypes.object, // weeks -> investments { [1]: [], [2]: [] }
 };
@@ -28,48 +24,27 @@ export default function SavingsMonth (props) {
     style,
     year,
     monthNumber,
-    expenses = {},
-    incomes = {},
     savings = {},
     investments = {},
   } = props;
+
+  const [selectedWeekIndex, setSelectedWeekIndex] = useState();
 
   const navigation = useNavigation();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
-  const [chartView, setChartView] = useState(CHART_VIEW.INCOME);
+  const savingsAndInvestmentsGroupedByDay = mergeGroupedByWeek(savings, investments);
+  const savingsAndInvestmentsByWeeks = getMonthChartPointsByWeek(savingsAndInvestmentsGroupedByDay);
 
-  function getTotalAmount (items) {
-    return Object
-      .keys(items)
-      .flatMap(week => {
-        return (items[week] || []).reduce((total, item) => {
-          const amount = item.amount || (item.shares * item.pricePerShare);
-          return total + amount;
-        }, 0);
-      })
-      .reduce((total, weekTotal) => total + weekTotal, 0);
-  }
-
-  const totalIncomes = getTotalAmount(incomes);
-  const totalExpenses = getTotalAmount(expenses);
-  const totalSavingsAndInvestments = (getTotalAmount(savings) + getTotalAmount(investments)) || 0;
+  const totalSavingsAndInvestments = savingsAndInvestmentsByWeeks.reduce((total, weekTotal) => total + weekTotal, 0);
 
   const columnWidth = windowWidth < MEDIA.DESKTOP
     ? '100%'
     : '50%';
-  const chartWidth = windowWidth < MEDIA.TABLET
-    ? '102%'
-    : windowWidth < MEDIA.DESKTOP
-      ? '103%'
-      : columnWidth;
-  const chartMarginLeft = windowWidth < MEDIA.TABLET
-    ? -50
-    : (windowWidth < MEDIA.DESKTOP ? -40 : -58);
-  const chartMarginTop = windowWidth < MEDIA.TABLET
-    ? 16
-    : (windowWidth < MEDIA.DESKTOP ? 24 : 40);
+  const chartWidth = windowWidth < MEDIA.DESKTOP
+    ? '100%' // mobile/tablet
+    : columnWidth; // desktop
 
   const subtitleFontSize = windowWidth < MEDIA.DESKTOP
     ? windowWidth < MEDIA.TABLET
@@ -81,65 +56,58 @@ export default function SavingsMonth (props) {
       ? 32 // mobile
       : 40 // tablet
     : 44; // desktop
-  const subtitlePaddingLeft = windowWidth < MEDIA.DESKTOP ? 28 : 0;
 
-  const statsMarginTop = windowWidth < MEDIA.DESKTOP
-    ? windowWidth < MEDIA.TABLET
-      ? windowWidth < MEDIA.WIDE_MOBILE
-        ? windowWidth < MEDIA.MOBILE
-          ? 0 // mobile
-          : 8 // wide-mobile
-        : -16 // wide-mobile
-      : -54 // tablet
-    : 0; // desktop
+  const statsMarginTop = windowWidth < MEDIA.MEDIUM_DESKTOP
+    ? windowWidth < MEDIA.DESKTOP
+      ? 40 // tablet/mobile
+      : -24 // desktop
+    : -20; // large desktop
+
+  const isEmptyMonth = !totalSavingsAndInvestments;
+
+  if (isEmptyMonth) {
+    return null;
+  }
 
   return (
     <View style={[styles.savingsMonth, style]}>
       <TitleLink
-        style={[styles.subtitleLink, { paddingLeft: subtitlePaddingLeft }]}
+        style={styles.subtitleLink}
         textStyle={[styles.subtitleLinkText, {
           fontSize: subtitleFontSize,
           lineHeight: subtitleLineHeight,
         }]}
         alwaysHighlighted
-        onPress={() => navigation.navigate('OverviewWeeks', { monthNumber })}
+        onPress={() => navigation.navigate('SavingsWeeks', { monthNumber })}
       >
         {MONTH_NAME[monthNumber]}
       </TitleLink>
 
-      <View style={[styles.content, {
-        flexDirection: windowWidth < MEDIA.DESKTOP ? 'column' : 'row',
-        alignItems: windowWidth < MEDIA.DESKTOP ? 'center' : 'flex-start',
-      }]}>
+      <View
+        style={[styles.content, {
+          flexDirection: windowWidth < MEDIA.DESKTOP ? 'column' : 'row',
+          alignItems: windowWidth < MEDIA.DESKTOP ? 'center' : 'flex-start',
+        }]}
+      >
         <MonthChart
-          style={[styles.chart, {
-            width: chartWidth,
-            marginLeft: chartMarginLeft,
-            marginTop: chartMarginTop,
-          }]}
+          style={{ width: chartWidth }}
           year={Number(year)}
-          chartView={chartView}
-          setChartView={setChartView}
           monthNumber={monthNumber}
-          expenses={expenses}
-          incomes={incomes}
-          savings={savings}
-          investments={investments}
+          savingsAndInvestmentsByWeeks={savingsAndInvestmentsByWeeks}
+          selectedWeekIndex={selectedWeekIndex}
+          onWeekSelected={setSelectedWeekIndex}
         />
 
         <MonthStats
-          style={[styles.stats, {
+          style={{
             width: columnWidth,
             marginTop: statsMarginTop,
-            paddingTop: windowWidth < MEDIA.DESKTOP ? 0 : 48,
-            paddingLeft: windowWidth < MEDIA.DESKTOP ? 32 : 40,
-            paddingRight: windowWidth < MEDIA.DESKTOP ? 32 : 0,
-          }]}
-          chartView={chartView}
-          setChartView={setChartView}
-          totalIncomes={totalIncomes}
-          totalExpenses={totalExpenses}
+            paddingLeft: windowWidth < MEDIA.DESKTOP ? 0 : 40,
+          }}
+          savingsAndInvestmentsByWeeks={savingsAndInvestmentsByWeeks}
           totalSavingsAndInvestments={totalSavingsAndInvestments}
+          selectedWeekIndex={selectedWeekIndex}
+          setSelectedWeekIndex={setSelectedWeekIndex}
         />
       </View>
     </View>
@@ -160,12 +128,5 @@ const styles = StyleSheet.create({
 
   content: {
     justifyContent: 'space-between',
-  },
-
-  chart: {},
-
-  stats: {
-    paddingTop: 48,
-    paddingLeft: 40,
   },
 });

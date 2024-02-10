@@ -5,10 +5,15 @@ import { LineChart } from 'react-native-chart-kit';
 import PropTypes from 'prop-types';
 import PointInfo from '../../../../components/chart/PointInfo';
 import Loader from '../../../../components/Loader';
-import { formatDateString } from '../../../../services/date';
 import MonthChartLegend from './MonthChartLegend';
+import { formatDateString } from '../../../../services/date';
+import {
+  groupByDay,
+  mergeGroupedByDay,
+  getMonthChartPointsByDay,
+} from '../../../../services/dataItems';
 import { COLOR } from '../../../../styles/colors';
-import { MEDIA } from "../../../../styles/media";
+import { MEDIA } from '../../../../styles/media';
 
 function daysInMonth (year, month) {
   return new Date(year, month, 0).getDate();
@@ -108,57 +113,6 @@ export default function MonthChart (props) {
 
   const daysNumber = daysInMonth(year, monthNumber);
 
-  function groupByDay (groupedByWeeks) {
-    const items = Object
-      .keys(groupedByWeeks)
-      .flatMap(weekNumber => groupedByWeeks?.[weekNumber]);
-    const groupedByDay = Array.from(new Array(daysNumber));
-
-    items.forEach(item => {
-      const [, , day] = item?.dateString?.split('-')?.map(string => Number(string)) || [];
-
-      groupedByDay[day - 1] = Array.isArray(groupedByDay[day - 1])
-        ? [...groupedByDay[day - 1], item]
-        : [item];
-    });
-
-    return groupedByDay;
-  }
-
-  function mergeGroupedByDay (groupedByDay1, groupedByDay2) {
-    return groupedByDay1.map((byDay1, index) => {
-      const byDay2 = groupedByDay2[index] || [];
-
-      return Array.isArray(byDay1)
-        ? [...byDay1, ...byDay2]
-        : byDay2;
-    });
-  }
-
-  function getAmount (item) {
-    return item?.shares
-      ? parseFloat((item.shares * item.pricePerShare).toFixed(2)) || 0
-      : item?.amount || 0;
-  }
-
-  function getChartPoints (groupedByDay) {
-    let totalOfPreviousDays = 0;
-
-    return groupedByDay.map(itemsByDay => {
-      if (!itemsByDay?.length) {
-        return totalOfPreviousDays;
-      }
-
-      const dayTotal = itemsByDay.reduce((total, item) => {
-        return total + getAmount(item);
-      }, 0);
-
-      totalOfPreviousDays = totalOfPreviousDays + dayTotal;
-
-      return parseFloat(totalOfPreviousDays.toFixed(2));
-    });
-  }
-
   function onPointClick ({ index, value, dataset, x, y }) {
     const clickedChartViewType = dataset.type;
     const color = clickedChartViewType === CHART_VIEW.EXPENSES
@@ -196,16 +150,16 @@ export default function MonthChart (props) {
     return `rgba(42, 113, 40, ${opacity * (chartView === CHART_VIEW.SAVINGS ? 3 : 1)})`;
   }
 
-  const expensesGroupedByDay = groupByDay(expenses);
-  const expensesPoints = getChartPoints(expensesGroupedByDay);
+  const expensesGroupedByDay = groupByDay(expenses, daysNumber);
+  const expensesPoints = getMonthChartPointsByDay(expensesGroupedByDay);
 
-  const incomesGroupedByDay = groupByDay(incomes);
-  const incomesPoints = getChartPoints(incomesGroupedByDay);
+  const incomesGroupedByDay = groupByDay(incomes, daysNumber);
+  const incomesPoints = getMonthChartPointsByDay(incomesGroupedByDay);
 
-  const savingsGroupedByDay = groupByDay(savings);
-  const investmentsGroupedByDay = groupByDay(investments);
+  const savingsGroupedByDay = groupByDay(savings, daysNumber);
+  const investmentsGroupedByDay = groupByDay(investments, daysNumber);
   const savingsAndInvestmentsGroupedByDay = mergeGroupedByDay(savingsGroupedByDay, investmentsGroupedByDay);
-  const savingsPoints = getChartPoints(savingsAndInvestmentsGroupedByDay);
+  const savingsPoints = getMonthChartPointsByDay(savingsAndInvestmentsGroupedByDay);
 
   const loaderMarginLeft = windowWidth < MEDIA.DESKTOP
     ? windowWidth < MEDIA.TABLET

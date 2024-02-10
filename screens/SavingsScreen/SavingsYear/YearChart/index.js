@@ -1,11 +1,9 @@
 import { useState, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Loader from '../../../../components/Loader';
 import BarChart from '../../../../components/chart/BarChart';
 import YearChartLegend, { LEGEND_HEIGHT } from './YearChartLegend';
-import { MEDIA } from '../../../../styles/media';
 
 YearChart.propTypes = {
   style: PropTypes.any,
@@ -21,8 +19,6 @@ export default function YearChart (props) {
     selectedMonthIndex,
     onMonthSelected,
   } = props;
-
-  const windowWidth = useSelector(state => state.ui.windowWidth);
 
   const chartRef = useRef();
 
@@ -57,6 +53,7 @@ export default function YearChart (props) {
         legendHeight={LEGEND_HEIGHT}
         data={savingsByMonths}
         getColor={(opacity = 1) => `rgba(42, 113, 40, ${opacity})`} // COLOR.GREEN
+        barSelected={selectedMonthIndex}
         onBarSelected={onMonthSelected}
       />
 

@@ -16,8 +16,10 @@ BarChart.propTypes = {
   height: PropTypes.number.isRequired,
   legendHeight: PropTypes.number.isRequired,
   data: PropTypes.arrayOf(PropTypes.number).isRequired,
+  barsProportion: PropTypes.arrayOf(PropTypes.number),
   getColor: PropTypes.func.isRequired,
-  onBarSelected: PropTypes.func.isRequired,
+  barSelected: PropTypes.number,
+  onBarSelected: PropTypes.func,
 };
 
 export default function BarChart (props) {
@@ -27,7 +29,9 @@ export default function BarChart (props) {
     height,
     legendHeight,
     data,
+    barsProportion,
     getColor,
+    barSelected,
     onBarSelected = () => {},
   } = props;
 
@@ -39,6 +43,12 @@ export default function BarChart (props) {
     const max = data.reduce((max, point) => point > max ? point: max, 0);
     setMaxPoint(max);
   }, [data]);
+
+  useEffect(() => {
+    if (typeof barSelected === 'number') {
+      setBarFocusedIndex(barSelected);
+    }
+  }, [barSelected]);
 
   function getBarHeight (point) {
     return `${Math.round(point * 100 / maxPoint)}%`;
@@ -61,6 +71,7 @@ export default function BarChart (props) {
               key={index}
               style={[styles.barButton, {
                 height: getBarHeight(point),
+                flexGrow: barsProportion?.[index] || 1,
               }]}
               onMouseEnter={() => setBarHighlightedIndex(index)}
               onMouseLeave={() => setBarHighlightedIndex(undefined)}
@@ -118,7 +129,6 @@ const styles = StyleSheet.create({
   },
 
   barButton: {
-    flexGrow: 1,
     borderTopLeftRadius: 4,
     borderTopRightRadius: 4,
   },

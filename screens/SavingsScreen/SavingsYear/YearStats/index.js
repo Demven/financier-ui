@@ -2,13 +2,13 @@ import { StyleSheet, View, Text } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
-import { COLOR } from '../../../../styles/colors';
-import { MEDIA } from '../../../../styles/media';
 import TitleLink from '../../../../components/TitleLink';
 import FoldedContainer from '../../../../components/FoldedContainer';
 import { formatAmount, getAmountColor } from '../../../../services/amount';
 import { MONTH_NAME } from '../../../../services/date';
 import { FONT } from '../../../../styles/fonts';
+import { COLOR } from '../../../../styles/colors';
+import { MEDIA } from '../../../../styles/media';
 
 YearStats.propTypes = {
   style: PropTypes.any,
@@ -82,7 +82,10 @@ export default function YearStats (props) {
                 styles.statName,
                 styles.statNameBold,
                 windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
-                { color: totalColor },
+                {
+                  color: totalColor,
+                  marginLeft: 4,
+                },
               ]}
             >
               Total

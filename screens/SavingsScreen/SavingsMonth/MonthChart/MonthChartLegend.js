@@ -1,96 +1,71 @@
-import { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  Dimensions, Platform,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import { WEEKS_IN_MONTH, DAYS_IN_WEEK } from '../../../../services/date';
 import { FONT } from '../../../../styles/fonts';
 import { COLOR } from '../../../../styles/colors';
 import { MEDIA } from '../../../../styles/media';
 
 MonthChartLegend.propTypes = {
   style: PropTypes.any,
-  chartWidth: PropTypes.number,
-  chartHeight: PropTypes.number,
+  width: PropTypes.number,
   daysInMonth: PropTypes.number,
+  selectedWeekIndex: PropTypes.number,
+  barsProportion: PropTypes.arrayOf(PropTypes.number),
 };
 
-const LEGEND_HEIGHT = 16;
+export const LEGEND_HEIGHT = 18;
+const BORDER_WIDTH = 2;
 
 export default function MonthChartLegend (props) {
   const {
     style,
-    chartWidth,
-    chartHeight,
+    width,
     daysInMonth,
+    selectedWeekIndex,
+    barsProportion,
   } = props;
 
-  const [horizontalLineWidth, setHorizontalLineWidth] = useState(0);
-
   const windowWidth = useSelector(state => state.ui.windowWidth);
-
-  function onHorizontalLineLayout (event) {
-    const { width } = event.nativeEvent.layout;
-
-    const updatedWindowWidth = Dimensions.get('window').width;
-
-    const horizontalLineWidthAdjustment = updatedWindowWidth < MEDIA.MEDIUM_DESKTOP
-      ? updatedWindowWidth < MEDIA.DESKTOP
-        ? updatedWindowWidth < MEDIA.TABLET
-          ? updatedWindowWidth > MEDIA.WIDE_MOBILE
-            ? (width * 0.005)
-            : (width * 0.01)
-          : -(width * 0.01)
-        : 2
-      : 1;
-
-    setHorizontalLineWidth(width + horizontalLineWidthAdjustment);
-  }
-
-  const weekPaddingLeft = windowWidth < (MEDIA.MEDIUM_DESKTOP + (40 * 2)) ? 0 : 4;
 
   return (
     <View
       style={[styles.monthChartLegend, {
-        width: Platform.OS === 'web' ? chartWidth : '100%',
-        top: Platform.OS === 'web'
-          ? chartHeight + LEGEND_HEIGHT
-          : (chartWidth / 21 * 9) + 11,
-        paddingRight: Platform.OS === 'web'
-          ? 0
-          : windowWidth < (MEDIA.MEDIUM_DESKTOP + 40 * 2)
-            ? 17
-            : 20,
+        bottom: windowWidth < MEDIA.WIDE_MOBILE ? 2 : 0,
       }, style]}
     >
-      <View
-        style={styles.horizontalLineContainer}
-        onLayout={Platform.OS === 'web' ? undefined : onHorizontalLineLayout}
-      >
-        <View style={[styles.horizontalLine, Platform.OS !== 'web' && {
-          width: horizontalLineWidth,
-        }]} />
+      <View style={styles.horizontalLineContainer}>
+        <View style={styles.horizontalLine} />
       </View>
 
       <View style={styles.weeks}>
-        <View style={[styles.week, { flexGrow: 7, paddingLeft: weekPaddingLeft }]}>
-          <Text style={styles.label}>Week 1</Text>
-        </View>
+        {Array.from(new Array(WEEKS_IN_MONTH)).map((_, index) => {
+          const isLastWeek = index === WEEKS_IN_MONTH - 1;
 
-        <View style={[styles.week, { flexGrow: 7, paddingLeft: weekPaddingLeft }]}>
-          <Text style={styles.label}>Week 2</Text>
-        </View>
-
-        <View style={[styles.week, { flexGrow: 7, paddingLeft: weekPaddingLeft }]}>
-          <Text style={styles.label}>Week 3</Text>
-        </View>
-
-        <View style={[styles.week, { flexGrow: 7 + (daysInMonth - 28), borderRightWidth: 0, paddingLeft: 0 }]}>
-          <Text style={styles.label}>Week 4</Text>
-        </View>
+          return (
+            <View
+              key={index}
+              style={[
+                styles.week,
+                isLastWeek && styles.weekLast,
+                { width: width / daysInMonth * (barsProportion?.[index] || DAYS_IN_WEEK) },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.label,
+                  selectedWeekIndex === index && styles.labelSelected,
+                ]}
+              >
+                Week {index + 1}
+              </Text>
+            </View>
+          );
+        })}
       </View>
     </View>
   );
@@ -98,11 +73,11 @@ export default function MonthChartLegend (props) {
 
 const styles = StyleSheet.create({
   monthChartLegend: {
+    width: '100%',
     flexGrow: 1,
-    paddingLeft: 65,
     position: 'absolute',
     left: 0,
-    boxSizing: 'content-box',
+    bottom: 0,
   },
 
   horizontalLineContainer: {
@@ -133,16 +108,23 @@ const styles = StyleSheet.create({
   },
 
   week: {
+    transform: [{ translateX: BORDER_WIDTH / 2 }],
     paddingTop: 4,
     borderRightWidth: 2,
     borderRightColor: COLOR.LIGHT_GRAY,
   },
+  weekLast: {
+    borderRightWidth: 0,
+    paddingLeft: 0,
+  },
 
   label: {
     fontFamily: FONT.NOTO_SERIF.REGULAR,
-    fontSize: 12,
-    lineHeight: 12,
     color: COLOR.LIGHT_GRAY,
     textAlign: 'center',
+  },
+  labelSelected: {
+    fontFamily: FONT.NOTO_SERIF.BOLD,
+    color: COLOR.DARK_GRAY,
   },
 });

@@ -5,10 +5,10 @@ import {
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import { MONTH_NAME, MONTHS_IN_YEAR } from '../../../../services/date';
 import { FONT } from '../../../../styles/fonts';
 import { COLOR } from '../../../../styles/colors';
 import { MEDIA } from '../../../../styles/media';
-import { MONTH_NAME, MONTHS_IN_YEAR } from '../../../../services/date';
 
 YearChartLegend.propTypes = {
   style: PropTypes.any,

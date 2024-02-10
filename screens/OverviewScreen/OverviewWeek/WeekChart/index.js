@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import PointInfo from '../../../../components/chart/PointInfo';
 import Loader from '../../../../components/Loader';
 import WeekChartLegend from './WeekChartLegend';
-import { formatDateString } from '../../../../services/date';
+import { formatDateString, DAYS_IN_WEEK } from '../../../../services/date';
 import { COLOR } from '../../../../styles/colors';
 import { MEDIA } from "../../../../styles/media";
 
@@ -15,8 +15,6 @@ export const CHART_VIEW = {
   EXPENSES: 'expenses',
   SAVINGS: 'savings',
 };
-
-const DAYS_IN_WEEK = 7;
 
 MonthChart.propTypes = {
   style: PropTypes.any,

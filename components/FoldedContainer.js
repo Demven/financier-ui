@@ -4,6 +4,7 @@ import {
   View,
   Pressable,
   Text,
+  Platform,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import Animated, {
@@ -42,8 +43,6 @@ export default function FoldedContainer (props) {
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
   const height = useSharedValue(0);
-
-  const active = !disable;
 
   useEffect(() => {
     if (!height.value) {
@@ -94,6 +93,8 @@ export default function FoldedContainer (props) {
       : 24 // desktop
     : 26; // large desktop
 
+  const active = !disable;
+
   return (
     <View style={[styles.foldedContainer, style]}>
       <Pressable
@@ -124,7 +125,10 @@ export default function FoldedContainer (props) {
       </Pressable>
 
       <Animated.View style={[styles.animatedContainer, active && animatedHeightStyles]}>
-        <View onLayout={onChildrenLayout}>
+        <View
+          style={[styles.content, active && styles.contentActive]}
+          onLayout={onChildrenLayout}
+        >
           {children}
         </View>
       </Animated.View>
@@ -160,6 +164,7 @@ const styles = StyleSheet.create({
   },
 
   arrowIcon: {
+    marginTop: Platform.OS === 'ios' ? -6 : 0,
     marginLeft: 8,
     transform: [{ translateY: 2 }],
   },
@@ -167,5 +172,14 @@ const styles = StyleSheet.create({
   animatedContainer: {
     height: 'auto',
     overflow: 'hidden',
+  },
+
+  content: {
+    flexGrow: 1,
+  },
+  contentActive: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
   },
 });

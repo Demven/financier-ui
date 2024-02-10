@@ -1,193 +1,137 @@
 import { StyleSheet, View, Text } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import { COLOR } from '../../../../styles/colors';
-import { MEDIA } from '../../../../styles/media';
 import TitleLink from '../../../../components/TitleLink';
-import { CHART_VIEW } from '../MonthChart';
+import FoldedContainer from '../../../../components/FoldedContainer';
 import { formatAmount, getAmountColor } from '../../../../services/amount';
+import { COLOR } from '../../../../styles/colors';
 import { FONT } from '../../../../styles/fonts';
+import { MEDIA } from '../../../../styles/media';
 
 MonthStats.propTypes = {
   style: PropTypes.any,
-  chartView: PropTypes.oneOf([
-    CHART_VIEW.EXPENSES,
-    CHART_VIEW.INCOME,
-    CHART_VIEW.SAVINGS,
-  ]).isRequired,
-  setChartView: PropTypes.func.isRequired,
-  totalIncomes: PropTypes.number,
-  totalExpenses: PropTypes.number,
-  totalSavingsAndInvestments: PropTypes.number,
+  savingsAndInvestmentsByWeeks: PropTypes.arrayOf(PropTypes.number).isRequired,
+  totalSavingsAndInvestments: PropTypes.number.isRequired,
+  selectedWeekIndex: PropTypes.number,
+  setSelectedWeekIndex: PropTypes.func,
 };
 
 export default function MonthStats (props) {
   const {
     style,
-    chartView,
-    setChartView = () => {},
-    totalIncomes,
-    totalExpenses,
+    savingsAndInvestmentsByWeeks,
     totalSavingsAndInvestments,
+    selectedWeekIndex,
+    setSelectedWeekIndex,
   } = props;
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
-  const savingsPercent = Math.floor(totalSavingsAndInvestments * 100 / totalIncomes);
-  const totalExcludingSavings = totalIncomes - totalExpenses;
-  const total = totalExcludingSavings - totalSavingsAndInvestments;
-
-  const totalExcludingSavingsColor = getAmountColor(totalExcludingSavings);
-  const totalColor = getAmountColor(total);
+  const totalColor = getAmountColor(totalSavingsAndInvestments);
 
   return (
     <View style={[styles.monthStats, style]}>
-      {!!totalIncomes && (
-        <View style={[styles.statRow, { marginTop: 0 }]}>
-          <TitleLink
-            textStyle={[
-              styles.statName,
-              chartView === CHART_VIEW.INCOME && styles.statNameBold,
-              windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
-            ]}
-            onPress={() => setChartView(CHART_VIEW.INCOME)}
-          >
-            Income
-          </TitleLink>
-
-          <Text style={[
-            styles.statValue,
-            chartView === CHART_VIEW.INCOME && styles.statValueBold,
-            windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
-          ]}>
-            {formatAmount(totalIncomes)}
-          </Text>
-        </View>
-      )}
-
-      {!!totalExpenses && (
-        <View style={styles.statRow}>
-          <TitleLink
-            textStyle={[
-              styles.statName,
-              chartView === CHART_VIEW.EXPENSES && styles.statNameBold,
-              windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
-            ]}
-            onPress={() => setChartView(CHART_VIEW.EXPENSES)}
-          >
-            Expenses
-          </TitleLink>
-
-          <Text style={[
-            styles.statValue,
-            chartView === CHART_VIEW.EXPENSES && styles.statValueBold,
-            windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
-          ]}>
-            {formatAmount(-totalExpenses)}
-          </Text>
-        </View>
-      )}
-
-      {!!totalSavingsAndInvestments && (
-        <View style={styles.statRow}>
-          <TitleLink
-            textStyle={[
-              styles.statName,
-              chartView === CHART_VIEW.SAVINGS && styles.statNameBold,
-              windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
-            ]}
-            onPress={() => setChartView(CHART_VIEW.SAVINGS)}
-          >
-            Savings
-          </TitleLink>
-
-          <Text style={[
-            styles.statValue,
-            chartView === CHART_VIEW.SAVINGS && styles.statValueBold,
-            windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
-          ]}>
-            {formatAmount(totalSavingsAndInvestments)}
-          </Text>
-        </View>
-      )}
-
-      {!!savingsPercent && (
-        <View style={[styles.statRow, { marginTop: 12 }]}>
-          <Text style={[styles.statValue, styles.smallerText]}>({savingsPercent}%)</Text>
-        </View>
-      )}
-
-      <View style={styles.underline} />
-
-      {!!totalSavingsAndInvestments && (
-        <View style={styles.statRow}>
-          <Text style={[styles.statName, styles.smallerText]}>(Excluding Savings)</Text>
-
-          <Text style={[
-            styles.statValue,
-            styles.statValueBold,
-            windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
-            { color: totalExcludingSavingsColor },
-          ]}>
-            {formatAmount(totalExcludingSavings)}
-          </Text>
-        </View>
-      )}
-
-      <View style={styles.statRow}>
-        <Text
-          style={[
-            styles.statName,
-            styles.statNameBold,
-            windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
-            { color: totalColor },
-          ]}
+      <FoldedContainer
+        title={windowWidth >= MEDIA.DESKTOP ? 'Weeks' : 'See savings by weeks'}
+        disable={windowWidth >= MEDIA.DESKTOP}
+      >
+        <View
+          style={[styles.stats, {
+            marginTop: windowWidth < MEDIA.DESKTOP ? 16 : 40,
+            paddingLeft: windowWidth < MEDIA.DESKTOP ? 16 : 24,
+          }]}
         >
-          Total
-        </Text>
+          {savingsAndInvestmentsByWeeks.map((total, index) => (
+            <View
+              key={index}
+              style={[styles.statRow, index === 0 && { marginTop: 0 }]}
+            >
+              <TitleLink
+                textStyle={[
+                  styles.statName,
+                  windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
+                  selectedWeekIndex === index && styles.statNameBold,
+                ]}
+                onPress={total ? () => setSelectedWeekIndex(index) : undefined}
+              >
+                Week {index + 1}
+              </TitleLink>
 
-        <Text
-          style={[
-            styles.statValue,
-            styles.statValueBold,
-            windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
-            { color: totalColor },
-          ]}
-        >
-          {formatAmount(total)}
-        </Text>
-      </View>
+              <Text style={[
+                styles.statValue,
+                windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
+                selectedWeekIndex === index && styles.statValueBold,
+              ]}>
+                {total > 0 ? formatAmount(total) : '–'}
+              </Text>
+            </View>
+          ))}
+
+          <View style={styles.underline} />
+
+          <View style={[styles.statRow, { marginTop: 24 }]}>
+            <Text
+              style={[
+                styles.statName,
+                styles.statNameBold,
+                windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
+                {
+                  color: totalColor,
+                  marginLeft: 4,
+                },
+              ]}
+            >
+              Total
+            </Text>
+
+            <Text
+              style={[
+                styles.statValue,
+                styles.statValueBold,
+                windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
+                { color: totalColor },
+              ]}
+            >
+              {formatAmount(totalSavingsAndInvestments)}
+            </Text>
+          </View>
+        </View>
+      </FoldedContainer>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  monthStats: {},
+  monthStats: {
+    width: '100%',
+  },
+
+  stats: {},
 
   statRow: {
-    marginTop: 20,
+    marginTop: 16,
     flexDirection: 'row',
   },
 
   statName: {
     fontFamily: FONT.NOTO_SERIF.REGULAR,
-    fontSize: 24,
-    lineHeight: 30,
+    fontSize: 20,
+    lineHeight: 24,
     color: COLOR.DARK_GRAY,
   },
   statNameBold: {
     fontFamily: FONT.NOTO_SERIF.BOLD,
   },
   statNameSmaller: {
-    fontSize: 21,
-    lineHeight: 26,
+    fontSize: 18,
+    lineHeight: 23,
   },
 
   statValue: {
     marginLeft: 'auto',
     fontFamily: FONT.NOTO_SERIF.REGULAR,
-    fontSize: 24,
-    lineHeight: 30,
+    fontSize: 20,
+    lineHeight: 24,
     color: COLOR.DARK_GRAY,
     userSelect: 'text',
   },
@@ -195,13 +139,8 @@ const styles = StyleSheet.create({
     fontFamily: FONT.NOTO_SERIF.BOLD,
   },
   statValueSmaller: {
-    fontSize: 21,
-    lineHeight: 26,
-  },
-
-  smallerText: {
-    fontSize: 16,
-    lineHeight: 30,
+    fontSize: 18,
+    lineHeight: 23,
   },
 
   underline: {

@@ -131,9 +131,7 @@ export default function SavingsYear (props) {
         }]}
       >
         <YearChart
-          style={[styles.chart, {
-            width: chartWidth,
-          }]}
+          style={{ width: chartWidth }}
           savingsByMonths={savingsByMonths}
           selectedMonthIndex={selectedMonthIndex}
           onMonthSelected={setSelectedMonthIndex}
@@ -175,6 +173,4 @@ const styles = StyleSheet.create({
   content: {
     justifyContent: 'space-between',
   },
-
-  chart: {},
 });
