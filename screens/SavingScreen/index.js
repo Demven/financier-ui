@@ -36,9 +36,6 @@ export default function SavingScreen () {
   const savingToEdit = route.params?.saving;
   const investmentToEdit = route.params?.investment;
 
-  console.info('savingToEdit', savingToEdit);
-  console.info('investmentToEdit', investmentToEdit);
-
   const [name, setName] = useState(savingToEdit?.name || investmentToEdit?.name || '');
   const [nameError, setNameError] = useState('');
 

@@ -28,8 +28,6 @@ export default function SavingsMonth (props) {
     investments = {},
   } = props;
 
-  console.info('monthNumber', monthNumber, savings, investments);
-
   const [selectedWeekIndex, setSelectedWeekIndex] = useState();
 
   const navigation = useNavigation();
