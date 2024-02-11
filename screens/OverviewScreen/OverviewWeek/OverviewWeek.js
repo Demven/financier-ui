@@ -9,7 +9,12 @@ import PropTypes from 'prop-types';
 import WeekChart, { CHART_VIEW } from './WeekChart';
 import WeekStats from './WeekStats';
 import TitleLink from '../../../components/TitleLink';
-import { MONTH_NAME, getDaysInMonth, getDaysInWeek } from '../../../services/date';
+import {
+  MONTH_NAME,
+  getDaysInMonth,
+  getDaysInWeek,
+  getWeekRange,
+} from '../../../services/date';
 import { FONT } from '../../../styles/fonts';
 import { MEDIA } from '../../../styles/media';
 
@@ -30,17 +35,6 @@ const WEEK_NAME = {
   [3]: 'Week 3',
   [4]: 'Week 4',
 };
-
-function getWeekRange (weekNumber, daysInMonth) {
-  const range = {
-    [1]: '1 - 7',
-    [2]: '8 - 14',
-    [3]: '15 - 21',
-    [4]: `22 - ${daysInMonth}`,
-  };
-
-  return range[weekNumber];
-}
 
 export default function OverviewWeek (props) {
   const {

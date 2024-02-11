@@ -6,9 +6,10 @@ import PropTypes from 'prop-types';
 import PointInfo from '../../../../components/chart/PointInfo';
 import Loader from '../../../../components/Loader';
 import WeekChartLegend from './WeekChartLegend';
-import { formatDateString, DAYS_IN_WEEK } from '../../../../services/date';
+import { DAYS_IN_WEEK, formatDateString } from '../../../../services/date';
+import { groupWeekByDay, mergeGroupedByDay } from '../../../../services/dataItems';
 import { COLOR } from '../../../../styles/colors';
-import { MEDIA } from "../../../../styles/media";
+import { MEDIA } from '../../../../styles/media';
 
 export const CHART_VIEW = {
   INCOME: 'income',
@@ -16,7 +17,7 @@ export const CHART_VIEW = {
   SAVINGS: 'savings',
 };
 
-MonthChart.propTypes = {
+WeekChart.propTypes = {
   style: PropTypes.any,
   year: PropTypes.number.isRequired,
   monthNumber: PropTypes.number.isRequired,
@@ -61,7 +62,7 @@ MonthChart.propTypes = {
   previousWeeksTotalInvestments: PropTypes.number.isRequired,
 };
 
-export default function MonthChart (props) {
+export default function WeekChart (props) {
   const {
     style,
     year,
@@ -115,44 +116,6 @@ export default function MonthChart (props) {
         setRealChartHeight(height);
       }
     }
-  }
-
-  function groupByDay (week) {
-    const groupedByDay = new Array(daysInWeek).fill([]);
-
-    week.forEach(item => {
-      const [, , dayOfMonth] = item?.dateString?.split('-')?.map(string => Number(string)) || [];
-      const dayOfWeek = dayOfMonthToDayOfWeek(dayOfMonth);
-
-      groupedByDay[dayOfWeek - 1] = Array.isArray(groupedByDay[dayOfWeek - 1])
-        ? [...groupedByDay[dayOfWeek - 1], item]
-        : [item];
-    });
-
-    return groupedByDay;
-  }
-
-  function mergeGroupedByDay (groupedByDay1 = [], groupedByDay2 = []) {
-    return groupedByDay1.map((byDay1, index) => {
-      const byDay2 = groupedByDay2[index] || [];
-
-      return Array.isArray(byDay1)
-        ? [...byDay1, ...byDay2]
-        : byDay2;
-    });
-  }
-
-  function dayOfMonthToDayOfWeek (dayOfMonth) {
-    const isFourthWeek = dayOfMonth / DAYS_IN_WEEK > 3;
-    const remainder = dayOfMonth % DAYS_IN_WEEK;
-
-    // 1 - 7 -> 1 - 7
-    // 8 - 14 -> 1 - 7
-    // 15 - 21 -> 1 - 7
-    // 22 - 31 -> 1 - 10
-    return isFourthWeek
-      ? dayOfMonth - (DAYS_IN_WEEK * 3)
-      : remainder === 0 ? 7 : remainder;
   }
 
   function getAmount (item) {
@@ -221,14 +184,14 @@ export default function MonthChart (props) {
     return `rgba(42, 113, 40, ${opacity * (chartView === CHART_VIEW.SAVINGS ? 3 : 1)})`;
   }
 
-  const expensesGroupedByDay = groupByDay(expenses);
+  const expensesGroupedByDay = groupWeekByDay(expenses, daysInWeek);
   const expensesPoints = getChartPoints(expensesGroupedByDay, previousWeeksTotalExpenses);
 
-  const incomesGroupedByDay = groupByDay(incomes);
+  const incomesGroupedByDay = groupWeekByDay(incomes, daysInWeek);
   const incomesPoints = getChartPoints(incomesGroupedByDay, previousWeeksTotalIncomes);
 
-  const savingsGroupedByDay = groupByDay(savings);
-  const investmentsGroupedByDay = groupByDay(investments);
+  const savingsGroupedByDay = groupWeekByDay(savings, daysInWeek);
+  const investmentsGroupedByDay = groupWeekByDay(investments, daysInWeek);
   const savingsAndInvestmentsGroupedByDay = mergeGroupedByDay(savingsGroupedByDay, investmentsGroupedByDay);
   const savingsPoints = getChartPoints(savingsAndInvestmentsGroupedByDay, previousWeeksTotalSavings + previousWeeksTotalInvestments);
 

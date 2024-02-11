@@ -8,7 +8,7 @@ import Loader from '../../../../components/Loader';
 import MonthChartLegend from './MonthChartLegend';
 import { formatDateString } from '../../../../services/date';
 import {
-  groupByDay,
+  groupMonthByDay,
   mergeGroupedByDay,
   getMonthChartPointsByDay,
 } from '../../../../services/dataItems';
@@ -150,14 +150,14 @@ export default function MonthChart (props) {
     return `rgba(42, 113, 40, ${opacity * (chartView === CHART_VIEW.SAVINGS ? 3 : 1)})`;
   }
 
-  const expensesGroupedByDay = groupByDay(expenses, daysNumber);
+  const expensesGroupedByDay = groupMonthByDay(expenses, daysNumber);
   const expensesPoints = getMonthChartPointsByDay(expensesGroupedByDay);
 
-  const incomesGroupedByDay = groupByDay(incomes, daysNumber);
+  const incomesGroupedByDay = groupMonthByDay(incomes, daysNumber);
   const incomesPoints = getMonthChartPointsByDay(incomesGroupedByDay);
 
-  const savingsGroupedByDay = groupByDay(savings, daysNumber);
-  const investmentsGroupedByDay = groupByDay(investments, daysNumber);
+  const savingsGroupedByDay = groupMonthByDay(savings, daysNumber);
+  const investmentsGroupedByDay = groupMonthByDay(investments, daysNumber);
   const savingsAndInvestmentsGroupedByDay = mergeGroupedByDay(savingsGroupedByDay, investmentsGroupedByDay);
   const savingsPoints = getMonthChartPointsByDay(savingsAndInvestmentsGroupedByDay);
 

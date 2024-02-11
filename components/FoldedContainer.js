@@ -175,6 +175,7 @@ const styles = StyleSheet.create({
   },
 
   content: {
+    width: '100%',
     flexGrow: 1,
   },
   contentActive: {

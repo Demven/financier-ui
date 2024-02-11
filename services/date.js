@@ -34,3 +34,27 @@ export function getDaysInWeek (weekNumber, daysInMonth) {
     ? 7 + (daysInMonth - 28)
     : 7;
 }
+
+export function dayOfMonthToDayOfWeek (dayOfMonth) {
+  const isFourthWeek = dayOfMonth / DAYS_IN_WEEK > 3;
+  const remainder = dayOfMonth % DAYS_IN_WEEK;
+
+  // 1 - 7 -> 1 - 7
+  // 8 - 14 -> 1 - 7
+  // 15 - 21 -> 1 - 7
+  // 22 - 31 -> 1 - 10
+  return isFourthWeek
+    ? dayOfMonth - (DAYS_IN_WEEK * 3)
+    : remainder === 0 ? 7 : remainder;
+}
+
+export function getWeekRange (weekNumber, daysInMonth) {
+  const range = {
+    [1]: '1 - 7',
+    [2]: '8 - 14',
+    [3]: '15 - 21',
+    [4]: `22 - ${daysInMonth}`,
+  };
+
+  return range[weekNumber];
+}

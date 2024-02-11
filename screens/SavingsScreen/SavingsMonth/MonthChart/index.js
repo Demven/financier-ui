@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Loader from '../../../../components/Loader';
@@ -56,7 +56,7 @@ export default function MonthChart (props) {
     : 0; // desktop
 
   return (
-    <ScrollView
+    <View
       style={[styles.monthChart, style]}
       onLayout={onLayout}
       ref={chartRef}
@@ -96,7 +96,7 @@ export default function MonthChart (props) {
           DAYS_IN_WEEK + (daysNumber - DAYS_IN_WEEK * WEEKS_IN_MONTH),
         ]}
       />
-    </ScrollView>
+    </View>
   );
 }
 

@@ -1,6 +1,7 @@
 import { StyleSheet, View, Text } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import { useNavigation } from '@react-navigation/native';
 import TitleLink from '../../../../components/TitleLink';
 import FoldedContainer from '../../../../components/FoldedContainer';
 import { formatAmount, getAmountColor } from '../../../../services/amount';
@@ -10,20 +11,22 @@ import { MEDIA } from '../../../../styles/media';
 
 MonthStats.propTypes = {
   style: PropTypes.any,
+  monthNumber: PropTypes.number.isRequired,
   savingsAndInvestmentsByWeeks: PropTypes.arrayOf(PropTypes.number).isRequired,
   totalSavingsAndInvestments: PropTypes.number.isRequired,
   selectedWeekIndex: PropTypes.number,
-  setSelectedWeekIndex: PropTypes.func,
 };
 
 export default function MonthStats (props) {
   const {
     style,
+    monthNumber,
     savingsAndInvestmentsByWeeks,
     totalSavingsAndInvestments,
     selectedWeekIndex,
-    setSelectedWeekIndex,
   } = props;
+
+  const navigation = useNavigation();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
@@ -52,7 +55,10 @@ export default function MonthStats (props) {
                   windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
                   selectedWeekIndex === index && styles.statNameBold,
                 ]}
-                onPress={total ? () => setSelectedWeekIndex(index) : undefined}
+                alwaysHighlighted={!!total}
+                onPress={total
+                  ? () => navigation.navigate('SavingsWeeks', { monthNumber, weekNumber: index + 1 })
+                  : undefined}
               >
                 Week {index + 1}
               </TitleLink>

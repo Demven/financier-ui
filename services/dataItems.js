@@ -1,6 +1,22 @@
 import { getListTotal } from './amount';
+import { dayOfMonthToDayOfWeek } from './date';
 
-export function groupByDay (groupedByWeeks, daysInMonth) {
+export function groupWeekByDay (weekItems, daysInWeek) {
+  const groupedByDay = new Array(daysInWeek).fill([]);
+
+  weekItems.forEach(item => {
+    const [, , dayOfMonth] = item?.dateString?.split('-')?.map(string => Number(string)) || [];
+    const dayOfWeek = dayOfMonthToDayOfWeek(dayOfMonth);
+
+    groupedByDay[dayOfWeek - 1] = Array.isArray(groupedByDay[dayOfWeek - 1])
+      ? [...groupedByDay[dayOfWeek - 1], item]
+      : [item];
+  });
+
+  return groupedByDay;
+}
+
+export function groupMonthByDay (groupedByWeeks, daysInMonth) {
   const items = Object
     .keys(groupedByWeeks)
     .flatMap(weekNumber => groupedByWeeks?.[weekNumber]);
@@ -58,4 +74,8 @@ export function getMonthChartPointsByWeek (groupedByWeek) {
     getListTotal(groupedByWeek[3] || []),
     getListTotal(groupedByWeek[4] || []),
   ];
+}
+
+export function getWeekChartPointsByDay (groupedByDay) {
+  return groupedByDay.map(day => getListTotal(day));
 }

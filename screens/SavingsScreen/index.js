@@ -5,12 +5,17 @@ import {
 } from 'react';
 import {
   Platform,
-  ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
+import Animated, {
+  scrollTo,
+  useAnimatedRef,
+  useSharedValue,
+  useDerivedValue,
+} from 'react-native-reanimated';
 import { setSelectedTabAction, setSelectedYearAction } from '../../redux/reducers/ui';
 import SavingsMonth from './SavingsMonth/SavingsMonth';
 import SavingsWeek from './SavingsWeek/SavingsWeek';
@@ -54,6 +59,9 @@ export default function SavingsScreen () {
   const route = useRoute();
   const overviewType = route.params?.type;
 
+  const animatedScrollViewRef = useAnimatedRef();
+  const scrollViewY = useSharedValue(0);
+
   const months = Object
     .keys(expenses[selectedYear] || {})
     .map(monthString => Number(monthString))
@@ -61,6 +69,7 @@ export default function SavingsScreen () {
   const latestMonthNumber = months[0];
 
   const monthNumber = route.params?.monthNumber || latestMonthNumber;
+  const routeWeekNumber = route.params?.weekNumber;
 
   useEffect(() => {
     if (overviewType !== selectedTab) {
@@ -78,6 +87,10 @@ export default function SavingsScreen () {
     }
   }, [route?.params?.year])
 
+  useDerivedValue(() => {
+    scrollTo(animatedScrollViewRef, 0, scrollViewY.value, true);
+  });
+
   function onYearDropdownLayout (event) {
     const { width } = event.nativeEvent.layout;
 
@@ -88,14 +101,13 @@ export default function SavingsScreen () {
     return [1, 2, 3, 4].map((weekNumber, index) => (
       <SavingsWeek
         key={index}
-        style={[styles.overview, {
-          paddingBottom: windowWidth < MEDIA.DESKTOP ? 80 : 40,
-        }]}
+        style={styles.overview}
         year={selectedYear}
         monthNumber={monthNumber}
         weekNumber={weekNumber}
-        expenses={expenses?.[selectedYear]?.[monthNumber]}
-        incomes={incomes?.[selectedYear]?.[monthNumber]}
+        onScrollTo={weekNumber === routeWeekNumber
+          ? (scrollY) => scrollViewY.value = scrollY
+          : undefined}
         savings={savings?.[selectedYear]?.[monthNumber]}
         investments={investments?.[selectedYear]?.[monthNumber]}
       />
@@ -106,9 +118,7 @@ export default function SavingsScreen () {
     return months.map((monthNumber, index) => (
       <SavingsMonth
         key={index}
-        style={[styles.overview, {
-          paddingBottom: 80,
-        }]}
+        style={styles.overview}
         year={selectedYear}
         monthNumber={monthNumber}
         savings={savings?.[selectedYear]?.[monthNumber]}
@@ -123,9 +133,7 @@ export default function SavingsScreen () {
       .map((yearNumber, index) => (
         <SavingsYear
           key={index}
-          style={[styles.overview, {
-            paddingBottom: windowWidth < MEDIA.DESKTOP ? 80 : 40,
-          }]}
+          style={styles.overview}
           year={yearNumber}
           savings={savings[yearNumber]}
           investments={investments[yearNumber]}
@@ -152,9 +160,10 @@ export default function SavingsScreen () {
   const hideYearSelector = selectedTab === TAB.YEARS;
 
   return (
-    <ScrollView
+    <Animated.ScrollView
       style={{ flexGrow: 1 }}
       contentContainerStyle={{ flexGrow: 1 }}
+      ref={animatedScrollViewRef}
     >
       <View
         style={[styles.savingsScreen, {
@@ -194,7 +203,7 @@ export default function SavingsScreen () {
           )}
         </View>
       </View>
-    </ScrollView>
+    </Animated.ScrollView>
   );
 }
 
@@ -218,5 +227,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 
-  overview: {},
+  overview: {
+    paddingBottom: 80,
+  },
 });

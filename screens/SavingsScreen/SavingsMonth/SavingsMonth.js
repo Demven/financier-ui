@@ -34,8 +34,8 @@ export default function SavingsMonth (props) {
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
-  const savingsAndInvestmentsGroupedByDay = mergeGroupedByWeek(savings, investments);
-  const savingsAndInvestmentsByWeeks = getMonthChartPointsByWeek(savingsAndInvestmentsGroupedByDay);
+  const savingsAndInvestmentsGroupedByWeek = mergeGroupedByWeek(savings, investments);
+  const savingsAndInvestmentsByWeeks = getMonthChartPointsByWeek(savingsAndInvestmentsGroupedByWeek);
 
   const totalSavingsAndInvestments = savingsAndInvestmentsByWeeks.reduce((total, weekTotal) => total + weekTotal, 0);
 
@@ -104,10 +104,10 @@ export default function SavingsMonth (props) {
             marginTop: statsMarginTop,
             paddingLeft: windowWidth < MEDIA.DESKTOP ? 0 : 40,
           }}
+          monthNumber={monthNumber}
           savingsAndInvestmentsByWeeks={savingsAndInvestmentsByWeeks}
           totalSavingsAndInvestments={totalSavingsAndInvestments}
           selectedWeekIndex={selectedWeekIndex}
-          setSelectedWeekIndex={setSelectedWeekIndex}
         />
       </View>
     </View>

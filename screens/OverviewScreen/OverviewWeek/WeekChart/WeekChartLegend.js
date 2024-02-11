@@ -47,12 +47,12 @@ export default function WeekChartLegend (props) {
         <View style={styles.horizontalLine} />
       </View>
 
-      <View style={styles.weeks}>
+      <View style={styles.days}>
         {Array.from(new Array(daysInWeek)).map((_, index) => (
           <View
             key={index}
             style={[
-              styles.week,
+              styles.day,
               {
                 paddingLeft: daysInWeek > 7 ? 2 : 0,
               },
@@ -99,12 +99,12 @@ const styles = StyleSheet.create({
     top: -4,
   },
 
-  weeks: {
+  days: {
     flexDirection: 'row',
     backgroundColor: COLOR.WHITE,
   },
 
-  week: {
+  day: {
     flexGrow: 1,
     paddingTop: 4,
     borderRightWidth: 2,

@@ -226,6 +226,7 @@ function SavingsScreens () {
         initialParams={{
           type: TAB.WEEKS,
           monthNumber: undefined,
+          weekNumber: undefined,
         }}
         options={{
           title: 'Savings',
