@@ -11,12 +11,18 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSelector, Provider, useDispatch } from 'react-redux';
 import 'react-native-gesture-handler';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import {
+  FontAwesome5,
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import OverviewScreen from './screens/OverviewScreen';
 import CategoriesScreen from './screens/CategoriesScreen';
+import IncomesScreen from './screens/IncomesScreen';
 import SavingsScreen from './screens/SavingsScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import SignInScreen from './screens/SignInScreen';
@@ -203,6 +209,166 @@ function CategoriesScreens () {
   );
 }
 
+function ExpensesScreens () {
+  const windowWidth = useSelector(state => state.ui.windowWidth);
+
+  return (
+    <BottomTabs.Navigator
+      initialRouteName='ExpensesMonths'
+      screenOptions={() => ({
+        headerStyle: { backgroundColor: COLOR.WHITE },
+        headerTintColor: COLOR.BLACK,
+        tabBarStyle: {
+          backgroundColor: COLOR.WHITE,
+          display: windowWidth >= MEDIA.TABLET ? 'none' : undefined,
+        },
+        tabBarActiveTintColor: COLOR.BLACK,
+        headerShown: false,
+      })}
+    >
+      <BottomTabs.Screen
+        name='ExpensesWeeks'
+        component={IncomesScreen}
+        initialParams={{
+          type: TAB.WEEKS,
+          monthNumber: undefined,
+          weekNumber: undefined,
+        }}
+        options={{
+          title: 'Expenses',
+          tabBarLabel: TAB_NAME[TAB.WEEKS],
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons
+              name='calendar-week'
+              color={color}
+              size={size}
+            />
+          ),
+        }}
+      />
+
+      <BottomTabs.Screen
+        name='ExpensesMonths'
+        component={IncomesScreen}
+        initialParams={{
+          type: TAB.MONTHS,
+          year: undefined,
+        }}
+        options={{
+          title: 'Expenses',
+          tabBarLabel: TAB_NAME[TAB.MONTHS],
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons
+              name='calendar-text'
+              color={color}
+              size={size}
+            />
+          ),
+        }}
+      />
+
+      <BottomTabs.Screen
+        name='ExpensesYears'
+        component={IncomesScreen}
+        initialParams={{
+          type: TAB.YEARS,
+        }}
+        options={{
+          title: 'All Expenses',
+          tabBarLabel: TAB_NAME[TAB.YEARS],
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons
+              name='calendar-sharp'
+              color={color}
+              size={size}
+            />
+          )
+        }}
+      />
+    </BottomTabs.Navigator>
+  );
+}
+
+function IncomesScreens () {
+  const windowWidth = useSelector(state => state.ui.windowWidth);
+
+  return (
+    <BottomTabs.Navigator
+      initialRouteName='IncomesMonths'
+      screenOptions={() => ({
+        headerStyle: { backgroundColor: COLOR.WHITE },
+        headerTintColor: COLOR.BLACK,
+        tabBarStyle: {
+          backgroundColor: COLOR.WHITE,
+          display: windowWidth >= MEDIA.TABLET ? 'none' : undefined,
+        },
+        tabBarActiveTintColor: COLOR.BLACK,
+        headerShown: false,
+      })}
+    >
+      <BottomTabs.Screen
+        name='IncomesWeeks'
+        component={IncomesScreen}
+        initialParams={{
+          type: TAB.WEEKS,
+          monthNumber: undefined,
+          weekNumber: undefined,
+        }}
+        options={{
+          title: 'Incomes',
+          tabBarLabel: TAB_NAME[TAB.WEEKS],
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons
+              name='calendar-week'
+              color={color}
+              size={size}
+            />
+          ),
+        }}
+      />
+
+      <BottomTabs.Screen
+        name='IncomesMonths'
+        component={IncomesScreen}
+        initialParams={{
+          type: TAB.MONTHS,
+          year: undefined,
+        }}
+        options={{
+          title: 'Incomes',
+          tabBarLabel: TAB_NAME[TAB.MONTHS],
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons
+              name='calendar-text'
+              color={color}
+              size={size}
+            />
+          ),
+        }}
+      />
+
+      <BottomTabs.Screen
+        name='IncomesYears'
+        component={IncomesScreen}
+        initialParams={{
+          type: TAB.YEARS,
+        }}
+        options={{
+          title: 'All Incomes',
+          tabBarLabel: TAB_NAME[TAB.YEARS],
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons
+              name='calendar-sharp'
+              color={color}
+              size={size}
+            />
+          )
+        }}
+      />
+    </BottomTabs.Navigator>
+  );
+}
+
 function SavingsScreens () {
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
@@ -338,6 +504,36 @@ function DrawerNavigator () {
               name='format-columns'
               color={color}
               size={28}
+            />
+          ),
+        }}
+      />
+
+      <Drawer.Screen
+        name='Expenses'
+        component={ExpensesScreens}
+        options={{
+          title: 'Expenses',
+          drawerIcon: ({ color }) => (
+            <MaterialIcons
+              name='money-off'
+              color={color}
+              size={28}
+            />
+          ),
+        }}
+      />
+
+      <Drawer.Screen
+        name='Incomes'
+        component={IncomesScreens}
+        options={{
+          title: 'Incomes',
+          drawerIcon: ({ color }) => (
+            <FontAwesome5
+              name='money-bill-alt'
+              color={color}
+              size={24}
             />
           ),
         }}
@@ -577,6 +773,22 @@ export default function App () {
                     CategoriesMonths: 'categories/months',
                     CategoriesWeeks: 'categories/weeks',
                     CategoriesYears: 'categories/years',
+                  },
+                },
+                Expenses: {
+                  initialRouteName: 'Expenses',
+                  screens: {
+                    ExpensesMonths: 'expenses/months',
+                    ExpensesWeeks: 'expenses/weeks',
+                    ExpensesYears: 'expenses/years',
+                  },
+                },
+                Incomes: {
+                  initialRouteName: 'Incomes',
+                  screens: {
+                    IncomesMonths: 'incomes/months',
+                    IncomesWeeks: 'incomes/weeks',
+                    IncomesYears: 'incomes/years',
                   },
                 },
                 Savings: {
