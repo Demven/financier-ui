@@ -7,6 +7,7 @@ import Dropdown from '../../components/Dropdown';
 import DatePicker from '../../components/DatePicker';
 import { addSavingAction, addInvestmentAction } from '../../redux/reducers/savings';
 import { dateToDateString } from '../../services/date';
+import { useRoute } from "@react-navigation/native";
 
 const TYPE = {
   SAVING: 'saving',
@@ -30,30 +31,40 @@ const DATE_OPTIONS = [
 
 export default function SavingScreen () {
   const dispatch = useDispatch();
+  const route = useRoute();
 
-  const [name, setName] = useState('');
+  const savingToEdit = route.params?.saving;
+  const investmentToEdit = route.params?.investment;
+
+  console.info('savingToEdit', savingToEdit);
+  console.info('investmentToEdit', investmentToEdit);
+
+  const [name, setName] = useState(savingToEdit?.name || investmentToEdit?.name || '');
   const [nameError, setNameError] = useState('');
 
   const [typeSelectOpen, setTypeSelectOpen] = useState(false);
-  const [typeId, setTypeId] = useState(TYPE.SAVING);
+  const [typeId, setTypeId] = useState(investmentToEdit ? TYPE.INVESTMENT : TYPE.SAVING);
   const [types, setTypes] = useState(TYPES);
 
   const [dateOptionsSelectOpen, setDateOptionsSelectOpen] = useState(false);
-  const [dateOptionId, setDateOptionId] = useState(DATE_OPTION.TODAY);
+  const [dateOptionId, setDateOptionId] = useState((savingToEdit?.dateString || investmentToEdit?.dateString)
+    ? DATE_OPTION.CHOOSE_DATE
+    : DATE_OPTION.TODAY
+  );
   const [dateOptions, setDateOptions] = useState(DATE_OPTIONS);
 
-  const [dateString, setDateString] = useState(dateToDateString(new Date()));
+  const [dateString, setDateString] = useState(savingToEdit?.dateString || investmentToEdit?.dateString || dateToDateString(new Date()));
   const [dateDisabled, setDateDisabled] = useState(false);
 
-  const [ticker, setTicker] = useState('');
+  const [ticker, setTicker] = useState(investmentToEdit?.ticker || '');
 
-  const [shares, setShares] = useState('');
+  const [shares, setShares] = useState(investmentToEdit?.shares ? String(investmentToEdit.shares) : '');
   const [sharesError, setSharesError] = useState('');
 
-  const [pricePerShare, setPricePerShare] = useState('');
+  const [pricePerShare, setPricePerShare] = useState(investmentToEdit?.pricePerShare ? String(investmentToEdit.pricePerShare) : '');
   const [pricePerShareError, setPricePerShareError] = useState('');
 
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState(savingToEdit?.amount ? String(savingToEdit.amount) : '');
   const [amountError, setAmountError] = useState('');
 
   const todayDate = new Date();

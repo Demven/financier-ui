@@ -156,6 +156,12 @@ export default function OverviewWeek (props) {
       : -54 // tablet
     : 0; // desktop
 
+  const isEmptyWeek = !totalIncomes && !totalExpenses && !totalSavingsAndInvestments;
+
+  if (isEmptyWeek) {
+    return null;
+  }
+
   return (
     <View style={[styles.overviewWeek, style]}>
       <View style={styles.titleContainer}>

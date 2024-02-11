@@ -34,13 +34,9 @@ export default function SavingsScreen () {
 
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const selectedYear = useSelector(state => state.ui.selectedYear);
-  const expenses = useSelector(state => state.expenses.expenses) || {};
-  const incomes = useSelector(state => state.incomes.incomes) || {};
   const savings = useSelector(state => state.savings.savings) || {};
   const investments = useSelector(state => state.savings.investments) || {};
 
-  const expensesYears = Object.keys(expenses);
-  const incomesYears = Object.keys(incomes);
   const savingsYears = Object.keys(savings);
   const investmentsYears = Object.keys(investments);
 
@@ -49,12 +45,10 @@ export default function SavingsScreen () {
   const yearsToSelect = useMemo(() => {
     return Array.from(new Set([
       new Date().getFullYear(),
-      ...expensesYears,
-      ...incomesYears,
       ...savingsYears,
       ...investmentsYears,
     ]))
-  }, [expensesYears, incomesYears, savingsYears, investmentsYears]);
+  }, [savingsYears, investmentsYears]);
 
   const route = useRoute();
   const overviewType = route.params?.type;
@@ -62,13 +56,19 @@ export default function SavingsScreen () {
   const animatedScrollViewRef = useAnimatedRef();
   const scrollViewY = useSharedValue(0);
 
-  const months = Object
-    .keys(expenses[selectedYear] || {})
-    .map(monthString => Number(monthString))
+  const savingMonths = Object
+    .keys(savings[selectedYear] || {})
+    .map(monthString => Number(monthString));
+  const investmentsMonths = Object
+    .keys(investments[selectedYear] || {})
+    .map(monthString => Number(monthString));
+  const months = Array
+    .from(new Set([...savingMonths, ...investmentsMonths]))
+    .sort((a, b) => a - b) // asc
     .reverse();
-  const latestMonthNumber = months[0];
+  const firstMonthNumber = months[0];
 
-  const monthNumber = route.params?.monthNumber || latestMonthNumber;
+  const monthNumber = route.params?.monthNumber || firstMonthNumber;
   const routeWeekNumber = route.params?.weekNumber;
 
   useEffect(() => {
@@ -148,13 +148,9 @@ export default function SavingsScreen () {
     : 40; // wide desktop
   const listContainerPaddingTop = windowWidth < MEDIA.TABLET ? 24 : 40;
 
-  const noDataForSelectedYear = !Object.keys(expenses[selectedYear] || {}).length
-    && !Object.keys(incomes[selectedYear] || {}).length
-    && !Object.keys(savings[selectedYear] || {}).length
+  const noDataForSelectedYear = !Object.keys(savings[selectedYear] || {}).length
     && !Object.keys(investments[selectedYear] || {}).length;
-  const noDataForAnyYear = !Object.keys(expenses).length
-    && !Object.keys(incomes).length
-    && !Object.keys(savings).length
+  const noDataForAnyYear = !Object.keys(savings).length
     && !Object.keys(investments).length;
 
   const hideYearSelector = selectedTab === TAB.YEARS;

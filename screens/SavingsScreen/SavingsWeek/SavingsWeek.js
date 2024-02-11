@@ -144,7 +144,6 @@ export default function SavingsWeek (props) {
           savingsAndInvestmentsGroupedByDay={savingsAndInvestmentsGroupedByDay}
           totalSavingsAndInvestments={totalSavingsAndInvestments}
           selectedDayIndex={selectedDayIndex}
-          setSelectedDayIndex={setSelectedDayIndex}
         />
       </View>
     </View>

@@ -498,6 +498,10 @@ function Navigator () {
 
         <Stack.Screen
           name='Saving'
+          initialParams={{
+            saving: undefined,
+            investment: undefined,
+          }}
           component={SavingScreen}
           options={{
             title: 'Add a Saving',

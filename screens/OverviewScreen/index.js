@@ -50,13 +50,25 @@ export default function OverviewScreen () {
     ]))
   }, [expensesYears, incomesYears, savingsYears, investmentsYears]);
 
-  const months = Object
+  const expensesMonths = Object
     .keys(expenses[selectedYear] || {})
-    .map(monthString => Number(monthString))
+    .map(monthString => Number(monthString));
+  const incomesMonths = Object
+    .keys(incomes[selectedYear] || {})
+    .map(monthString => Number(monthString));
+  const savingMonths = Object
+    .keys(savings[selectedYear] || {})
+    .map(monthString => Number(monthString));
+  const investmentsMonths = Object
+    .keys(investments[selectedYear] || {})
+    .map(monthString => Number(monthString));
+  const months = Array
+    .from(new Set([...expensesMonths, ...incomesMonths, ...savingMonths, ...investmentsMonths]))
+    .sort((a, b) => a - b) // asc
     .reverse();
-  const latestMonthNumber = months[0];
+  const firstMonthNumber = months[0];
 
-  const monthNumber = route.params?.monthNumber || latestMonthNumber;
+  const monthNumber = route.params?.monthNumber || firstMonthNumber;
 
   useEffect(() => {
     if (overviewType !== selectedTab) {

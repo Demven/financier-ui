@@ -1,5 +1,6 @@
 import { StyleSheet, View, Text } from 'react-native';
 import { useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import TitleLink from '../../../../components/TitleLink';
 import FoldedContainer from '../../../../components/FoldedContainer';
@@ -13,7 +14,6 @@ WeekStats.propTypes = {
   savingsAndInvestmentsGroupedByDay: PropTypes.arrayOf(PropTypes.number).isRequired,
   totalSavingsAndInvestments: PropTypes.number.isRequired,
   selectedDayIndex: PropTypes.number,
-  setSelectedDayIndex: PropTypes.func,
 };
 
 export default function WeekStats (props) {
@@ -22,8 +22,9 @@ export default function WeekStats (props) {
     savingsAndInvestmentsGroupedByDay,
     totalSavingsAndInvestments,
     selectedDayIndex,
-    setSelectedDayIndex,
   } = props;
+
+  const navigation = useNavigation();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
@@ -56,7 +57,10 @@ export default function WeekStats (props) {
                         selectedDayIndex === index && styles.statNameBold,
                       ]}
                       alwaysHighlighted
-                      onPress={() => setSelectedDayIndex(index)}
+                      onPress={() => navigation.navigate('Saving', {
+                        saving: item?.shares ? undefined: item,
+                        investment: item?.shares ? item : undefined,
+                      })}
                     >
                       {item.name}
                     </TitleLink>
