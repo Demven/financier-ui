@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import WeekChart from './WeekChart';
 import WeekStats from './WeekStats';
 import TitleLink from '../../../components/TitleLink';
+import CategoryDropdown, { SHOW_ALL_CATEGORY_ID } from '../../../components/CategoryDropdown';
 import {
   getDaysInMonth,
   getWeekRange,
@@ -12,9 +13,9 @@ import {
   MONTH_NAME,
 } from '../../../services/date';
 import {
+  filterWeekExpensesByCategory,
   getWeekChartPointsByDay,
   groupWeekByDay,
-  mergeGroupedByDay,
 } from '../../../services/dataItems';
 import { FONT } from '../../../styles/fonts';
 import { MEDIA } from '../../../styles/media';
@@ -25,8 +26,7 @@ ExpensesWeek.propTypes = {
   monthNumber: PropTypes.number.isRequired,
   weekNumber: PropTypes.number.isRequired,
   onScrollTo: PropTypes.func,
-  savings: PropTypes.object, // weeks -> savings { [1]: [], [2]: [] }
-  investments: PropTypes.object, // weeks -> investments { [1]: [], [2]: [] }
+  expenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
 };
 
 export default function ExpensesWeek (props) {
@@ -36,26 +36,23 @@ export default function ExpensesWeek (props) {
     monthNumber,
     weekNumber,
     onScrollTo,
-    savings = {},
-    investments = {},
+    expenses = {},
   } = props;
+
+  const windowWidth = useSelector(state => state.ui.windowWidth);
 
   const [selectedDayIndex, setSelectedDayIndex] = useState();
 
-  const windowWidth = useSelector(state => state.ui.windowWidth);
+  const [categoryId, setCategoryId] = useState(SHOW_ALL_CATEGORY_ID);
 
   const daysInMonth = getDaysInMonth(year, monthNumber);
   const daysInWeek = getDaysInWeek(weekNumber, daysInMonth);
 
-  const currentWeekSavings = savings?.[weekNumber] || [];
-  const currentWeekInvestments = investments?.[weekNumber] || [];
+  const currentWeekExpenses = filterWeekExpensesByCategory(expenses?.[weekNumber] || [], categoryId);
+  const expensesGroupedByDays = groupWeekByDay(currentWeekExpenses, daysInWeek);
+  const expensesByDays = getWeekChartPointsByDay(expensesGroupedByDays);
 
-  const savingsGroupedByDay = groupWeekByDay(currentWeekSavings, daysInWeek);
-  const investmentsGroupedByDay = groupWeekByDay(currentWeekInvestments, daysInWeek);
-  const savingsAndInvestmentsGroupedByDay = mergeGroupedByDay(savingsGroupedByDay, investmentsGroupedByDay);
-  const savingsAndInvestmentsByDays = getWeekChartPointsByDay(savingsAndInvestmentsGroupedByDay);
-
-  const totalSavingsAndInvestments = savingsAndInvestmentsByDays.reduce((total, weekTotal) => total + weekTotal, 0);
+  const totalExpenses = expensesByDays.reduce((total, weekTotal) => total + weekTotal, 0);
 
   function onLayout (event) {
     if (typeof onScrollTo === 'function') {
@@ -87,7 +84,7 @@ export default function ExpensesWeek (props) {
       : -24 // desktop
     : -20; // large desktop
 
-  const isEmptyWeek = !totalSavingsAndInvestments;
+  const isEmptyWeek = !totalExpenses;
 
   if (isEmptyWeek) {
     return null;
@@ -98,7 +95,7 @@ export default function ExpensesWeek (props) {
       style={[styles.expensesWeek, style]}
       onLayout={onLayout}
     >
-      <View style={styles.titleContainer}>
+      <View style={[styles.titleContainer, { width: columnWidth }]}>
         <TitleLink
           style={styles.subtitleLink}
           textStyle={[styles.subtitleLinkText, {
@@ -117,6 +114,13 @@ export default function ExpensesWeek (props) {
         }]}>
           {MONTH_NAME[monthNumber].substring(0, 3)} {(getWeekRange(weekNumber, getDaysInMonth(year, monthNumber)))}
         </Text>
+
+        <CategoryDropdown
+          style={styles.categoryDropdown}
+          categoryId={categoryId}
+          showAll
+          onSelect={setCategoryId}
+        />
       </View>
 
       <View
@@ -130,7 +134,7 @@ export default function ExpensesWeek (props) {
           year={Number(year)}
           monthNumber={monthNumber}
           daysInWeek={daysInWeek}
-          savingsAndInvestmentsByDays={savingsAndInvestmentsByDays}
+          expensesByDays={expensesByDays}
           selectedDayIndex={selectedDayIndex}
           onDaySelected={setSelectedDayIndex}
         />
@@ -141,9 +145,9 @@ export default function ExpensesWeek (props) {
             marginTop: statsMarginTop,
             paddingLeft: windowWidth < MEDIA.DESKTOP ? 0 : 40,
           }}
-          savingsAndInvestmentsGroupedByDay={savingsAndInvestmentsGroupedByDay}
-          totalSavingsAndInvestments={totalSavingsAndInvestments}
-          selectedDayIndex={selectedDayIndex}
+          monthNumber={monthNumber}
+          weekExpenses={currentWeekExpenses}
+          totalExpenses={totalExpenses}
         />
       </View>
     </View>
@@ -158,6 +162,8 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
+    position: 'relative',
+    zIndex: 1,
   },
 
   subtitleLink: {
@@ -169,6 +175,13 @@ const styles = StyleSheet.create({
 
   weekRangeText: {
     fontFamily: FONT.NOTO_SERIF.REGULAR,
+  },
+
+  categoryDropdown: {
+    width: 300,
+    position: 'absolute',
+    right: 0,
+    top: -14,
   },
 
   content: {

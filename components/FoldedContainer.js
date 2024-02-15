@@ -24,7 +24,11 @@ FoldedContainer.propTypes = {
   titleStyle: PropTypes.any,
   title: PropTypes.string.isRequired,
   children: PropTypes.any.isRequired,
+  arrowIconSize: PropTypes.number,
   disable: PropTypes.bool,
+  initiallyFolded: PropTypes.bool,
+  onFold: PropTypes.func,
+  onUnfold: PropTypes.func,
 };
 
 export default function FoldedContainer (props) {
@@ -33,10 +37,14 @@ export default function FoldedContainer (props) {
     titleStyle,
     title,
     children,
+    arrowIconSize,
     disable,
+    initiallyFolded = false,
+    onFold = () => {},
+    onUnfold = () => {},
   } = props;
 
-  const [folded, setFolded] = useState(false);
+  const [folded, setFolded] = useState(initiallyFolded);
   const [initialized, setInitialized] = useState(false);
   const [childrenHeight, setChildrenHeight] = useState(0);
 
@@ -81,6 +89,18 @@ export default function FoldedContainer (props) {
     setChildrenHeight(height);
   }
 
+  function onPress () {
+    const isFolded = !folded;
+
+    setFolded(isFolded);
+
+    if (isFolded) {
+      onFold();
+    } else {
+      onUnfold();
+    }
+  }
+
   const animatedHeightStyles = useAnimatedStyle(() => ({
     height: height.value,
   }));
@@ -101,7 +121,7 @@ export default function FoldedContainer (props) {
         style={active
           ? ({ pressed }) => [styles.button, pressed && styles.buttonPressed]
           : styles.buttonDisabled}
-        onPress={active ? () => setFolded(!folded) : undefined}
+        onPress={active ? onPress : undefined}
       >
         <View style={styles.titleContainer}>
           <Text
@@ -117,14 +137,20 @@ export default function FoldedContainer (props) {
             <Icon
               style={styles.arrowIcon}
               collection={ICON_COLLECTION.IONICONS}
-              name={folded ? 'caret-up' : 'caret-down'}
-              size={titleFontSize}
+              name={folded ? 'caret-down' : 'caret-up'}
+              size={arrowIconSize || titleFontSize}
             />
           )}
         </View>
       </Pressable>
 
-      <Animated.View style={[styles.animatedContainer, active && animatedHeightStyles]}>
+      <Animated.View
+        style={[
+          styles.animatedContainer,
+          active && animatedHeightStyles,
+          !active && { height: 'auto' },
+        ]}
+      >
         <View
           style={[styles.content, active && styles.contentActive]}
           onLayout={onChildrenLayout}
@@ -170,13 +196,13 @@ const styles = StyleSheet.create({
   },
 
   animatedContainer: {
-    height: 'auto',
     overflow: 'hidden',
   },
 
   content: {
     width: '100%',
     flexGrow: 1,
+    alignItems: 'flex-start',
   },
   contentActive: {
     position: 'absolute',

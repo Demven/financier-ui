@@ -7,7 +7,7 @@ import YearChart from './YearChart';
 import YearStats from './YearStats';
 import TitleLink from '../../../components/TitleLink';
 import { MONTHS_IN_YEAR } from '../../../services/date';
-import { getAmount } from '../../../services/amount';
+import { getTotalAmountsByMonths } from '../../../services/amount';
 import { FONT } from '../../../styles/fonts';
 import { MEDIA } from '../../../styles/media';
 
@@ -57,24 +57,10 @@ export default function SavingsYear (props) {
     });
   }
 
-  function getSavingsByMonths (groupedByMonth) {
-    return groupedByMonth.map(itemsByMonth => {
-      if (!itemsByMonth?.length) {
-        return 0;
-      }
-
-      const monthTotal = itemsByMonth.reduce((total, item) => {
-        return total + getAmount(item);
-      }, 0);
-
-      return parseFloat(monthTotal.toFixed(2));
-    });
-  }
-
   const savingsGroupedByMonth = groupByMonth(savings);
   const investmentsGroupedByMonth = groupByMonth(investments);
   const savingsAndInvestmentsGroupedByMonth = mergeGroupedByMonth(savingsGroupedByMonth, investmentsGroupedByMonth);
-  const savingsByMonths = getSavingsByMonths(savingsAndInvestmentsGroupedByMonth);
+  const savingsByMonths = getTotalAmountsByMonths(savingsAndInvestmentsGroupedByMonth);
 
   const totalSavingsAndInvestments = savingsByMonths.reduce((total, month) => total + month, 0);
 

@@ -18,8 +18,8 @@ export function getMonthTotalAmount (items) {
     .reduce((total, weekTotal) => total + weekTotal, 0);
 }
 
-export function formatAmount (number) {
-  return `${Math.sign(number) === -1 ? '- ' : '+'}${parseFloat(Math.abs(number).toFixed(2)).toLocaleString()}`;
+export function formatAmount (number, currencySymbol = '') {
+  return `${Math.sign(number) === -1 ? '- ' : '+'}${currencySymbol}${parseFloat(Math.abs(number).toFixed(2)).toLocaleString()}`;
 }
 
 export function getAmountColor (amount) {
@@ -32,4 +32,18 @@ export function getListTotal (itemList) {
   return itemList.reduce((total, item) => {
     return total + getAmount(item);
   }, 0);
+}
+
+export function getTotalAmountsByMonths (groupedByMonth) {
+  return groupedByMonth.map(itemsByMonth => {
+    if (!itemsByMonth?.length) {
+      return 0;
+    }
+
+    const monthTotal = itemsByMonth.reduce((total, item) => {
+      return total + getAmount(item);
+    }, 0);
+
+    return parseFloat(monthTotal.toFixed(2));
+  });
 }

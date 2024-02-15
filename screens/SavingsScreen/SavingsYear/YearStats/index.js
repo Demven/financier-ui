@@ -56,6 +56,7 @@ export default function YearStats (props) {
                   windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
                   selectedMonthIndex === index && styles.statNameBold,
                 ]}
+                alwaysHighlighted={!!total}
                 onPress={total > 0
                   ? () => navigation.navigate('SavingsWeeks', { monthNumber: index + 1, year })
                   : undefined
@@ -113,10 +114,12 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 
-  stats: {},
+  stats: {
+    width: '100%',
+  },
 
   statRow: {
-    marginTop: 8,
+    marginTop: 16,
     flexDirection: 'row',
   },
 

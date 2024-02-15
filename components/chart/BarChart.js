@@ -128,10 +128,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
 
-  barButton: {
-    borderTopLeftRadius: 4,
-    borderTopRightRadius: 4,
-  },
+  barButton: {},
   bar: {
     width: '100%',
     height: '100%',
@@ -149,15 +146,13 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 6,
     maxHeight: '100%',
-    borderTopLeftRadius: 4,
-    borderTopRightRadius: 4,
     position: 'absolute',
     top: 0,
     left: 0,
-    transition: 'height 0.3s',
+    transition: 'height 0.25s',
   },
   barTopHighlighted: {
-    height: 20,
+    height: 36,
   },
 
   gradient: {

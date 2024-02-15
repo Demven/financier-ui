@@ -206,13 +206,14 @@ export default function SavingScreen () {
     || (typeId === TYPE.SAVING && !!amountError)
     || (typeId === TYPE.INVESTMENT && (!!sharesError || !!pricePerShareError));
 
+  const modalTitle = typeId === TYPE.SAVING
+    ? savingToEdit ? 'Edit a saving' : 'Add a saving'
+    : investmentToEdit ? 'Edit an investment' : 'Add an investment';
+
   return (
     <Modal
       contentStyle={styles.savingScreen}
-      title={typeId === TYPE.SAVING
-        ? 'Add a Saving'
-        : 'Add an Investment'
-      }
+      title={modalTitle}
       disableSave={formIsInvalid}
       onSave={onSave}
     >

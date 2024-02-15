@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Modal from '../../components/Modal';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import Dropdown from '../../components/Dropdown';
 import { ICON_COLLECTION } from '../../components/Icon';
 import IconButton from '../../components/IconButton';
 import DatePicker from '../../components/DatePicker';
+import CategoryDropdown from '../../components/CategoryDropdown';
 import { addExpenseAction } from '../../redux/reducers/expenses';
 import { dateToDateString } from '../../services/date';
 import { COLOR } from '../../styles/colors';
@@ -26,43 +27,30 @@ const DATE_OPTIONS = [
 export default function ExpenseScreen () {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const route = useRoute();
 
-  const categoriesList = useSelector(state => state.categories);
+  const preselectedCategory = route.params?.preselectedCategory || ''; // 'first' or 'last'
+  const expenseToEdit = route.params?.expense;
 
-  const [name, setName] = useState('');
+  const [name, setName] = useState(expenseToEdit?.name || '');
   const [nameError, setNameError] = useState('');
 
-  const [categorySelectOpen, setCategorySelectOpen] = useState(false);
-  const [categoryId, setCategoryId] = useState(null);
-  const [categories, setCategories] = useState(storedCategoryToDropdownItems(categoriesList));
+  const [categoryId, setCategoryId] = useState(expenseToEdit?.categoryId || null);
 
   const [dateOptionsSelectOpen, setDateOptionsSelectOpen] = useState(false);
-  const [dateOptionId, setDateOptionId] = useState(DATE_OPTION.TODAY);
+  const [dateOptionId, setDateOptionId] = useState(expenseToEdit?.dateString ? DATE_OPTION.CHOOSE_DATE : DATE_OPTION.TODAY);
   const [dateOptions, setDateOptions] = useState(DATE_OPTIONS);
 
-  const [dateString, setDateString] = useState(dateToDateString(new Date()));
+  const [dateString, setDateString] = useState(expenseToEdit?.dateString || dateToDateString(new Date()));
   const [dateDisabled, setDateDisabled] = useState(false);
 
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState(expenseToEdit?.amount ? String(expenseToEdit.amount) : '');
   const [amountError, setAmountError] = useState('');
 
   const todayDate = new Date();
   todayDate.setHours(0);
   todayDate.setMinutes(0);
   todayDate.setSeconds(0);
-
-  const route = useRoute();
-  const preselectedCategory = route.params?.preselectedCategory || ''; // 'first' or 'last'
-
-  useEffect(() => {
-    setCategories(storedCategoryToDropdownItems(categoriesList));
-
-    if (preselectedCategory === 'first' && categoriesList.length > 0) {
-      setCategoryId(categoriesList?.[0]?.id);
-    } else if (preselectedCategory === 'last' && categoriesList.length > 0) {
-      setCategoryId(categoriesList?.[categoriesList.length - 1]?.id);
-    }
-  }, [categoriesList]);
 
   useEffect(() => {
     if (dateOptionId === DATE_OPTION.TODAY) {
@@ -80,14 +68,6 @@ export default function ExpenseScreen () {
 
   function onAddCategory () {
     navigation.navigate('Category');
-  }
-
-  function storedCategoryToDropdownItems (categoriesList) {
-    return categoriesList.map(category => ({
-      value: category.id,
-      label: category.name,
-      description: category.description,
-    }));
   }
 
   function validateName () {
@@ -161,7 +141,7 @@ export default function ExpenseScreen () {
   return (
     <Modal
       contentStyle={styles.expenseScreen}
-      title='Add an Expense'
+      title={expenseToEdit ? 'Edit an expense' : 'Add an expense' }
       disableSave={formIsInvalid}
       onSave={onSave}
     >
@@ -178,16 +158,11 @@ export default function ExpenseScreen () {
       />
 
       <View style={[styles.formRow, { zIndex: 30 }]}>
-        <Dropdown
+        <CategoryDropdown
           style={styles.formElement}
-          label='Category'
-          placeholder='Select a category'
-          open={categorySelectOpen}
-          setOpen={setCategorySelectOpen}
-          value={categoryId}
-          setValue={setCategoryId}
-          items={categories}
-          setItems={setCategories}
+          categoryId={categoryId}
+          preselectedCategory={expenseToEdit ? undefined : preselectedCategory}
+          onSelect={setCategoryId}
         />
 
         <IconButton

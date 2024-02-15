@@ -42,7 +42,7 @@ export default function WeekStats (props) {
             paddingLeft: windowWidth < MEDIA.DESKTOP ? 16 : 24,
           }]}
         >
-          {savingsAndInvestmentsGroupedByDay.flatMap((daySavingsAndInvestments, index) => (
+          {savingsAndInvestmentsGroupedByDay.flatMap(daySavingsAndInvestments => (
             <>
               {daySavingsAndInvestments?.map((item, index) => (
                 <View
@@ -124,7 +124,9 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 
-  stats: {},
+  stats: {
+    width: '100%',
+  },
 
   statRow: {
     marginTop: 16,

@@ -4,12 +4,12 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Loader from '../../../../components/Loader';
 import BarChart from '../../../../components/chart/BarChart';
-import WeekChartLegend, { LEGEND_HEIGHT } from './WeekChartLegend';
+import WeekChartLegend, { LEGEND_HEIGHT } from '../../../../components/chart/legends/WeekChartLegend';
 import { MEDIA } from '../../../../styles/media';
 
 WeekChart.propTypes = {
   style: PropTypes.any,
-  savingsAndInvestmentsByDays: PropTypes.arrayOf(PropTypes.number).isRequired,
+  expensesByDays: PropTypes.arrayOf(PropTypes.number).isRequired,
   daysInWeek: PropTypes.number.isRequired,
   selectedDayIndex: PropTypes.number,
   onDaySelected: PropTypes.func.isRequired,
@@ -18,7 +18,7 @@ WeekChart.propTypes = {
 export default function WeekChart (props) {
   const {
     style,
-    savingsAndInvestmentsByDays,
+    expensesByDays,
     daysInWeek,
     selectedDayIndex,
     onDaySelected,
@@ -64,8 +64,8 @@ export default function WeekChart (props) {
         width={chartWidth}
         height={chartHeight}
         legendHeight={LEGEND_HEIGHT}
-        data={savingsAndInvestmentsByDays}
-        getColor={(opacity = 1) => `rgba(42, 113, 40, ${opacity})`} // COLOR.GREEN
+        data={expensesByDays}
+        getColor={(opacity = 1) => `rgba(100, 100, 100, ${opacity})`} // COLOR.GRAY
         barSelected={selectedDayIndex}
         onBarSelected={onDaySelected}
       />

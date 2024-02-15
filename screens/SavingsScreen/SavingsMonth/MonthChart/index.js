@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Loader from '../../../../components/Loader';
 import BarChart from '../../../../components/chart/BarChart';
-import MonthChartLegend, { LEGEND_HEIGHT } from './MonthChartLegend';
+import MonthChartLegend, { LEGEND_HEIGHT } from '../../../../components/chart/legends/MonthChartLegend';
 import { DAYS_IN_WEEK, WEEKS_IN_MONTH } from '../../../../services/date';
 import { MEDIA } from '../../../../styles/media';
 

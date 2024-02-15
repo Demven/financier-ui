@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import PropTypes from 'prop-types';
 import Loader from '../../../../components/Loader';
 import BarChart from '../../../../components/chart/BarChart';
-import YearChartLegend, { LEGEND_HEIGHT } from './YearChartLegend';
+import YearChartLegend, { LEGEND_HEIGHT } from '../../../../components/chart/legends/YearChartLegend';
 
 YearChart.propTypes = {
   style: PropTypes.any,

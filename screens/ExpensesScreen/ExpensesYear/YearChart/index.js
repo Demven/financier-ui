@@ -3,11 +3,11 @@ import { StyleSheet, View } from 'react-native';
 import PropTypes from 'prop-types';
 import Loader from '../../../../components/Loader';
 import BarChart from '../../../../components/chart/BarChart';
-import YearChartLegend, { LEGEND_HEIGHT } from './YearChartLegend';
+import YearChartLegend, { LEGEND_HEIGHT } from '../../../../components/chart/legends/YearChartLegend';
 
 YearChart.propTypes = {
   style: PropTypes.any,
-  savingsByMonths: PropTypes.arrayOf(PropTypes.number),
+  expensesByMonths: PropTypes.arrayOf(PropTypes.number),
   selectedMonthIndex: PropTypes.number,
   onMonthSelected: PropTypes.func.isRequired,
 };
@@ -15,7 +15,7 @@ YearChart.propTypes = {
 export default function YearChart (props) {
   const {
     style,
-    savingsByMonths,
+    expensesByMonths,
     selectedMonthIndex,
     onMonthSelected,
   } = props;
@@ -51,8 +51,8 @@ export default function YearChart (props) {
         width={chartWidth}
         height={chartHeight}
         legendHeight={LEGEND_HEIGHT}
-        data={savingsByMonths}
-        getColor={(opacity = 1) => `rgba(42, 113, 40, ${opacity})`} // COLOR.GREEN
+        data={expensesByMonths}
+        getColor={(opacity = 1) => `rgba(100, 100, 100, ${opacity})`} // COLOR.GRAY
         barSelected={selectedMonthIndex}
         onBarSelected={onMonthSelected}
       />

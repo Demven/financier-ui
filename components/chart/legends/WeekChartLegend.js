@@ -5,36 +5,30 @@ import {
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import { WEEKS_IN_MONTH, DAYS_IN_WEEK } from '../../../../services/date';
-import { FONT } from '../../../../styles/fonts';
-import { COLOR } from '../../../../styles/colors';
-import { MEDIA } from '../../../../styles/media';
+import { FONT } from '../../../styles/fonts';
+import { COLOR } from '../../../styles/colors';
+import { MEDIA } from '../../../styles/media';
 
-MonthChartLegend.propTypes = {
+WeekChartLegend.propTypes = {
   style: PropTypes.any,
-  width: PropTypes.number,
-  daysInMonth: PropTypes.number,
-  selectedWeekIndex: PropTypes.number,
-  barsProportion: PropTypes.arrayOf(PropTypes.number),
+  daysInWeek: PropTypes.number,
+  selectedDayIndex: PropTypes.number,
 };
 
 export const LEGEND_HEIGHT = 18;
-const BORDER_WIDTH = 2;
 
-export default function MonthChartLegend (props) {
+export default function WeekChartLegend (props) {
   const {
     style,
-    width,
-    daysInMonth,
-    selectedWeekIndex,
-    barsProportion,
+    daysInWeek,
+    selectedDayIndex,
   } = props;
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
   return (
     <View
-      style={[styles.monthChartLegend, {
+      style={[styles.weekChartLegend, {
         bottom: windowWidth < MEDIA.WIDE_MOBILE ? 2 : 0,
       }, style]}
     >
@@ -42,37 +36,33 @@ export default function MonthChartLegend (props) {
         <View style={styles.horizontalLine} />
       </View>
 
-      <View style={styles.weeks}>
-        {Array.from(new Array(WEEKS_IN_MONTH)).map((_, index) => {
-          const isLastWeek = index === WEEKS_IN_MONTH - 1;
-
-          return (
-            <View
-              key={index}
+      <View style={styles.days}>
+        {Array.from(new Array(daysInWeek)).map((_, index) => (
+          <View
+            key={index}
+            style={[
+              styles.day,
+              { paddingLeft: daysInWeek > 7 ? 2 : 0 },
+              index === daysInWeek - 1 && { borderRightWidth: 0, paddingLeft: 0 },
+            ]}
+          >
+            <Text
               style={[
-                styles.week,
-                isLastWeek && styles.weekLast,
-                { width: width / daysInMonth * (barsProportion?.[index] || DAYS_IN_WEEK) },
+                styles.label,
+                selectedDayIndex === index && styles.labelSelected,
               ]}
             >
-              <Text
-                style={[
-                  styles.label,
-                  selectedWeekIndex === index && styles.labelSelected,
-                ]}
-              >
-                Week {index + 1}
-              </Text>
-            </View>
-          );
-        })}
+              {windowWidth > MEDIA.WIDE_MOBILE ? 'Day ' : ''}{index + 1}
+            </Text>
+          </View>
+        ))}
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  monthChartLegend: {
+  weekChartLegend: {
     width: '100%',
     flexGrow: 1,
     position: 'absolute',
@@ -102,24 +92,22 @@ const styles = StyleSheet.create({
     top: -4,
   },
 
-  weeks: {
+  days: {
     flexDirection: 'row',
     backgroundColor: COLOR.WHITE,
   },
 
-  week: {
-    transform: [{ translateX: BORDER_WIDTH / 2 }],
+  day: {
+    flexGrow: 1,
     paddingTop: 4,
     borderRightWidth: 2,
     borderRightColor: COLOR.LIGHT_GRAY,
   },
-  weekLast: {
-    borderRightWidth: 0,
-    paddingLeft: 0,
-  },
 
   label: {
     fontFamily: FONT.NOTO_SERIF.REGULAR,
+    fontSize: 12,
+    lineHeight: 12,
     color: COLOR.LIGHT_GRAY,
     textAlign: 'center',
   },

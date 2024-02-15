@@ -6,8 +6,12 @@ import PropTypes from 'prop-types';
 import MonthChart from './MonthChart';
 import MonthStats from './MonthStats';
 import TitleLink from '../../../components/TitleLink';
+import CategoryDropdown, { SHOW_ALL_CATEGORY_ID } from '../../../components/CategoryDropdown';
 import { MONTH_NAME } from '../../../services/date';
-import { getMonthChartPointsByWeek, mergeGroupedByWeek } from '../../../services/dataItems';
+import {
+  getMonthChartPointsByWeek,
+  filterMonthExpensesByCategory,
+} from '../../../services/dataItems';
 import { FONT } from '../../../styles/fonts';
 import { MEDIA } from '../../../styles/media';
 
@@ -15,8 +19,7 @@ ExpensesMonth.propTypes = {
   style: PropTypes.any,
   year: PropTypes.number.isRequired,
   monthNumber: PropTypes.number.isRequired,
-  savings: PropTypes.object, // weeks -> savings { [1]: [], [2]: [] }
-  investments: PropTypes.object, // weeks -> investments { [1]: [], [2]: [] }
+  expenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
 };
 
 export default function ExpensesMonth (props) {
@@ -24,20 +27,21 @@ export default function ExpensesMonth (props) {
     style,
     year,
     monthNumber,
-    savings = {},
-    investments = {},
+    expenses = {},
   } = props;
 
   const [selectedWeekIndex, setSelectedWeekIndex] = useState();
+
+  const [categoryId, setCategoryId] = useState(SHOW_ALL_CATEGORY_ID);
 
   const navigation = useNavigation();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
-  const savingsAndInvestmentsGroupedByWeek = mergeGroupedByWeek(savings, investments);
-  const savingsAndInvestmentsByWeeks = getMonthChartPointsByWeek(savingsAndInvestmentsGroupedByWeek);
+  const filteredExpenses = filterMonthExpensesByCategory(expenses, categoryId);
+  const expensesByWeeks = getMonthChartPointsByWeek(filteredExpenses);
 
-  const totalSavingsAndInvestments = savingsAndInvestmentsByWeeks.reduce((total, weekTotal) => total + weekTotal, 0);
+  const totalExpenses = expensesByWeeks.reduce((total, weekTotal) => total + weekTotal, 0);
 
   const columnWidth = windowWidth < MEDIA.DESKTOP
     ? '100%'
@@ -63,7 +67,7 @@ export default function ExpensesMonth (props) {
       : -24 // desktop
     : -20; // large desktop
 
-  const isEmptyMonth = !totalSavingsAndInvestments;
+  const isEmptyMonth = !totalExpenses;
 
   if (isEmptyMonth) {
     return null;
@@ -71,17 +75,26 @@ export default function ExpensesMonth (props) {
 
   return (
     <View style={[styles.expensesMonth, style]}>
-      <TitleLink
-        style={styles.subtitleLink}
-        textStyle={[styles.subtitleLinkText, {
-          fontSize: subtitleFontSize,
-          lineHeight: subtitleLineHeight,
-        }]}
-        alwaysHighlighted
-        onPress={() => navigation.navigate('SavingsWeeks', { monthNumber })}
-      >
-        {MONTH_NAME[monthNumber]}
-      </TitleLink>
+      <View style={[styles.titleContainer, { width: columnWidth }]}>
+        <TitleLink
+          style={styles.subtitleLink}
+          textStyle={[styles.subtitleLinkText, {
+            fontSize: subtitleFontSize,
+            lineHeight: subtitleLineHeight,
+          }]}
+          alwaysHighlighted
+          onPress={() => navigation.navigate('ExpensesWeeks', { monthNumber })}
+        >
+          {MONTH_NAME[monthNumber]}
+        </TitleLink>
+
+        <CategoryDropdown
+          style={styles.categoryDropdown}
+          categoryId={categoryId}
+          showAll
+          onSelect={setCategoryId}
+        />
+      </View>
 
       <View
         style={[styles.content, {
@@ -93,7 +106,7 @@ export default function ExpensesMonth (props) {
           style={{ width: chartWidth }}
           year={Number(year)}
           monthNumber={monthNumber}
-          savingsAndInvestmentsByWeeks={savingsAndInvestmentsByWeeks}
+          expensesByWeeks={expensesByWeeks}
           selectedWeekIndex={selectedWeekIndex}
           onWeekSelected={setSelectedWeekIndex}
         />
@@ -105,8 +118,8 @@ export default function ExpensesMonth (props) {
             paddingLeft: windowWidth < MEDIA.DESKTOP ? 0 : 40,
           }}
           monthNumber={monthNumber}
-          savingsAndInvestmentsByWeeks={savingsAndInvestmentsByWeeks}
-          totalSavingsAndInvestments={totalSavingsAndInvestments}
+          expensesByWeeks={expensesByWeeks}
+          totalExpenses={totalExpenses}
           selectedWeekIndex={selectedWeekIndex}
         />
       </View>
@@ -119,11 +132,25 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
 
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    position: 'relative',
+    zIndex: 1,
+  },
+
   subtitleLink: {
     alignSelf: 'flex-start',
   },
   subtitleLinkText: {
     fontFamily: FONT.NOTO_SERIF.BOLD,
+  },
+
+  categoryDropdown: {
+    width: 300,
+    position: 'absolute',
+    right: 0,
+    top: -14,
   },
 
   content: {

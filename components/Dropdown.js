@@ -11,7 +11,7 @@ import { COLOR } from '../styles/colors';
 import { FONT } from '../styles/fonts';
 
 Dropdown.propTypes = {
-  style: PropTypes.object,
+  style: PropTypes.any,
   label: PropTypes.string,
   placeholder: PropTypes.string,
   open: PropTypes.bool.isRequired,
@@ -107,7 +107,7 @@ export default function Dropdown (props) {
         )}
       />
 
-      {description && (
+      {!!description && (
         <Text style={styles.description}>
           {description}
         </Text>

@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Loader from '../../../../components/Loader';
 import BarChart from '../../../../components/chart/BarChart';
-import WeekChartLegend, { LEGEND_HEIGHT } from './WeekChartLegend';
+import WeekChartLegend, { LEGEND_HEIGHT } from '../../../../components/chart/legends/WeekChartLegend';
 import { MEDIA } from '../../../../styles/media';
 
 WeekChart.propTypes = {

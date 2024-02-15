@@ -6,29 +6,31 @@ import PropTypes from 'prop-types';
 import YearChart from './YearChart';
 import YearStats from './YearStats';
 import TitleLink from '../../../components/TitleLink';
+import CategoryDropdown, { SHOW_ALL_CATEGORY_ID } from '../../../components/CategoryDropdown';
 import { MONTHS_IN_YEAR } from '../../../services/date';
-import { getAmount } from '../../../services/amount';
+import { getTotalAmountsByMonths } from '../../../services/amount';
+import { filterYearExpensesByCategory } from '../../../services/dataItems';
 import { FONT } from '../../../styles/fonts';
 import { MEDIA } from '../../../styles/media';
 
 ExpensesYear.propTypes = {
   style: PropTypes.any,
   year: PropTypes.number.isRequired,
-  savings: PropTypes.object, // weeks -> savings { [1]: [], [2]: [] }
-  investments: PropTypes.object, // weeks -> investments { [1]: [], [2]: [] }
+  expenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
 };
 
 export default function ExpensesYear (props) {
   const {
     style,
     year,
-    savings = {},
-    investments = {},
+    expenses = {},
   } = props;
 
   const navigation = useNavigation();
 
   const [selectedMonthIndex, setSelectedMonthIndex] = useState();
+
+  const [categoryId, setCategoryId] = useState(SHOW_ALL_CATEGORY_ID);
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
@@ -47,36 +49,10 @@ export default function ExpensesYear (props) {
     return groupedByMonth;
   }
 
-  function mergeGroupedByMonth (groupedByMonth1 = [], groupedByMonth2 = []) {
-    return groupedByMonth1.map((byMonth1, index) => {
-      const byMonth2 = groupedByMonth2[index] || [];
-
-      return Array.isArray(byMonth1)
-        ? [...byMonth1, ...byMonth2]
-        : byMonth2;
-    });
-  }
-
-  function getSavingsByMonths (groupedByMonth) {
-    return groupedByMonth.map(itemsByMonth => {
-      if (!itemsByMonth?.length) {
-        return 0;
-      }
-
-      const monthTotal = itemsByMonth.reduce((total, item) => {
-        return total + getAmount(item);
-      }, 0);
-
-      return parseFloat(monthTotal.toFixed(2));
-    });
-  }
-
-  const savingsGroupedByMonth = groupByMonth(savings);
-  const investmentsGroupedByMonth = groupByMonth(investments);
-  const savingsAndInvestmentsGroupedByMonth = mergeGroupedByMonth(savingsGroupedByMonth, investmentsGroupedByMonth);
-  const savingsByMonths = getSavingsByMonths(savingsAndInvestmentsGroupedByMonth);
-
-  const totalSavingsAndInvestments = savingsByMonths.reduce((total, month) => total + month, 0);
+  const filteredExpenses = filterYearExpensesByCategory(expenses, categoryId);
+  const expensesGroupedByMonth = groupByMonth(filteredExpenses);
+  const totalAmountsByMonths = getTotalAmountsByMonths(expensesGroupedByMonth);
+  const totalExpenses = totalAmountsByMonths.reduce((total, month) => total + month, 0);
 
   const columnWidth = windowWidth < MEDIA.DESKTOP
     ? '100%'
@@ -102,7 +78,7 @@ export default function ExpensesYear (props) {
       : -24 // desktop
     : -20; // large desktop
 
-  const isEmptyYear = !totalSavingsAndInvestments;
+  const isEmptyYear = !totalExpenses;
 
   if (isEmptyYear) {
     return null;
@@ -110,7 +86,7 @@ export default function ExpensesYear (props) {
 
   return (
     <View style={[styles.expensesYear, style]}>
-      <View style={styles.titleContainer}>
+      <View style={[styles.titleContainer, { width: columnWidth }]}>
         <TitleLink
           style={styles.subtitleLink}
           textStyle={[styles.subtitleLinkText, {
@@ -118,10 +94,17 @@ export default function ExpensesYear (props) {
             lineHeight: subtitleLineHeight,
           }]}
           alwaysHighlighted
-          onPress={() => navigation.navigate('SavingsMonths', { year })}
+          onPress={() => navigation.navigate('ExpensesMonths', { year })}
         >
           {year}
         </TitleLink>
+
+        <CategoryDropdown
+          style={styles.categoryDropdown}
+          categoryId={categoryId}
+          showAll
+          onSelect={setCategoryId}
+        />
       </View>
 
       <View
@@ -132,7 +115,7 @@ export default function ExpensesYear (props) {
       >
         <YearChart
           style={{ width: chartWidth }}
-          savingsByMonths={savingsByMonths}
+          expensesByMonths={totalAmountsByMonths}
           selectedMonthIndex={selectedMonthIndex}
           onMonthSelected={setSelectedMonthIndex}
         />
@@ -144,8 +127,8 @@ export default function ExpensesYear (props) {
             paddingLeft: windowWidth < MEDIA.DESKTOP ? 0 : 40,
           }}
           year={year}
-          savingsByMonths={savingsByMonths}
-          total={totalSavingsAndInvestments}
+          expensesByMonths={totalAmountsByMonths}
+          total={totalExpenses}
           selectedMonthIndex={selectedMonthIndex}
         />
       </View>
@@ -161,6 +144,8 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
+    position: 'relative',
+    zIndex: 1,
   },
 
   subtitleLink: {
@@ -168,6 +153,13 @@ const styles = StyleSheet.create({
   },
   subtitleLinkText: {
     fontFamily: FONT.NOTO_SERIF.BOLD,
+  },
+
+  categoryDropdown: {
+    width: 300,
+    position: 'absolute',
+    right: 0,
+    top: -14,
   },
 
   content: {

@@ -34,39 +34,31 @@ export default function ExpensesScreen () {
 
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const selectedYear = useSelector(state => state.ui.selectedYear);
-  const savings = useSelector(state => state.savings.savings) || {};
-  const investments = useSelector(state => state.savings.investments) || {};
+  const expenses = useSelector(state => state.expenses.expenses) || {};
 
-  const savingsYears = Object.keys(savings);
-  const investmentsYears = Object.keys(investments);
+  const expensesYears = Object.keys(expenses);
 
   const [yearDropdownWidth, setYearDropdownWidth] = useState(0);
 
   const yearsToSelect = useMemo(() => {
     return Array.from(new Set([
       new Date().getFullYear(),
-      ...savingsYears,
-      ...investmentsYears,
+      ...expensesYears,
     ]))
-  }, [savingsYears, investmentsYears]);
+  }, [expensesYears]);
 
   const route = useRoute();
   const overviewType = route.params?.type;
+  const routeYear = route.params?.year;
 
   const animatedScrollViewRef = useAnimatedRef();
   const scrollViewY = useSharedValue(0);
 
-  const savingMonths = Object
-    .keys(savings[selectedYear] || {})
-    .map(monthString => Number(monthString));
-  const investmentsMonths = Object
-    .keys(investments[selectedYear] || {})
-    .map(monthString => Number(monthString));
-  const months = Array
-    .from(new Set([...savingMonths, ...investmentsMonths]))
-    .sort((a, b) => a - b) // asc
+  const expensesMonths = Object
+    .keys(expenses[selectedYear] || {})
+    .map(monthString => Number(monthString))
     .reverse();
-  const firstMonthNumber = months[0];
+  const firstMonthNumber = expensesMonths[0];
 
   const monthNumber = route.params?.monthNumber || firstMonthNumber;
   const routeWeekNumber = route.params?.weekNumber;
@@ -78,14 +70,14 @@ export default function ExpensesScreen () {
   }, [route]);
 
   useEffect(() => {
-    if (route?.params?.year) {
-      dispatch(setSelectedYearAction(Number(route.params.year)));
+    if (routeYear) {
+      dispatch(setSelectedYearAction(Number(routeYear)));
 
       navigation.setParams({
         year: undefined,
       });
     }
-  }, [route?.params?.year])
+  }, [routeYear])
 
   useDerivedValue(() => {
     scrollTo(animatedScrollViewRef, 0, scrollViewY.value, true);
@@ -108,21 +100,19 @@ export default function ExpensesScreen () {
         onScrollTo={weekNumber === routeWeekNumber
           ? (scrollY) => scrollViewY.value = scrollY
           : undefined}
-        savings={savings?.[selectedYear]?.[monthNumber]}
-        investments={investments?.[selectedYear]?.[monthNumber]}
+        expenses={expenses?.[selectedYear]?.[monthNumber]}
       />
     ));
   }
 
   function renderMonths () {
-    return months.map((monthNumber, index) => (
+    return expensesMonths.map((monthNumber, index) => (
       <ExpensesMonth
         key={index}
         style={styles.overview}
         year={selectedYear}
         monthNumber={monthNumber}
-        savings={savings?.[selectedYear]?.[monthNumber]}
-        investments={investments?.[selectedYear]?.[monthNumber]}
+        expenses={expenses?.[selectedYear]?.[monthNumber]}
       />
     ));
   }
@@ -135,8 +125,7 @@ export default function ExpensesScreen () {
           key={index}
           style={styles.overview}
           year={yearNumber}
-          savings={savings[yearNumber]}
-          investments={investments[yearNumber]}
+          expenses={expenses[yearNumber]}
         />
       ));
   }
@@ -148,10 +137,8 @@ export default function ExpensesScreen () {
     : 40; // wide desktop
   const listContainerPaddingTop = windowWidth < MEDIA.TABLET ? 24 : 40;
 
-  const noDataForSelectedYear = !Object.keys(savings[selectedYear] || {}).length
-    && !Object.keys(investments[selectedYear] || {}).length;
-  const noDataForAnyYear = !Object.keys(savings).length
-    && !Object.keys(investments).length;
+  const noDataForSelectedYear = !Object.keys(expenses[selectedYear] || {}).length;
+  const noDataForAnyYear = !Object.keys(expenses).length;
 
   const hideYearSelector = selectedTab === TAB.YEARS;
 

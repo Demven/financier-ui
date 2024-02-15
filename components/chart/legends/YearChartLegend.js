@@ -5,54 +5,56 @@ import {
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import { FONT } from '../../../../styles/fonts';
-import { COLOR } from '../../../../styles/colors';
-import { MEDIA } from '../../../../styles/media';
+import { MONTH_NAME, MONTHS_IN_YEAR } from '../../../services/date';
+import { FONT } from '../../../styles/fonts';
+import { COLOR } from '../../../styles/colors';
+import { MEDIA } from '../../../styles/media';
 
-WeekChartLegend.propTypes = {
+YearChartLegend.propTypes = {
   style: PropTypes.any,
-  daysInWeek: PropTypes.number,
-  selectedDayIndex: PropTypes.number,
+  chartWidth: PropTypes.number,
+  selectedMonthIndex: PropTypes.number,
 };
 
 export const LEGEND_HEIGHT = 18;
+const BORDER_WIDTH = 2;
 
-export default function WeekChartLegend (props) {
+export default function YearChartLegend (props) {
   const {
     style,
-    daysInWeek,
-    selectedDayIndex,
+    chartWidth,
+    selectedMonthIndex,
   } = props;
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
   return (
-    <View
-      style={[styles.weekChartLegend, {
-        bottom: windowWidth < MEDIA.WIDE_MOBILE ? 2 : 0,
-      }, style]}
-    >
+    <View style={[styles.yearChartLegend, {
+      bottom: windowWidth < MEDIA.WIDE_MOBILE ? 2 : 0,
+    }, style]}>
       <View style={styles.horizontalLineContainer}>
         <View style={styles.horizontalLine} />
       </View>
 
-      <View style={styles.days}>
-        {Array.from(new Array(daysInWeek)).map((_, index) => (
+      <View style={styles.months}>
+        {Array.from(new Array(MONTHS_IN_YEAR)).map((_, index) => (
           <View
             key={index}
             style={[
-              styles.day,
-              { paddingLeft: daysInWeek > 7 ? 2 : 0 },
-              index === daysInWeek - 1 && { borderRightWidth: 0, paddingLeft: 0 },
+              styles.month,
+              { width: chartWidth / MONTHS_IN_YEAR },
+              index === MONTHS_IN_YEAR - 1 && { borderRightWidth: 0, paddingLeft: 0 },
             ]}
           >
-            <Text
-              style={[
-                styles.label,
-                selectedDayIndex === index && styles.labelSelected,
-              ]}
-            >
-              {windowWidth > MEDIA.WIDE_MOBILE ? 'Day ' : ''}{index + 1}
+            <Text style={[
+              styles.label,
+              {
+                fontSize: windowWidth < MEDIA.WIDE_MOBILE ? 10 : 12,
+                lineHeight: windowWidth < MEDIA.WIDE_MOBILE ? 10 : 12,
+              },
+              selectedMonthIndex === index && styles.labelSelected,
+            ]}>
+              {MONTH_NAME[index + 1].substring(0, 3)}
             </Text>
           </View>
         ))}
@@ -62,7 +64,7 @@ export default function WeekChartLegend (props) {
 }
 
 const styles = StyleSheet.create({
-  weekChartLegend: {
+  yearChartLegend: {
     width: '100%',
     flexGrow: 1,
     position: 'absolute',
@@ -92,13 +94,13 @@ const styles = StyleSheet.create({
     top: -4,
   },
 
-  days: {
+  months: {
     flexDirection: 'row',
     backgroundColor: COLOR.WHITE,
   },
 
-  day: {
-    flexGrow: 1,
+  month: {
+    transform: [{ translateX: BORDER_WIDTH / 2 }],
     paddingTop: 4,
     borderRightWidth: 2,
     borderRightColor: COLOR.LIGHT_GRAY,
@@ -106,8 +108,6 @@ const styles = StyleSheet.create({
 
   label: {
     fontFamily: FONT.NOTO_SERIF.REGULAR,
-    fontSize: 12,
-    lineHeight: 12,
     color: COLOR.LIGHT_GRAY,
     textAlign: 'center',
   },

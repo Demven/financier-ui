@@ -22,6 +22,7 @@ import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import OverviewScreen from './screens/OverviewScreen';
 import CategoriesScreen from './screens/CategoriesScreen';
+import ExpensesScreen from './screens/ExpensesScreen';
 import IncomesScreen from './screens/IncomesScreen';
 import SavingsScreen from './screens/SavingsScreen';
 import SettingsScreen from './screens/SettingsScreen';
@@ -228,7 +229,7 @@ function ExpensesScreens () {
     >
       <BottomTabs.Screen
         name='ExpensesWeeks'
-        component={IncomesScreen}
+        component={ExpensesScreen}
         initialParams={{
           type: TAB.WEEKS,
           monthNumber: undefined,
@@ -249,7 +250,7 @@ function ExpensesScreens () {
 
       <BottomTabs.Screen
         name='ExpensesMonths'
-        component={IncomesScreen}
+        component={ExpensesScreen}
         initialParams={{
           type: TAB.MONTHS,
           year: undefined,
@@ -269,7 +270,7 @@ function ExpensesScreens () {
 
       <BottomTabs.Screen
         name='ExpensesYears'
-        component={IncomesScreen}
+        component={ExpensesScreen}
         initialParams={{
           type: TAB.YEARS,
         }}

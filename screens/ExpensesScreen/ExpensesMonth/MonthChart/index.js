@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Loader from '../../../../components/Loader';
 import BarChart from '../../../../components/chart/BarChart';
-import MonthChartLegend, { LEGEND_HEIGHT } from './MonthChartLegend';
+import MonthChartLegend, { LEGEND_HEIGHT } from '../../../../components/chart/legends/MonthChartLegend';
 import { DAYS_IN_WEEK, WEEKS_IN_MONTH } from '../../../../services/date';
 import { MEDIA } from '../../../../styles/media';
 
@@ -16,7 +16,7 @@ MonthChart.propTypes = {
   style: PropTypes.any,
   year: PropTypes.number.isRequired,
   monthNumber: PropTypes.number.isRequired,
-  savingsAndInvestmentsByWeeks: PropTypes.arrayOf(PropTypes.number).isRequired,
+  expensesByWeeks: PropTypes.arrayOf(PropTypes.number).isRequired,
   selectedWeekIndex: PropTypes.number,
   onWeekSelected: PropTypes.func.isRequired,
 };
@@ -26,7 +26,7 @@ export default function MonthChart (props) {
     style,
     year,
     monthNumber,
-    savingsAndInvestmentsByWeeks,
+    expensesByWeeks,
     selectedWeekIndex,
     onWeekSelected,
   } = props;
@@ -73,14 +73,14 @@ export default function MonthChart (props) {
         width={chartWidth}
         height={chartHeight}
         legendHeight={LEGEND_HEIGHT}
-        data={savingsAndInvestmentsByWeeks}
+        data={expensesByWeeks}
         barsProportion={[
           DAYS_IN_WEEK,
           DAYS_IN_WEEK,
           DAYS_IN_WEEK,
           DAYS_IN_WEEK + (daysNumber - DAYS_IN_WEEK * WEEKS_IN_MONTH),
         ]}
-        getColor={(opacity = 1) => `rgba(42, 113, 40, ${opacity})`} // COLOR.GREEN
+        getColor={(opacity = 1) => `rgba(100, 100, 100, ${opacity})`} // COLOR.GRAY
         barSelected={selectedWeekIndex}
         onBarSelected={onWeekSelected}
       />

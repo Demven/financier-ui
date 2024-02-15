@@ -113,7 +113,9 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 
-  stats: {},
+  stats: {
+    width: '100%',
+  },
 
   statRow: {
     marginTop: 8,

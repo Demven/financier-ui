@@ -12,7 +12,7 @@ import { MEDIA } from '../../../../styles/media';
 
 YearStats.propTypes = {
   style: PropTypes.any,
-  savingsByMonths: PropTypes.arrayOf(PropTypes.number).isRequired,
+  expensesByMonths: PropTypes.arrayOf(PropTypes.number).isRequired,
   total: PropTypes.number,
   year: PropTypes.number,
   selectedMonthIndex: PropTypes.number,
@@ -21,7 +21,7 @@ YearStats.propTypes = {
 export default function YearStats (props) {
   const {
     style,
-    savingsByMonths,
+    expensesByMonths,
     total,
     year,
     selectedMonthIndex,
@@ -31,12 +31,12 @@ export default function YearStats (props) {
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
-  const totalColor = getAmountColor(total);
+  const totalColor = getAmountColor(-total);
 
   return (
     <View style={[styles.yearStats, style]}>
       <FoldedContainer
-        title={windowWidth >= MEDIA.DESKTOP ? 'Months' : 'See savings by months'}
+        title={windowWidth >= MEDIA.DESKTOP ? 'Months' : 'See expenses by months'}
         disable={windowWidth >= MEDIA.DESKTOP}
       >
         <View
@@ -45,7 +45,7 @@ export default function YearStats (props) {
             paddingLeft: windowWidth < MEDIA.DESKTOP ? 16 : 24,
           }]}
         >
-          {savingsByMonths.map((total, index) => (
+          {expensesByMonths.map((total, index) => (
             <View
               key={index}
               style={[styles.statRow, index === 0 && { marginTop: 0 }]}
@@ -56,8 +56,9 @@ export default function YearStats (props) {
                   windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
                   selectedMonthIndex === index && styles.statNameBold,
                 ]}
+                alwaysHighlighted={!!total}
                 onPress={total > 0
-                  ? () => navigation.navigate('SavingsWeeks', { monthNumber: index + 1, year })
+                  ? () => navigation.navigate('ExpensesWeeks', { monthNumber: index + 1, year })
                   : undefined
                 }
               >
@@ -69,7 +70,7 @@ export default function YearStats (props) {
                 windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
                 selectedMonthIndex === index && styles.statValueBold,
               ]}>
-                {total > 0 ? formatAmount(total) : '–'}
+                {total > 0 ? formatAmount(-total) : '–'}
               </Text>
             </View>
           ))}
@@ -99,7 +100,7 @@ export default function YearStats (props) {
                 { color: totalColor },
               ]}
             >
-              {formatAmount(total)}
+              {formatAmount(-total)}
             </Text>
           </View>
         </View>
@@ -113,10 +114,12 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 
-  stats: {},
+  stats: {
+    width: '100%',
+  },
 
   statRow: {
-    marginTop: 8,
+    marginTop: 16,
     flexDirection: 'row',
   },
 
