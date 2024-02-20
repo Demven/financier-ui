@@ -1,4 +1,5 @@
 import { COLOR } from '../styles/colors';
+import expensesTotalData from '../data/expensesTotal';
 
 export function getAmount (item) {
   return item?.shares
@@ -8,14 +9,15 @@ export function getAmount (item) {
 
 export function getMonthTotalAmount (items) {
   return Object
-    .keys(items)
+    .keys(items || {})
     .flatMap(week => {
       return (items[week] || []).reduce((total, item) => {
         const amount = item.amount || (item.shares * item.pricePerShare);
         return total + amount;
       }, 0);
     })
-    .reduce((total, weekTotal) => total + weekTotal, 0);
+    .reduce((total, weekTotal) => total + weekTotal, 0)
+    || 0;
 }
 
 export function formatAmount (number, currencySymbol = '') {

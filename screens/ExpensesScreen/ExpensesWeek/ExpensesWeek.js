@@ -25,8 +25,12 @@ ExpensesWeek.propTypes = {
   year: PropTypes.number.isRequired,
   monthNumber: PropTypes.number.isRequired,
   weekNumber: PropTypes.number.isRequired,
+  monthIncome: PropTypes.number.isRequired,
   onScrollTo: PropTypes.func,
-  expenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
+  weekExpenses: PropTypes.arrayOf(PropTypes.object), // []
+  weekExpensesTotal: PropTypes.number.isRequired,
+  previousWeekTotalExpenses: PropTypes.number.isRequired,
+  previousMonthName: PropTypes.string,
 };
 
 export default function ExpensesWeek (props) {
@@ -35,8 +39,12 @@ export default function ExpensesWeek (props) {
     year,
     monthNumber,
     weekNumber,
+    monthIncome,
     onScrollTo,
-    expenses = {},
+    weekExpenses = [],
+    weekExpensesTotal = 0,
+    previousWeekTotalExpenses = 0,
+    previousMonthName = ''
   } = props;
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
@@ -48,11 +56,13 @@ export default function ExpensesWeek (props) {
   const daysInMonth = getDaysInMonth(year, monthNumber);
   const daysInWeek = getDaysInWeek(weekNumber, daysInMonth);
 
-  const currentWeekExpenses = filterWeekExpensesByCategory(expenses?.[weekNumber] || [], categoryId);
+  const currentWeekExpenses = filterWeekExpensesByCategory(weekExpenses, categoryId);
   const expensesGroupedByDays = groupWeekByDay(currentWeekExpenses, daysInWeek);
   const expensesByDays = getWeekChartPointsByDay(expensesGroupedByDays);
 
-  const totalExpenses = expensesByDays.reduce((total, weekTotal) => total + weekTotal, 0);
+  const totalExpenses = categoryId === SHOW_ALL_CATEGORY_ID
+    ? weekExpensesTotal
+    : expensesByDays.reduce((total, weekTotal) => total + weekTotal, 0);
 
   function onLayout (event) {
     if (typeof onScrollTo === 'function') {
@@ -131,12 +141,15 @@ export default function ExpensesWeek (props) {
       >
         <WeekChart
           style={{ width: chartWidth }}
-          year={Number(year)}
-          monthNumber={monthNumber}
           daysInWeek={daysInWeek}
           expensesByDays={expensesByDays}
           selectedDayIndex={selectedDayIndex}
           onDaySelected={setSelectedDayIndex}
+          totalExpenses={totalExpenses}
+          monthIncome={monthIncome}
+          previousWeekTotalExpenses={previousWeekTotalExpenses}
+          previousMonthName={previousMonthName}
+          showSecondaryComparisons={categoryId === SHOW_ALL_CATEGORY_ID}
         />
 
         <WeekStats
@@ -147,7 +160,6 @@ export default function ExpensesWeek (props) {
           }}
           monthNumber={monthNumber}
           weekExpenses={currentWeekExpenses}
-          totalExpenses={totalExpenses}
         />
       </View>
     </View>

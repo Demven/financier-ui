@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import TitleLink from '../../../../components/TitleLink';
 import FoldedContainer from '../../../../components/FoldedContainer';
-import { formatAmount, getAmountColor } from '../../../../services/amount';
+import { formatAmount } from '../../../../services/amount';
 import { MONTH_NAME } from '../../../../services/date';
 import { FONT } from '../../../../styles/fonts';
 import { COLOR } from '../../../../styles/colors';
@@ -13,7 +13,6 @@ import { MEDIA } from '../../../../styles/media';
 YearStats.propTypes = {
   style: PropTypes.any,
   expensesByMonths: PropTypes.arrayOf(PropTypes.number).isRequired,
-  total: PropTypes.number,
   year: PropTypes.number,
   selectedMonthIndex: PropTypes.number,
 };
@@ -22,7 +21,6 @@ export default function YearStats (props) {
   const {
     style,
     expensesByMonths,
-    total,
     year,
     selectedMonthIndex,
   } = props;
@@ -30,8 +28,6 @@ export default function YearStats (props) {
   const navigation = useNavigation();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
-
-  const totalColor = getAmountColor(-total);
 
   return (
     <View style={[styles.yearStats, style]}>
@@ -74,35 +70,6 @@ export default function YearStats (props) {
               </Text>
             </View>
           ))}
-
-          <View style={styles.underline} />
-
-          <View style={styles.statRow}>
-            <Text
-              style={[
-                styles.statName,
-                styles.statNameBold,
-                windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
-                {
-                  color: totalColor,
-                  marginLeft: 4,
-                },
-              ]}
-            >
-              Total
-            </Text>
-
-            <Text
-              style={[
-                styles.statValue,
-                styles.statValueBold,
-                windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
-                { color: totalColor },
-              ]}
-            >
-              {formatAmount(-total)}
-            </Text>
-          </View>
         </View>
       </FoldedContainer>
     </View>
@@ -151,12 +118,5 @@ const styles = StyleSheet.create({
   statValueSmaller: {
     fontSize: 18,
     lineHeight: 23,
-  },
-
-  underline: {
-    height: 1,
-    marginTop: 12,
-    marginLeft: '50%',
-    backgroundColor: COLOR.BLACK,
   },
 });

@@ -19,7 +19,11 @@ ExpensesMonth.propTypes = {
   style: PropTypes.any,
   year: PropTypes.number.isRequired,
   monthNumber: PropTypes.number.isRequired,
-  expenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
+  monthIncome: PropTypes.number,
+  monthExpenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
+  monthExpensesTotal: PropTypes.object, // weeks -> expensesTotal { total: ?, [1]: ?, [2]: ? }
+  previousMonthTotalExpenses: PropTypes.number.isRequired,
+  previousMonthName: PropTypes.string.isRequired,
 };
 
 export default function ExpensesMonth (props) {
@@ -27,7 +31,11 @@ export default function ExpensesMonth (props) {
     style,
     year,
     monthNumber,
-    expenses = {},
+    monthIncome = 0,
+    monthExpenses = {},
+    monthExpensesTotal = {},
+    previousMonthTotalExpenses = 0,
+    previousMonthName = '',
   } = props;
 
   const [selectedWeekIndex, setSelectedWeekIndex] = useState();
@@ -38,10 +46,12 @@ export default function ExpensesMonth (props) {
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
-  const filteredExpenses = filterMonthExpensesByCategory(expenses, categoryId);
+  const filteredExpenses = filterMonthExpensesByCategory(monthExpenses, categoryId);
   const expensesByWeeks = getMonthChartPointsByWeek(filteredExpenses);
 
-  const totalExpenses = expensesByWeeks.reduce((total, weekTotal) => total + weekTotal, 0);
+  const totalExpenses = categoryId === SHOW_ALL_CATEGORY_ID
+    ? monthExpensesTotal?.total || 0
+    : expensesByWeeks.reduce((total, weekTotal) => total + weekTotal, 0);
 
   const columnWidth = windowWidth < MEDIA.DESKTOP
     ? '100%'
@@ -118,9 +128,13 @@ export default function ExpensesMonth (props) {
             paddingLeft: windowWidth < MEDIA.DESKTOP ? 0 : 40,
           }}
           monthNumber={monthNumber}
+          monthIncome={monthIncome}
           expensesByWeeks={expensesByWeeks}
           totalExpenses={totalExpenses}
+          previousMonthTotalExpenses={previousMonthTotalExpenses}
+          previousMonthName={previousMonthName}
           selectedWeekIndex={selectedWeekIndex}
+          showSecondaryComparisons={categoryId === SHOW_ALL_CATEGORY_ID}
         />
       </View>
     </View>

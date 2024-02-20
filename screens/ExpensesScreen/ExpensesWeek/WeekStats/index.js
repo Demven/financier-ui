@@ -10,11 +10,7 @@ import PropTypes from 'prop-types';
 import TitleLink from '../../../../components/TitleLink';
 import FoldedContainer from '../../../../components/FoldedContainer';
 import ExpenseGroup from './ExpenseGroup';
-import {
-  formatAmount,
-  getAmountColor,
-  getListTotal,
-} from '../../../../services/amount';
+import { formatAmount, getListTotal } from '../../../../services/amount';
 import { COLOR } from '../../../../styles/colors';
 import { FONT } from '../../../../styles/fonts';
 import { MEDIA } from '../../../../styles/media';
@@ -29,7 +25,6 @@ WeekStats.propTypes = {
     dateString: PropTypes.string,
     amount: PropTypes.number,
   })).isRequired,
-  totalExpenses: PropTypes.number.isRequired,
 };
 
 export default function WeekStats (props) {
@@ -37,15 +32,12 @@ export default function WeekStats (props) {
     style,
     monthNumber,
     weekExpenses,
-    totalExpenses,
   } = props;
 
   const navigation = useNavigation();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
   const currencySymbol = useSelector(state => state.account.currencySymbol);
-
-  const totalColor = getAmountColor(-totalExpenses);
 
   const expensesGroupedByName = useMemo(() =>
     weekExpenses.reduce((groupedByName, expense) => {
@@ -113,35 +105,6 @@ export default function WeekStats (props) {
               </View>
             ))
           }
-
-          <View style={styles.underline} />
-
-          <View style={[styles.statRow, { marginTop: 24 }]}>
-            <Text
-              style={[
-                styles.statName,
-                styles.statNameBold,
-                windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
-                {
-                  color: totalColor,
-                  marginLeft: 4,
-                },
-              ]}
-            >
-              Total
-            </Text>
-
-            <Text
-              style={[
-                styles.statValue,
-                styles.statValueBold,
-                windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
-                { color: totalColor },
-              ]}
-            >
-              {formatAmount(-totalExpenses, currencySymbol)}
-            </Text>
-          </View>
         </View>
       </FoldedContainer>
     </View>
@@ -195,12 +158,5 @@ const styles = StyleSheet.create({
   statValueSmaller: {
     fontSize: 18,
     lineHeight: 23,
-  },
-
-  underline: {
-    height: 1,
-    marginTop: 12,
-    marginLeft: '50%',
-    backgroundColor: COLOR.BLACK,
   },
 });

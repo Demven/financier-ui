@@ -23,6 +23,7 @@ import ExpensesYear from './ExpensesYear/ExpensesYear';
 import NoDataPlaceholder from '../../components/NoDataPlaceholder';
 import HeaderDropdown from '../../components/HeaderDropdown';
 import { TAB } from '../../components/HeaderTabs';
+import { getLastMonthNumberInYear, MONTH_NAME } from '../../services/date';
 import { COLOR } from '../../styles/colors';
 import { MEDIA } from '../../styles/media';
 
@@ -34,9 +35,12 @@ export default function ExpensesScreen () {
 
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const selectedYear = useSelector(state => state.ui.selectedYear);
-  const expenses = useSelector(state => state.expenses.expenses) || {};
 
-  const expensesYears = Object.keys(expenses);
+  const expenses = useSelector(state => state.expenses.expenses) || {};
+  const expensesTotal = useSelector(state => state.expenses.expensesTotal) || {};
+  const incomesTotal = useSelector(state => state.incomes.incomesTotal) || {};
+
+  const expensesYears = Object.keys(expensesTotal);
 
   const [yearDropdownWidth, setYearDropdownWidth] = useState(0);
 
@@ -90,31 +94,57 @@ export default function ExpensesScreen () {
   }
 
   function renderWeeks () {
-    return [1, 2, 3, 4].map((weekNumber, index) => (
-      <ExpensesWeek
-        key={index}
-        style={styles.overview}
-        year={selectedYear}
-        monthNumber={monthNumber}
-        weekNumber={weekNumber}
-        onScrollTo={weekNumber === routeWeekNumber
-          ? (scrollY) => scrollViewY.value = scrollY
-          : undefined}
-        expenses={expenses?.[selectedYear]?.[monthNumber]}
-      />
-    ));
+    return [1, 2, 3, 4].map((weekNumber, index) => {
+      const previousMonthNumber = monthNumber > 1
+        ? monthNumber - 1
+        : getLastMonthNumberInYear(expensesTotal?.[selectedYear - 1]); // the last month of the previous year
+
+      return (
+        <ExpensesWeek
+          key={index}
+          style={styles.overview}
+          year={selectedYear}
+          monthNumber={monthNumber}
+          weekNumber={weekNumber}
+          monthIncome={incomesTotal?.[selectedYear]?.[monthNumber]?.total || 0}
+          onScrollTo={weekNumber === routeWeekNumber
+            ? (scrollY) => scrollViewY.value = scrollY
+            : undefined}
+          weekExpenses={expenses?.[selectedYear]?.[monthNumber]?.[weekNumber]}
+          weekExpensesTotal={expensesTotal?.[selectedYear]?.[monthNumber]?.[weekNumber]}
+          previousWeekTotalExpenses={monthNumber > 1
+            ? expensesTotal?.[selectedYear]?.[previousMonthNumber]?.[weekNumber] || 0
+            : expensesTotal?.[selectedYear - 1]?.[previousMonthNumber]?.[weekNumber] || 0
+          }
+          previousMonthName={MONTH_NAME[previousMonthNumber]}
+        />
+      );
+    });
   }
 
   function renderMonths () {
-    return expensesMonths.map((monthNumber, index) => (
-      <ExpensesMonth
-        key={index}
-        style={styles.overview}
-        year={selectedYear}
-        monthNumber={monthNumber}
-        expenses={expenses?.[selectedYear]?.[monthNumber]}
-      />
-    ));
+    return expensesMonths.map((monthNumber, index) => {
+      const previousMonthNumber = monthNumber > 1
+       ? expensesMonths[index + 1] // + 1 because month numbers are sorted in ASC order
+       : getLastMonthNumberInYear(expensesTotal?.[selectedYear - 1]); // the last month of the previous year
+
+      return (
+        <ExpensesMonth
+          key={index}
+          style={styles.overview}
+          year={selectedYear}
+          monthNumber={monthNumber}
+          monthIncome={incomesTotal?.[selectedYear]?.[monthNumber]?.total || 0}
+          monthExpenses={expenses?.[selectedYear]?.[monthNumber]}
+          monthExpensesTotal={expensesTotal?.[selectedYear]?.[monthNumber]}
+          previousMonthTotalExpenses={monthNumber > 1
+            ? expensesTotal?.[selectedYear]?.[previousMonthNumber]?.total || 0
+            : expensesTotal?.[selectedYear - 1]?.[previousMonthNumber]?.total || 0 // compare to the last month of the previous year
+          }
+          previousMonthName={MONTH_NAME[previousMonthNumber]}
+        />
+      );
+    });
   }
 
   function renderYears () {
@@ -125,7 +155,11 @@ export default function ExpensesScreen () {
           key={index}
           style={styles.overview}
           year={yearNumber}
-          expenses={expenses[yearNumber]}
+          yearExpenses={expenses[yearNumber]}
+          yearTotalExpenses={expensesTotal[yearNumber]}
+          yearIncome={incomesTotal?.[yearNumber]?.total || 0}
+          previousYear={yearNumber - 1}
+          previousYearTotalExpenses={incomesTotal?.[yearNumber - 1]?.total || 0}
         />
       ));
   }

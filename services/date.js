@@ -58,3 +58,10 @@ export function getWeekRange (weekNumber, daysInMonth) {
 
   return range[weekNumber];
 }
+
+export function getLastMonthNumberInYear (yearItems = {}) {
+  return Object.keys(yearItems)
+    .map(key => Number(key))
+    .sort((a, b) => a - b)
+    .pop();
+}

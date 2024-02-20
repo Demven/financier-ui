@@ -1,14 +1,24 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { saveToStorage, STORAGE_KEY } from '../../services/storage';
 import savingsData from '../../data/savings';
+import savingsTotalData from '../../data/savingsTotal';
 import investmentsData from '../../data/investments';
+import investmentsTotalData from '../../data/investmentsTotal';
 
 const savingsSlice = createSlice({
   name: 'savings',
 
   initialState: {
     savings: savingsData,
+    savingsTotal: savingsTotalData,
+    savingsYearAverage: savingsTotalData.yearAverage,
+    savingsMonthAverage: savingsTotalData.monthAverage,
+    savingsWeekAverage: savingsTotalData.weekAverage,
     investments: investmentsData,
+    investmentsTotal: investmentsTotalData,
+    investmentsYearAverage: investmentsTotalData.yearAverage,
+    investmentsMonthAverage: investmentsTotalData.monthAverage,
+    investmentsWeekAverage: investmentsTotalData.weekAverage,
   },
 
   reducers: {

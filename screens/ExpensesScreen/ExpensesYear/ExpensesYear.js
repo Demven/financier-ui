@@ -16,14 +16,22 @@ import { MEDIA } from '../../../styles/media';
 ExpensesYear.propTypes = {
   style: PropTypes.any,
   year: PropTypes.number.isRequired,
-  expenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
+  yearExpenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
+  yearTotalExpenses: PropTypes.object, // weeks -> expensesTotal { total: ?, [1]: ?, [2]: ? }
+  yearIncome: PropTypes.number.isRequired,
+  previousYear: PropTypes.number.isRequired,
+  previousYearTotalExpenses: PropTypes.number.isRequired,
 };
 
 export default function ExpensesYear (props) {
   const {
     style,
     year,
-    expenses = {},
+    yearExpenses = {},
+    yearTotalExpenses = {},
+    yearIncome,
+    previousYear,
+    previousYearTotalExpenses,
   } = props;
 
   const navigation = useNavigation();
@@ -49,10 +57,13 @@ export default function ExpensesYear (props) {
     return groupedByMonth;
   }
 
-  const filteredExpenses = filterYearExpensesByCategory(expenses, categoryId);
+  const filteredExpenses = filterYearExpensesByCategory(yearExpenses, categoryId);
   const expensesGroupedByMonth = groupByMonth(filteredExpenses);
   const totalAmountsByMonths = getTotalAmountsByMonths(expensesGroupedByMonth);
-  const totalExpenses = totalAmountsByMonths.reduce((total, month) => total + month, 0);
+
+  const totalExpenses = categoryId === SHOW_ALL_CATEGORY_ID
+    ? yearTotalExpenses?.total || 0
+    : totalAmountsByMonths.reduce((total, month) => total + month, 0);
 
   const columnWidth = windowWidth < MEDIA.DESKTOP
     ? '100%'
@@ -118,6 +129,11 @@ export default function ExpensesYear (props) {
           expensesByMonths={totalAmountsByMonths}
           selectedMonthIndex={selectedMonthIndex}
           onMonthSelected={setSelectedMonthIndex}
+          totalExpenses={totalExpenses}
+          yearIncome={yearIncome}
+          previousYearTotalExpenses={previousYearTotalExpenses}
+          previousYear={previousYear}
+          showSecondaryComparisons={categoryId === SHOW_ALL_CATEGORY_ID}
         />
 
         <YearStats
@@ -128,7 +144,6 @@ export default function ExpensesYear (props) {
           }}
           year={year}
           expensesByMonths={totalAmountsByMonths}
-          total={totalExpenses}
           selectedMonthIndex={selectedMonthIndex}
         />
       </View>
