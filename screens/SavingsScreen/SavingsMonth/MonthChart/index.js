@@ -1,12 +1,10 @@
 import { useRef, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Loader from '../../../../components/Loader';
 import BarChart from '../../../../components/chart/BarChart';
 import MonthChartLegend, { LEGEND_HEIGHT } from '../../../../components/chart/legends/MonthChartLegend';
 import { DAYS_IN_WEEK, WEEKS_IN_MONTH } from '../../../../services/date';
-import { MEDIA } from '../../../../styles/media';
 
 function daysInMonth (year, month) {
   return new Date(year, month, 0).getDate();
@@ -33,8 +31,6 @@ export default function MonthChart (props) {
 
   const [loading, setLoading] = useState(true);
 
-  const windowWidth = useSelector(state => state.ui.windowWidth);
-
   const chartRef = useRef();
 
   const [chartWidth, setChartWidth] = useState(0);
@@ -49,12 +45,6 @@ export default function MonthChart (props) {
 
   const daysNumber = daysInMonth(year, monthNumber);
 
-  const loaderMarginLeft = windowWidth < MEDIA.DESKTOP
-    ? windowWidth < MEDIA.TABLET
-      ? 72 // mobile
-      : 40 // tablet
-    : 0; // desktop
-
   return (
     <View
       style={[styles.monthChart, style]}
@@ -62,7 +52,6 @@ export default function MonthChart (props) {
       ref={chartRef}
     >
       <Loader
-        style={{ marginLeft: loaderMarginLeft }}
         loading={loading}
         setLoading={setLoading}
         timeout={500}
