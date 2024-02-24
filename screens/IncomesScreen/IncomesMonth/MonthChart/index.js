@@ -1,10 +1,12 @@
 import { useRef, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Loader from '../../../../components/Loader';
 import BarChart from '../../../../components/chart/BarChart';
-import MonthChartLegend, { LEGEND_HEIGHT } from './MonthChartLegend';
+import MonthChartLegend, { LEGEND_HEIGHT } from '../../../../components/chart/legends/MonthChartLegend';
 import { DAYS_IN_WEEK, WEEKS_IN_MONTH } from '../../../../services/date';
+import { MEDIA } from '../../../../styles/media';
 
 function daysInMonth (year, month) {
   return new Date(year, month, 0).getDate();
@@ -14,7 +16,7 @@ MonthChart.propTypes = {
   style: PropTypes.any,
   year: PropTypes.number.isRequired,
   monthNumber: PropTypes.number.isRequired,
-  savingsAndInvestmentsByWeeks: PropTypes.arrayOf(PropTypes.number).isRequired,
+  expensesByWeeks: PropTypes.arrayOf(PropTypes.number).isRequired,
   selectedWeekIndex: PropTypes.number,
   onWeekSelected: PropTypes.func.isRequired,
 };
@@ -24,12 +26,14 @@ export default function MonthChart (props) {
     style,
     year,
     monthNumber,
-    savingsAndInvestmentsByWeeks,
+    expensesByWeeks,
     selectedWeekIndex,
     onWeekSelected,
   } = props;
 
   const [loading, setLoading] = useState(true);
+
+  const windowWidth = useSelector(state => state.ui.windowWidth);
 
   const chartRef = useRef();
 
@@ -52,24 +56,25 @@ export default function MonthChart (props) {
       ref={chartRef}
     >
       <Loader
+        style={styles.loader}
         loading={loading}
         setLoading={setLoading}
         timeout={500}
       />
 
       <BarChart
-        style={styles.chart}
+        style={[styles.chart, windowWidth < MEDIA.TABLET && styles.chartMobile]}
         width={chartWidth}
         height={chartHeight}
         legendHeight={LEGEND_HEIGHT}
-        data={savingsAndInvestmentsByWeeks}
+        data={expensesByWeeks}
         barsProportion={[
           DAYS_IN_WEEK,
           DAYS_IN_WEEK,
           DAYS_IN_WEEK,
           DAYS_IN_WEEK + (daysNumber - DAYS_IN_WEEK * WEEKS_IN_MONTH),
         ]}
-        getColor={(opacity = 1) => `rgba(42, 113, 40, ${opacity})`} // COLOR.GREEN
+        getColor={(opacity = 1) => `rgba(238, 167, 76, ${opacity})`} // COLOR.MEDIUM_ORANGE
         barSelected={selectedWeekIndex}
         onBarSelected={onWeekSelected}
       />
@@ -95,8 +100,15 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
 
+  loader: {
+    marginTop: 32,
+  },
+
   chart: {
     width: '100%',
-    marginTop: 72,
+    marginTop: 80,
+  },
+  chartMobile: {
+    marginTop: 180,
   },
 });

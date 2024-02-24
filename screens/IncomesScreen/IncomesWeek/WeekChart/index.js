@@ -1,28 +1,45 @@
 import { useRef, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Loader from '../../../../components/Loader';
 import BarChart from '../../../../components/chart/BarChart';
-import WeekChartLegend, { LEGEND_HEIGHT } from './WeekChartLegend';
+import WeekChartLegend, { LEGEND_HEIGHT } from '../../../../components/chart/legends/WeekChartLegend';
+import CompareStats from '../../../../components/CompareStats';
+import { MEDIA } from '../../../../styles/media';
 
 WeekChart.propTypes = {
   style: PropTypes.any,
-  savingsAndInvestmentsByDays: PropTypes.arrayOf(PropTypes.number).isRequired,
+  expensesByDays: PropTypes.arrayOf(PropTypes.number).isRequired,
   daysInWeek: PropTypes.number.isRequired,
   selectedDayIndex: PropTypes.number,
   onDaySelected: PropTypes.func.isRequired,
+  totalExpenses: PropTypes.number.isRequired,
+  monthIncome: PropTypes.number.isRequired,
+  previousWeekTotalExpenses: PropTypes.number,
+  previousMonthName: PropTypes.string.isRequired,
+  allTimeWeekAverage: PropTypes.number,
+  showSecondaryComparisons: PropTypes.bool.isRequired,
 };
 
 export default function WeekChart (props) {
   const {
     style,
-    savingsAndInvestmentsByDays,
+    expensesByDays,
     daysInWeek,
     selectedDayIndex,
     onDaySelected,
+    totalExpenses,
+    monthIncome,
+    previousWeekTotalExpenses,
+    previousMonthName,
+    allTimeWeekAverage,
+    showSecondaryComparisons,
   } = props;
 
   const [loading, setLoading] = useState(true);
+
+  const windowWidth = useSelector(state => state.ui.windowWidth);
 
   const chartRef = useRef();
 
@@ -37,32 +54,47 @@ export default function WeekChart (props) {
   }
 
   return (
-    <View
-      style={[styles.weekChart, style]}
-      onLayout={onLayout}
-      ref={chartRef}
-    >
-      <Loader
-        loading={loading}
-        setLoading={setLoading}
-        timeout={500}
-      />
+    <View style={[styles.weekChart, style]}>
+      <View
+        style={styles.chartContainer}
+        onLayout={onLayout}
+        ref={chartRef}
+      >
+        <Loader
+          style={styles.loader}
+          loading={loading}
+          setLoading={setLoading}
+          timeout={500}
+        />
 
-      <BarChart
-        style={styles.chart}
-        width={chartWidth}
-        height={chartHeight}
-        legendHeight={LEGEND_HEIGHT}
-        data={savingsAndInvestmentsByDays}
-        getColor={(opacity = 1) => `rgba(42, 113, 40, ${opacity})`} // COLOR.GREEN
-        barSelected={selectedDayIndex}
-        onBarSelected={onDaySelected}
-      />
+        <BarChart
+          style={[styles.chart, windowWidth < MEDIA.TABLET && styles.chartMobile]}
+          width={chartWidth}
+          height={chartHeight}
+          legendHeight={LEGEND_HEIGHT}
+          data={expensesByDays}
+          getColor={(opacity = 1) => `rgba(238, 167, 76, ${opacity})`} // COLOR.MEDIUM_ORANGE
+          barSelected={selectedDayIndex}
+          onBarSelected={onDaySelected}
+        />
 
-      <WeekChartLegend
-        daysInWeek={daysInWeek}
-        selectedDayIndex={selectedDayIndex}
-      />
+        <WeekChartLegend
+          daysInWeek={daysInWeek}
+          selectedDayIndex={selectedDayIndex}
+        />
+      </View>
+
+      {windowWidth >= MEDIA.DESKTOP && (
+        <CompareStats
+          style={styles.compareStats}
+          compareWhat={-totalExpenses}
+          compareTo={monthIncome}
+          previousResult={-previousWeekTotalExpenses}
+          previousResultName={previousMonthName}
+          allTimeAverage={-allTimeWeekAverage}
+          showSecondaryComparisons={showSecondaryComparisons}
+        />
+      )}
     </View>
   );
 }
@@ -70,11 +102,26 @@ export default function WeekChart (props) {
 const styles = StyleSheet.create({
   weekChart: {
     flexGrow: 1,
+  },
+
+  loader: {
+    marginTop: 32,
+  },
+
+  chartContainer: {
+    width: '100%',
     position: 'relative',
   },
 
   chart: {
     width: '100%',
-    marginTop: 72,
+    marginTop: 80,
+  },
+  chartMobile: {
+    marginTop: 180,
+  },
+
+  compareStats: {
+    marginTop: 52,
   },
 });

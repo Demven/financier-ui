@@ -7,23 +7,29 @@ import YearChart from './YearChart';
 import YearStats from './YearStats';
 import TitleLink from '../../../components/TitleLink';
 import { MONTHS_IN_YEAR } from '../../../services/date';
-import { getAmount } from '../../../services/amount';
+import { getTotalAmountsByMonths } from '../../../services/amount';
 import { FONT } from '../../../styles/fonts';
 import { MEDIA } from '../../../styles/media';
 
 IncomesYear.propTypes = {
   style: PropTypes.any,
   year: PropTypes.number.isRequired,
-  savings: PropTypes.object, // weeks -> savings { [1]: [], [2]: [] }
-  investments: PropTypes.object, // weeks -> investments { [1]: [], [2]: [] }
+  yearExpenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
+  yearTotalExpenses: PropTypes.object, // weeks -> expensesTotal { total: ?, [1]: ?, [2]: ? }
+  yearIncome: PropTypes.number.isRequired,
+  previousYear: PropTypes.number.isRequired,
+  previousYearTotalExpenses: PropTypes.number.isRequired,
 };
 
 export default function IncomesYear (props) {
   const {
     style,
     year,
-    savings = {},
-    investments = {},
+    yearExpenses = {},
+    yearTotalExpenses = {},
+    yearIncome,
+    previousYear,
+    previousYearTotalExpenses,
   } = props;
 
   const navigation = useNavigation();
@@ -31,6 +37,7 @@ export default function IncomesYear (props) {
   const [selectedMonthIndex, setSelectedMonthIndex] = useState();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
+  const allTimeYearAverage = useSelector(state => state.expenses.yearAverage);
 
   function groupByMonth (yearItems) {
     const groupedByMonth = new Array(MONTHS_IN_YEAR).fill([]);
@@ -47,36 +54,10 @@ export default function IncomesYear (props) {
     return groupedByMonth;
   }
 
-  function mergeGroupedByMonth (groupedByMonth1 = [], groupedByMonth2 = []) {
-    return groupedByMonth1.map((byMonth1, index) => {
-      const byMonth2 = groupedByMonth2[index] || [];
+  const expensesGroupedByMonth = groupByMonth(yearExpenses);
+  const totalAmountsByMonths = getTotalAmountsByMonths(expensesGroupedByMonth);
 
-      return Array.isArray(byMonth1)
-        ? [...byMonth1, ...byMonth2]
-        : byMonth2;
-    });
-  }
-
-  function getSavingsByMonths (groupedByMonth) {
-    return groupedByMonth.map(itemsByMonth => {
-      if (!itemsByMonth?.length) {
-        return 0;
-      }
-
-      const monthTotal = itemsByMonth.reduce((total, item) => {
-        return total + getAmount(item);
-      }, 0);
-
-      return parseFloat(monthTotal.toFixed(2));
-    });
-  }
-
-  const savingsGroupedByMonth = groupByMonth(savings);
-  const investmentsGroupedByMonth = groupByMonth(investments);
-  const savingsAndInvestmentsGroupedByMonth = mergeGroupedByMonth(savingsGroupedByMonth, investmentsGroupedByMonth);
-  const savingsByMonths = getSavingsByMonths(savingsAndInvestmentsGroupedByMonth);
-
-  const totalSavingsAndInvestments = savingsByMonths.reduce((total, month) => total + month, 0);
+  const totalExpenses = yearTotalExpenses?.total || 0;
 
   const columnWidth = windowWidth < MEDIA.DESKTOP
     ? '100%'
@@ -102,15 +83,15 @@ export default function IncomesYear (props) {
       : -24 // desktop
     : -20; // large desktop
 
-  const isEmptyYear = !totalSavingsAndInvestments;
+  const isEmptyYear = !totalExpenses;
 
   if (isEmptyYear) {
     return null;
   }
 
   return (
-    <View style={[styles.savingsYear, style]}>
-      <View style={styles.titleContainer}>
+    <View style={[styles.incomesYear, style]}>
+      <View style={[styles.titleContainer, { width: columnWidth }]}>
         <TitleLink
           style={styles.subtitleLink}
           textStyle={[styles.subtitleLinkText, {
@@ -118,7 +99,7 @@ export default function IncomesYear (props) {
             lineHeight: subtitleLineHeight,
           }]}
           alwaysHighlighted
-          onPress={() => navigation.navigate('SavingsMonths', { year })}
+          onPress={() => navigation.navigate('ExpensesMonths', { year })}
         >
           {year}
         </TitleLink>
@@ -132,9 +113,15 @@ export default function IncomesYear (props) {
       >
         <YearChart
           style={{ width: chartWidth }}
-          savingsByMonths={savingsByMonths}
+          expensesByMonths={totalAmountsByMonths}
           selectedMonthIndex={selectedMonthIndex}
           onMonthSelected={setSelectedMonthIndex}
+          totalExpenses={totalExpenses}
+          yearIncome={yearIncome}
+          previousYearTotalExpenses={previousYearTotalExpenses}
+          previousYear={previousYear}
+          allTimeYearAverage={allTimeYearAverage}
+          showSecondaryComparisons
         />
 
         <YearStats
@@ -144,9 +131,14 @@ export default function IncomesYear (props) {
             paddingLeft: windowWidth < MEDIA.DESKTOP ? 0 : 40,
           }}
           year={year}
-          savingsByMonths={savingsByMonths}
-          total={totalSavingsAndInvestments}
+          expensesByMonths={totalAmountsByMonths}
           selectedMonthIndex={selectedMonthIndex}
+          totalExpenses={totalExpenses}
+          yearIncome={yearIncome}
+          previousYearTotalExpenses={previousYearTotalExpenses}
+          previousYear={previousYear}
+          allTimeYearAverage={allTimeYearAverage}
+          showSecondaryComparisons
         />
       </View>
     </View>
@@ -161,6 +153,8 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
+    position: 'relative',
+    zIndex: 1,
   },
 
   subtitleLink: {

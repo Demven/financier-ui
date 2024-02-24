@@ -14,7 +14,6 @@ import {
 import {
   getWeekChartPointsByDay,
   groupWeekByDay,
-  mergeGroupedByDay,
 } from '../../../services/dataItems';
 import { FONT } from '../../../styles/fonts';
 import { MEDIA } from '../../../styles/media';
@@ -24,9 +23,12 @@ IncomesWeek.propTypes = {
   year: PropTypes.number.isRequired,
   monthNumber: PropTypes.number.isRequired,
   weekNumber: PropTypes.number.isRequired,
+  monthIncome: PropTypes.number.isRequired,
   onScrollTo: PropTypes.func,
-  savings: PropTypes.object, // weeks -> savings { [1]: [], [2]: [] }
-  investments: PropTypes.object, // weeks -> investments { [1]: [], [2]: [] }
+  weekExpenses: PropTypes.arrayOf(PropTypes.object), // []
+  weekExpensesTotal: PropTypes.number.isRequired,
+  previousWeekTotalExpenses: PropTypes.number.isRequired,
+  previousMonthName: PropTypes.string,
 };
 
 export default function IncomesWeek (props) {
@@ -35,27 +37,26 @@ export default function IncomesWeek (props) {
     year,
     monthNumber,
     weekNumber,
+    monthIncome,
     onScrollTo,
-    savings = {},
-    investments = {},
+    weekExpenses = [],
+    weekExpensesTotal = 0,
+    previousWeekTotalExpenses = 0,
+    previousMonthName = ''
   } = props;
 
-  const [selectedDayIndex, setSelectedDayIndex] = useState();
-
   const windowWidth = useSelector(state => state.ui.windowWidth);
+  const allTimeWeekAverage = useSelector(state => state.expenses.weekAverage);
+
+  const [selectedDayIndex, setSelectedDayIndex] = useState();
 
   const daysInMonth = getDaysInMonth(year, monthNumber);
   const daysInWeek = getDaysInWeek(weekNumber, daysInMonth);
 
-  const currentWeekSavings = savings?.[weekNumber] || [];
-  const currentWeekInvestments = investments?.[weekNumber] || [];
+  const expensesGroupedByDays = groupWeekByDay(weekExpenses, daysInWeek);
+  const expensesByDays = getWeekChartPointsByDay(expensesGroupedByDays);
 
-  const savingsGroupedByDay = groupWeekByDay(currentWeekSavings, daysInWeek);
-  const investmentsGroupedByDay = groupWeekByDay(currentWeekInvestments, daysInWeek);
-  const savingsAndInvestmentsGroupedByDay = mergeGroupedByDay(savingsGroupedByDay, investmentsGroupedByDay);
-  const savingsAndInvestmentsByDays = getWeekChartPointsByDay(savingsAndInvestmentsGroupedByDay);
-
-  const totalSavingsAndInvestments = savingsAndInvestmentsByDays.reduce((total, weekTotal) => total + weekTotal, 0);
+  const totalExpenses = weekExpensesTotal;
 
   function onLayout (event) {
     if (typeof onScrollTo === 'function') {
@@ -87,7 +88,7 @@ export default function IncomesWeek (props) {
       : -24 // desktop
     : -20; // large desktop
 
-  const isEmptyWeek = !totalSavingsAndInvestments;
+  const isEmptyWeek = !totalExpenses;
 
   if (isEmptyWeek) {
     return null;
@@ -98,7 +99,7 @@ export default function IncomesWeek (props) {
       style={[styles.incomesWeek, style]}
       onLayout={onLayout}
     >
-      <View style={styles.titleContainer}>
+      <View style={[styles.titleContainer, { width: columnWidth }]}>
         <TitleLink
           style={styles.subtitleLink}
           textStyle={[styles.subtitleLinkText, {
@@ -127,12 +128,16 @@ export default function IncomesWeek (props) {
       >
         <WeekChart
           style={{ width: chartWidth }}
-          year={Number(year)}
-          monthNumber={monthNumber}
           daysInWeek={daysInWeek}
-          savingsAndInvestmentsByDays={savingsAndInvestmentsByDays}
+          expensesByDays={expensesByDays}
           selectedDayIndex={selectedDayIndex}
           onDaySelected={setSelectedDayIndex}
+          totalExpenses={totalExpenses}
+          monthIncome={monthIncome}
+          previousWeekTotalExpenses={previousWeekTotalExpenses}
+          previousMonthName={previousMonthName}
+          allTimeWeekAverage={allTimeWeekAverage}
+          showSecondaryComparisons
         />
 
         <WeekStats
@@ -141,9 +146,14 @@ export default function IncomesWeek (props) {
             marginTop: statsMarginTop,
             paddingLeft: windowWidth < MEDIA.DESKTOP ? 0 : 40,
           }}
-          savingsAndInvestmentsGroupedByDay={savingsAndInvestmentsGroupedByDay}
-          totalSavingsAndInvestments={totalSavingsAndInvestments}
-          selectedDayIndex={selectedDayIndex}
+          monthNumber={monthNumber}
+          weekExpenses={weekExpenses}
+          totalExpenses={totalExpenses}
+          monthIncome={monthIncome}
+          previousWeekTotalExpenses={previousWeekTotalExpenses}
+          previousMonthName={previousMonthName}
+          allTimeWeekAverage={allTimeWeekAverage}
+          showSecondaryComparisons
         />
       </View>
     </View>
@@ -158,6 +168,8 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
+    position: 'relative',
+    zIndex: 1,
   },
 
   subtitleLink: {

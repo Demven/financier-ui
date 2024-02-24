@@ -4,7 +4,8 @@ import PropTypes from 'prop-types';
 import { useNavigation } from '@react-navigation/native';
 import TitleLink from '../../../../components/TitleLink';
 import FoldedContainer from '../../../../components/FoldedContainer';
-import { formatAmount, getAmountColor } from '../../../../services/amount';
+import CompareStats from '../../../../components/CompareStats';
+import { formatAmount } from '../../../../services/amount';
 import { COLOR } from '../../../../styles/colors';
 import { FONT } from '../../../../styles/fonts';
 import { MEDIA } from '../../../../styles/media';
@@ -12,30 +13,38 @@ import { MEDIA } from '../../../../styles/media';
 MonthStats.propTypes = {
   style: PropTypes.any,
   monthNumber: PropTypes.number.isRequired,
-  savingsAndInvestmentsByWeeks: PropTypes.arrayOf(PropTypes.number).isRequired,
-  totalSavingsAndInvestments: PropTypes.number.isRequired,
+  monthIncome: PropTypes.number.isRequired,
+  expensesByWeeks: PropTypes.arrayOf(PropTypes.number).isRequired,
+  totalExpenses: PropTypes.number.isRequired,
+  previousMonthTotalExpenses: PropTypes.number,
+  previousMonthName: PropTypes.string,
   selectedWeekIndex: PropTypes.number,
+  showSecondaryComparisons: PropTypes.bool.isRequired,
 };
 
 export default function MonthStats (props) {
   const {
     style,
     monthNumber,
-    savingsAndInvestmentsByWeeks,
-    totalSavingsAndInvestments,
+    monthIncome,
+    expensesByWeeks,
+    totalExpenses,
+    previousMonthTotalExpenses,
+    previousMonthName,
     selectedWeekIndex,
+    showSecondaryComparisons,
   } = props;
 
   const navigation = useNavigation();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
-
-  const totalColor = getAmountColor(totalSavingsAndInvestments);
+  const allTimeMonthAverage = useSelector(state => state.expenses.monthAverage);
+  const currencySymbol = useSelector(state => state.account.currencySymbol);
 
   return (
     <View style={[styles.monthStats, style]}>
       <FoldedContainer
-        title={windowWidth >= MEDIA.DESKTOP ? 'Weeks' : 'See savings by weeks'}
+        title={windowWidth < MEDIA.DESKTOP ? 'View expenses by weeks' : 'Weeks'}
         disable={windowWidth >= MEDIA.DESKTOP}
       >
         <View
@@ -44,7 +53,7 @@ export default function MonthStats (props) {
             paddingLeft: windowWidth < MEDIA.DESKTOP ? 16 : 24,
           }]}
         >
-          {savingsAndInvestmentsByWeeks.map((total, index) => (
+          {expensesByWeeks.map((total, index) => (
             <View
               key={index}
               style={[styles.statRow, index === 0 && { marginTop: 0 }]}
@@ -57,7 +66,7 @@ export default function MonthStats (props) {
                 ]}
                 alwaysHighlighted={!!total}
                 onPress={total
-                  ? () => navigation.navigate('SavingsWeeks', { monthNumber, weekNumber: index + 1 })
+                  ? () => navigation.navigate('ExpensesWeeks', { monthNumber, weekNumber: index + 1 })
                   : undefined}
               >
                 Week {index + 1}
@@ -68,41 +77,22 @@ export default function MonthStats (props) {
                 windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
                 selectedWeekIndex === index && styles.statValueBold,
               ]}>
-                {total > 0 ? formatAmount(total) : '–'}
+                {total > 0 ? formatAmount(-total, currencySymbol) : '–'}
               </Text>
             </View>
           ))}
-
-          <View style={styles.underline} />
-
-          <View style={[styles.statRow, { marginTop: 24 }]}>
-            <Text
-              style={[
-                styles.statName,
-                styles.statNameBold,
-                windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
-                {
-                  color: totalColor,
-                  marginLeft: 4,
-                },
-              ]}
-            >
-              Total
-            </Text>
-
-            <Text
-              style={[
-                styles.statValue,
-                styles.statValueBold,
-                windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
-                { color: totalColor },
-              ]}
-            >
-              {formatAmount(totalSavingsAndInvestments)}
-            </Text>
-          </View>
         </View>
       </FoldedContainer>
+
+      <CompareStats
+        style={styles.compareStats}
+        compareWhat={-totalExpenses}
+        compareTo={monthIncome}
+        previousResult={-previousMonthTotalExpenses}
+        previousResultName={previousMonthName}
+        allTimeAverage={-allTimeMonthAverage}
+        showSecondaryComparisons={showSecondaryComparisons}
+      />
     </View>
   );
 }
@@ -151,10 +141,7 @@ const styles = StyleSheet.create({
     lineHeight: 23,
   },
 
-  underline: {
-    height: 1,
-    marginTop: 12,
-    marginLeft: '50%',
-    backgroundColor: COLOR.BLACK,
+  compareStats: {
+    marginTop: 52,
   },
 });

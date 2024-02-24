@@ -102,8 +102,8 @@ export default function BarChart (props) {
                 <LinearGradient
                   style={styles.gradient}
                   colors={[
-                    barFocusedIndex === index ? getColor(0.6) : getColor(0.5),
-                    barFocusedIndex === index ? getColor(0.2) : getColor(0.1),
+                    barFocusedIndex === index ? getColor(0.7) : getColor(0.6),
+                    barFocusedIndex === index ? getColor(0.3) : getColor(0.2),
                   ]}
                 />
               </View>
