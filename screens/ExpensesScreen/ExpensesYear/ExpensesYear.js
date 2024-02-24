@@ -41,6 +41,7 @@ export default function ExpensesYear (props) {
   const [categoryId, setCategoryId] = useState(SHOW_ALL_CATEGORY_ID);
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
+  const allTimeYearAverage = useSelector(state => state.expenses.yearAverage);
 
   function groupByMonth (yearItems) {
     const groupedByMonth = new Array(MONTHS_IN_YEAR).fill([]);
@@ -111,7 +112,15 @@ export default function ExpensesYear (props) {
         </TitleLink>
 
         <CategoryDropdown
-          style={styles.categoryDropdown}
+          style={[
+            styles.categoryDropdown,
+            windowWidth < MEDIA.WIDE_MOBILE && styles.categoryDropdownMobile,
+            windowWidth >= MEDIA.WIDE_MOBILE && windowWidth < MEDIA.TABLET && styles.categoryDropdownTablet,
+          ]}
+          placeholderStyle={{
+            fontSize: windowWidth < MEDIA.WIDE_MOBILE ? 18 : 20,
+            lineHeight: windowWidth < MEDIA.WIDE_MOBILE ? 22 : 24,
+          }}
           categoryId={categoryId}
           showAll
           onSelect={setCategoryId}
@@ -133,6 +142,7 @@ export default function ExpensesYear (props) {
           yearIncome={yearIncome}
           previousYearTotalExpenses={previousYearTotalExpenses}
           previousYear={previousYear}
+          allTimeYearAverage={allTimeYearAverage}
           showSecondaryComparisons={categoryId === SHOW_ALL_CATEGORY_ID}
         />
 
@@ -145,6 +155,12 @@ export default function ExpensesYear (props) {
           year={year}
           expensesByMonths={totalAmountsByMonths}
           selectedMonthIndex={selectedMonthIndex}
+          totalExpenses={totalExpenses}
+          yearIncome={yearIncome}
+          previousYearTotalExpenses={previousYearTotalExpenses}
+          previousYear={previousYear}
+          allTimeYearAverage={allTimeYearAverage}
+          showSecondaryComparisons={categoryId === SHOW_ALL_CATEGORY_ID}
         />
       </View>
     </View>
@@ -175,6 +191,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: -14,
+  },
+  categoryDropdownMobile: {
+    width: '100%',
+    left: 0,
+    top: 54,
+  },
+  categoryDropdownTablet: {
+    width: '50%',
+    right: 0,
+    left: 'auto',
+    top: 6,
   },
 
   content: {

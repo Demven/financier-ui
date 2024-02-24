@@ -78,11 +78,13 @@ export default function ExpenseGroup (props) {
       </FoldedContainer>
 
       {folded && (
-        <Text style={[
-          styles.groupExpenses,
-          styles.groupExpensesFolded,
-          { width: width * 0.7 }
-        ]}>
+        <Text
+          style={[
+            styles.groupExpenses,
+            styles.groupExpensesFolded,
+            !!width && { width: width * 0.7 },
+          ]}
+        >
           {expenses
             .map(expense => getAmount(expense))
             .join(' + ')}

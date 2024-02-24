@@ -22,8 +22,8 @@ ExpensesMonth.propTypes = {
   monthIncome: PropTypes.number,
   monthExpenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
   monthExpensesTotal: PropTypes.object, // weeks -> expensesTotal { total: ?, [1]: ?, [2]: ? }
-  previousMonthTotalExpenses: PropTypes.number.isRequired,
-  previousMonthName: PropTypes.string.isRequired,
+  previousMonthTotalExpenses: PropTypes.number,
+  previousMonthName: PropTypes.string,
 };
 
 export default function ExpensesMonth (props) {
@@ -99,8 +99,16 @@ export default function ExpensesMonth (props) {
         </TitleLink>
 
         <CategoryDropdown
-          style={styles.categoryDropdown}
+          style={[
+            styles.categoryDropdown,
+            windowWidth < MEDIA.WIDE_MOBILE && styles.categoryDropdownMobile,
+            windowWidth >= MEDIA.WIDE_MOBILE && windowWidth < MEDIA.TABLET && styles.categoryDropdownTablet,
+          ]}
           categoryId={categoryId}
+          placeholderStyle={{
+            fontSize: windowWidth < MEDIA.WIDE_MOBILE ? 18 : 20,
+            lineHeight: windowWidth < MEDIA.WIDE_MOBILE ? 22 : 24,
+          }}
           showAll
           onSelect={setCategoryId}
         />
@@ -165,6 +173,16 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: -14,
+  },
+  categoryDropdownMobile: {
+    width: '100%',
+    left: 0,
+    top: 54,
+  },
+  categoryDropdownTablet: {
+    width: '50%',
+    left: 0,
+    top: 54,
   },
 
   content: {

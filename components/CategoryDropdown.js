@@ -17,6 +17,7 @@ CategoryDropdown.propTypes = {
     PRESELECTED_CATEGORY.FIRST,
     PRESELECTED_CATEGORY.LAST,
   ]),
+  placeholderStyle: PropTypes.any,
   showAll: PropTypes.bool,
   onSelect: PropTypes.func,
 };
@@ -26,6 +27,7 @@ export default function CategoryDropdown (props) {
     style,
     categoryId,
     preselectedCategory,
+    placeholderStyle,
     showAll,
     onSelect = () => {},
   } = props;
@@ -64,6 +66,7 @@ export default function CategoryDropdown (props) {
       style={[styles.categoryDropdown, style]}
       label='Category'
       placeholder='Select a category'
+      placeholderStyle={placeholderStyle}
       open={categorySelectOpen}
       setOpen={setCategorySelectOpen}
       value={categoryId}

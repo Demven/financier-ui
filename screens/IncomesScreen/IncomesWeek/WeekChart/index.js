@@ -1,11 +1,9 @@
 import { useRef, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Loader from '../../../../components/Loader';
 import BarChart from '../../../../components/chart/BarChart';
 import WeekChartLegend, { LEGEND_HEIGHT } from './WeekChartLegend';
-import { MEDIA } from '../../../../styles/media';
 
 WeekChart.propTypes = {
   style: PropTypes.any,
@@ -26,8 +24,6 @@ export default function WeekChart (props) {
 
   const [loading, setLoading] = useState(true);
 
-  const windowWidth = useSelector(state => state.ui.windowWidth);
-
   const chartRef = useRef();
 
   const [chartWidth, setChartWidth] = useState(0);
@@ -40,12 +36,6 @@ export default function WeekChart (props) {
     setChartHeight(Math.floor(width / 16 * 9));
   }
 
-  const loaderMarginLeft = windowWidth < MEDIA.DESKTOP
-    ? windowWidth < MEDIA.TABLET
-      ? 72 // mobile
-      : 40 // tablet
-    : 0; // desktop
-
   return (
     <View
       style={[styles.weekChart, style]}
@@ -53,7 +43,6 @@ export default function WeekChart (props) {
       ref={chartRef}
     >
       <Loader
-        style={{ marginLeft: loaderMarginLeft }}
         loading={loading}
         setLoading={setLoading}
         timeout={500}

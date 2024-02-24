@@ -133,8 +133,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     position: 'relative',
-    borderTopLeftRadius: 4,
-    borderTopRightRadius: 4,
   },
   barFocused: {
     outlineWidth: 1,
@@ -158,8 +156,6 @@ const styles = StyleSheet.create({
   gradient: {
     width: '100%',
     height: '100%',
-    borderTopLeftRadius: 4,
-    borderTopRightRadius: 4,
   },
 
   value: {

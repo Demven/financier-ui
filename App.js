@@ -144,7 +144,7 @@ function CategoriesScreens () {
         headerTintColor: 'black',
         tabBarStyle: {
           backgroundColor: 'white',
-          display: windowWidth >= MEDIA.TABLET ? 'none' : undefined,
+          display: windowWidth >= MEDIA.DESKTOP ? 'none' : undefined,
         },
         tabBarActiveTintColor: 'black',
         headerShown: false,
@@ -221,7 +221,7 @@ function ExpensesScreens () {
         headerTintColor: COLOR.BLACK,
         tabBarStyle: {
           backgroundColor: COLOR.WHITE,
-          display: windowWidth >= MEDIA.TABLET ? 'none' : undefined,
+          display: windowWidth >= MEDIA.DESKTOP ? 'none' : undefined,
         },
         tabBarActiveTintColor: COLOR.BLACK,
         headerShown: false,
@@ -301,7 +301,7 @@ function IncomesScreens () {
         headerTintColor: COLOR.BLACK,
         tabBarStyle: {
           backgroundColor: COLOR.WHITE,
-          display: windowWidth >= MEDIA.TABLET ? 'none' : undefined,
+          display: windowWidth >= MEDIA.DESKTOP ? 'none' : undefined,
         },
         tabBarActiveTintColor: COLOR.BLACK,
         headerShown: false,
@@ -381,7 +381,7 @@ function SavingsScreens () {
         headerTintColor: COLOR.BLACK,
         tabBarStyle: {
           backgroundColor: COLOR.WHITE,
-          display: windowWidth >= MEDIA.TABLET ? 'none' : undefined,
+          display: windowWidth >= MEDIA.DESKTOP ? 'none' : undefined,
         },
         tabBarActiveTintColor: COLOR.BLACK,
         headerShown: false,

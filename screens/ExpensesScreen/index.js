@@ -102,7 +102,10 @@ export default function ExpensesScreen () {
       return (
         <ExpensesWeek
           key={index}
-          style={styles.overview}
+          style={[
+            styles.expenses,
+            windowWidth < MEDIA.WIDE_MOBILE && styles.expensesMobile,
+          ]}
           year={selectedYear}
           monthNumber={monthNumber}
           weekNumber={weekNumber}
@@ -131,7 +134,10 @@ export default function ExpensesScreen () {
       return (
         <ExpensesMonth
           key={index}
-          style={styles.overview}
+          style={[
+            styles.expenses,
+            windowWidth < MEDIA.WIDE_MOBILE && styles.expensesMobile,
+          ]}
           year={selectedYear}
           monthNumber={monthNumber}
           monthIncome={incomesTotal?.[selectedYear]?.[monthNumber]?.total || 0}
@@ -153,7 +159,10 @@ export default function ExpensesScreen () {
       .map((yearNumber, index) => (
         <ExpensesYear
           key={index}
-          style={styles.overview}
+          style={[
+            styles.expenses,
+            windowWidth < MEDIA.WIDE_MOBILE && styles.expensesMobile,
+          ]}
           year={yearNumber}
           yearExpenses={expenses[yearNumber]}
           yearTotalExpenses={expensesTotal[yearNumber]}
@@ -189,12 +198,14 @@ export default function ExpensesScreen () {
       >
         {(windowWidth < MEDIA.TABLET && !hideYearSelector) && (
           <HeaderDropdown
-            style={[styles.yearsDropdown, {
-              top: Platform.OS === 'ios' ? 26 : 24,
-            }, noDataForSelectedYear && {
-              right: '50%',
-              transform: [{translateX: yearDropdownWidth / 2}],
-            }]}
+            style={[
+              styles.yearsDropdown,
+              { top: Platform.OS === 'ios' ? 26 : 24 },
+              noDataForSelectedYear && {
+                right: '50%',
+                transform: [{translateX: yearDropdownWidth / 2}],
+              },
+            ]}
             selectedValue={selectedYear}
             values={yearsToSelect}
             onSelect={(selectedYear) => dispatch(setSelectedYearAction(Number(selectedYear)))}
@@ -244,7 +255,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 
-  overview: {
+  expenses: {
+    paddingBottom: 120,
+  },
+  expensesMobile: {
     paddingBottom: 80,
   },
 });

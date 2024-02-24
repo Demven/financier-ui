@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import TitleLink from '../../../../components/TitleLink';
 import FoldedContainer from '../../../../components/FoldedContainer';
+import CompareStats from '../../../../components/CompareStats';
 import { formatAmount } from '../../../../services/amount';
 import { MONTH_NAME } from '../../../../services/date';
 import { FONT } from '../../../../styles/fonts';
@@ -15,6 +16,12 @@ YearStats.propTypes = {
   expensesByMonths: PropTypes.arrayOf(PropTypes.number).isRequired,
   year: PropTypes.number,
   selectedMonthIndex: PropTypes.number,
+  totalExpenses: PropTypes.number.isRequired,
+  yearIncome: PropTypes.number.isRequired,
+  previousYearTotalExpenses: PropTypes.number,
+  previousYear: PropTypes.number,
+  allTimeYearAverage: PropTypes.number,
+  showSecondaryComparisons: PropTypes.bool.isRequired,
 };
 
 export default function YearStats (props) {
@@ -23,6 +30,12 @@ export default function YearStats (props) {
     expensesByMonths,
     year,
     selectedMonthIndex,
+    totalExpenses,
+    yearIncome,
+    previousYearTotalExpenses,
+    previousYear,
+    allTimeYearAverage,
+    showSecondaryComparisons,
   } = props;
 
   const navigation = useNavigation();
@@ -32,7 +45,7 @@ export default function YearStats (props) {
   return (
     <View style={[styles.yearStats, style]}>
       <FoldedContainer
-        title={windowWidth >= MEDIA.DESKTOP ? 'Months' : 'See expenses by months'}
+        title={windowWidth < MEDIA.DESKTOP ? 'View expenses by months' : 'Months'}
         disable={windowWidth >= MEDIA.DESKTOP}
       >
         <View
@@ -72,6 +85,18 @@ export default function YearStats (props) {
           ))}
         </View>
       </FoldedContainer>
+
+      {windowWidth < MEDIA.DESKTOP && (
+        <CompareStats
+          style={styles.compareStats}
+          compareWhat={-totalExpenses}
+          compareTo={yearIncome}
+          previousResult={-previousYearTotalExpenses}
+          previousResultName={`${previousYear}`}
+          allTimeAverage={-allTimeYearAverage}
+          showSecondaryComparisons={showSecondaryComparisons}
+        />
+      )}
     </View>
   );
 }
@@ -118,5 +143,9 @@ const styles = StyleSheet.create({
   statValueSmaller: {
     fontSize: 18,
     lineHeight: 23,
+  },
+
+  compareStats: {
+    marginTop: 40,
   },
 });

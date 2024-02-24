@@ -6,6 +6,7 @@ import Loader from '../../../../components/Loader';
 import BarChart from '../../../../components/chart/BarChart';
 import YearChartLegend, { LEGEND_HEIGHT } from '../../../../components/chart/legends/YearChartLegend';
 import CompareStats from '../../../../components/CompareStats';
+import { MEDIA } from '../../../../styles/media';
 
 YearChart.propTypes = {
   style: PropTypes.any,
@@ -14,8 +15,9 @@ YearChart.propTypes = {
   onMonthSelected: PropTypes.func.isRequired,
   totalExpenses: PropTypes.number.isRequired,
   yearIncome: PropTypes.number.isRequired,
-  previousYearTotalExpenses: PropTypes.number.isRequired,
-  previousYear: PropTypes.number.isRequired,
+  previousYearTotalExpenses: PropTypes.number,
+  previousYear: PropTypes.number,
+  allTimeYearAverage: PropTypes.number,
   showSecondaryComparisons: PropTypes.bool.isRequired,
 };
 
@@ -29,12 +31,13 @@ export default function YearChart (props) {
     yearIncome,
     previousYearTotalExpenses,
     previousYear,
+    allTimeYearAverage,
     showSecondaryComparisons,
   } = props;
 
   const chartRef = useRef();
 
-  const allTimeYearAverage = useSelector(state => state.expenses.yearAverage);
+  const windowWidth = useSelector(state => state.ui.windowWidth);
 
   const [loading, setLoading] = useState(true);
 
@@ -56,13 +59,18 @@ export default function YearChart (props) {
         onLayout={onLayout}
       >
         <Loader
+          style={styles.loader}
           loading={loading}
           setLoading={setLoading}
           timeout={500}
         />
 
         <BarChart
-          style={styles.chart}
+          style={[
+            styles.chart,
+            windowWidth < MEDIA.WIDE_MOBILE && styles.chartMobile,
+            windowWidth >= MEDIA.WIDE_MOBILE && windowWidth < MEDIA.TABLET && styles.chartTablet,
+          ]}
           width={chartWidth}
           height={chartHeight}
           legendHeight={LEGEND_HEIGHT}
@@ -78,15 +86,17 @@ export default function YearChart (props) {
         />
       </View>
 
-      <CompareStats
-        style={styles.compareStats}
-        compareWhat={-totalExpenses}
-        compareTo={yearIncome}
-        previousResult={-previousYearTotalExpenses}
-        previousResultName={`${previousYear}`}
-        allTimeAverage={-allTimeYearAverage}
-        showSecondaryComparisons={showSecondaryComparisons}
-      />
+      {windowWidth >= MEDIA.DESKTOP && (
+        <CompareStats
+          style={styles.compareStats}
+          compareWhat={-totalExpenses}
+          compareTo={yearIncome}
+          previousResult={-previousYearTotalExpenses}
+          previousResultName={`${previousYear}`}
+          allTimeAverage={-allTimeYearAverage}
+          showSecondaryComparisons={showSecondaryComparisons}
+        />
+      )}
     </View>
   );
 }
@@ -96,6 +106,10 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
 
+  loader: {
+    marginTop: 32,
+  },
+
   chartContainer: {
     width: '100%',
     position: 'relative',
@@ -103,7 +117,13 @@ const styles = StyleSheet.create({
 
   chart: {
     width: '100%',
-    marginTop: 72,
+    marginTop: 100,
+  },
+  chartMobile: {
+    marginTop: 180,
+  },
+  chartTablet: {
+    marginTop: 136,
   },
 
   compareStats: {

@@ -14,6 +14,7 @@ import { formatAmount, getListTotal } from '../../../../services/amount';
 import { COLOR } from '../../../../styles/colors';
 import { FONT } from '../../../../styles/fonts';
 import { MEDIA } from '../../../../styles/media';
+import CompareStats from "../../../../components/CompareStats";
 
 WeekStats.propTypes = {
   style: PropTypes.any,
@@ -25,6 +26,12 @@ WeekStats.propTypes = {
     dateString: PropTypes.string,
     amount: PropTypes.number,
   })).isRequired,
+  totalExpenses: PropTypes.number.isRequired,
+  monthIncome: PropTypes.number.isRequired,
+  previousWeekTotalExpenses: PropTypes.number.isRequired,
+  previousMonthName: PropTypes.string.isRequired,
+  allTimeWeekAverage: PropTypes.number,
+  showSecondaryComparisons: PropTypes.bool.isRequired,
 };
 
 export default function WeekStats (props) {
@@ -32,6 +39,12 @@ export default function WeekStats (props) {
     style,
     monthNumber,
     weekExpenses,
+    totalExpenses,
+    monthIncome,
+    previousWeekTotalExpenses,
+    previousMonthName,
+    allTimeWeekAverage,
+    showSecondaryComparisons,
   } = props;
 
   const navigation = useNavigation();
@@ -53,8 +66,9 @@ export default function WeekStats (props) {
   return (
     <View style={[styles.weekStats, style]}>
       <FoldedContainer
-        title='Expenses'
+        title={windowWidth < MEDIA.DESKTOP ? 'View expenses' : 'Expenses'}
         disable={windowWidth >= MEDIA.DESKTOP}
+        initiallyFolded={windowWidth < MEDIA.DESKTOP}
       >
         <View
           style={[styles.stats, {
@@ -107,6 +121,18 @@ export default function WeekStats (props) {
           }
         </View>
       </FoldedContainer>
+
+      {windowWidth < MEDIA.DESKTOP && (
+        <CompareStats
+          style={styles.compareStats}
+          compareWhat={-totalExpenses}
+          compareTo={monthIncome}
+          previousResult={-previousWeekTotalExpenses}
+          previousResultName={previousMonthName}
+          allTimeAverage={-allTimeWeekAverage}
+          showSecondaryComparisons={showSecondaryComparisons}
+        />
+      )}
     </View>
   );
 }
@@ -158,5 +184,9 @@ const styles = StyleSheet.create({
   statValueSmaller: {
     fontSize: 18,
     lineHeight: 23,
+  },
+
+  compareStats: {
+    marginTop: 40,
   },
 });

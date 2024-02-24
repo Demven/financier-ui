@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontFamily: FONT.NOTO_SERIF.BOLD,
+    flexShrink: 0,
   },
   headerDropdown: {
     marginLeft: 24,

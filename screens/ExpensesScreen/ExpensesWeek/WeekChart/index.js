@@ -16,8 +16,9 @@ WeekChart.propTypes = {
   onDaySelected: PropTypes.func.isRequired,
   totalExpenses: PropTypes.number.isRequired,
   monthIncome: PropTypes.number.isRequired,
-  previousWeekTotalExpenses: PropTypes.number.isRequired,
+  previousWeekTotalExpenses: PropTypes.number,
   previousMonthName: PropTypes.string.isRequired,
+  allTimeWeekAverage: PropTypes.number,
   showSecondaryComparisons: PropTypes.bool.isRequired,
 };
 
@@ -32,13 +33,13 @@ export default function WeekChart (props) {
     monthIncome,
     previousWeekTotalExpenses,
     previousMonthName,
+    allTimeWeekAverage,
     showSecondaryComparisons,
   } = props;
 
   const [loading, setLoading] = useState(true);
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
-  const allTimeWeekAverage = useSelector(state => state.expenses.weekAverage);
 
   const chartRef = useRef();
 
@@ -52,12 +53,6 @@ export default function WeekChart (props) {
     setChartHeight(Math.floor(width / 16 * 9));
   }
 
-  const loaderMarginLeft = windowWidth < MEDIA.DESKTOP
-    ? windowWidth < MEDIA.TABLET
-      ? 72 // mobile
-      : 40 // tablet
-    : 0; // desktop
-
   return (
     <View style={[styles.weekChart, style]}>
       <View
@@ -66,14 +61,14 @@ export default function WeekChart (props) {
         ref={chartRef}
       >
         <Loader
-          style={{ marginLeft: loaderMarginLeft }}
+          style={styles.loader}
           loading={loading}
           setLoading={setLoading}
           timeout={500}
         />
 
         <BarChart
-          style={styles.chart}
+          style={[styles.chart, windowWidth < MEDIA.TABLET && styles.chartMobile]}
           width={chartWidth}
           height={chartHeight}
           legendHeight={LEGEND_HEIGHT}
@@ -89,15 +84,17 @@ export default function WeekChart (props) {
         />
       </View>
 
-      <CompareStats
-        style={styles.compareStats}
-        compareWhat={-totalExpenses}
-        compareTo={monthIncome}
-        previousResult={-previousWeekTotalExpenses}
-        previousResultName={previousMonthName}
-        allTimeAverage={-allTimeWeekAverage}
-        showSecondaryComparisons={showSecondaryComparisons}
-      />
+      {windowWidth >= MEDIA.DESKTOP && (
+        <CompareStats
+          style={styles.compareStats}
+          compareWhat={-totalExpenses}
+          compareTo={monthIncome}
+          previousResult={-previousWeekTotalExpenses}
+          previousResultName={previousMonthName}
+          allTimeAverage={-allTimeWeekAverage}
+          showSecondaryComparisons={showSecondaryComparisons}
+        />
+      )}
     </View>
   );
 }
@@ -107,6 +104,10 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
 
+  loader: {
+    marginTop: 32,
+  },
+
   chartContainer: {
     width: '100%',
     position: 'relative',
@@ -114,7 +115,10 @@ const styles = StyleSheet.create({
 
   chart: {
     width: '100%',
-    marginTop: 72,
+    marginTop: 80,
+  },
+  chartMobile: {
+    marginTop: 180,
   },
 
   compareStats: {

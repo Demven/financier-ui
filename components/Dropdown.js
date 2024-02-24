@@ -14,6 +14,7 @@ Dropdown.propTypes = {
   style: PropTypes.any,
   label: PropTypes.string,
   placeholder: PropTypes.string,
+  placeholderStyle: PropTypes.any,
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
   value: PropTypes.string,
@@ -33,6 +34,7 @@ export default function Dropdown (props) {
     style,
     label = '',
     placeholder = '',
+    placeholderStyle,
     open = false,
     setOpen = () => {},
     value = '',
@@ -63,7 +65,7 @@ export default function Dropdown (props) {
         style={[styles.picker]}
         containerStyle={[styles.pickerContainer, (open || focused) && styles.pickerContainerActive]}
         containerProps={{ onFocus, onBlur }}
-        textStyle={styles.pickerText}
+        textStyle={[styles.pickerText, placeholderStyle]}
         dropDownContainerStyle={[styles.pickerList, {
           height: Math.ceil(ITEM_HEIGHT * items.length),
           maxHeight: Math.ceil(ITEM_HEIGHT * 6),
@@ -71,7 +73,7 @@ export default function Dropdown (props) {
         listItemContainerStyle={styles.pickerListItem}
         listItemLabelStyle={styles.pickerListItemText}
         selectedItemLabelStyle={styles.pickerListItemTextSelected}
-        placeholderStyle={styles.pickerPlaceholder}
+        placeholderStyle={[styles.pickerPlaceholder, placeholderStyle]}
         open={open}
         setOpen={setOpen}
         value={value}

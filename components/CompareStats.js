@@ -9,6 +9,7 @@ import Icon, { ICON_COLLECTION } from './Icon';
 import { formatAmount, getAmountColor } from '../services/amount';
 import { FONT } from '../styles/fonts';
 import { COLOR } from '../styles/colors';
+import { MEDIA } from '../styles/media';
 
 CompareStats.propTypes = {
   style: PropTypes.object,
@@ -31,6 +32,7 @@ export default function CompareStats (props) {
     showSecondaryComparisons,
   } = props;
 
+  const windowWidth = useSelector(state => state.ui.windowWidth);
   const currencySymbol = useSelector(state => state.account.currencySymbol);
 
   const expensesToIncomeRatio = Math.round(Math.abs(compareWhat) * 100 / compareTo);
@@ -116,8 +118,17 @@ export default function CompareStats (props) {
         )}
       </View>
 
-      <View style={[styles.total, !secondaryComparisonsToShow && styles.totalWithoutSecondaryComparisons]}>
-        {formatAmount(compareWhat, currencySymbol)}
+      <View style={[
+        styles.total,
+        !secondaryComparisonsToShow && styles.totalWithoutSecondaryComparisons,
+      ]}>
+        <Text style={[
+          styles.totalText,
+          windowWidth < MEDIA.TABLET && styles.totalTextMobile,
+          windowWidth >= MEDIA.TABLET && windowWidth < MEDIA.DESKTOP && styles.totalTextTablet,
+        ]}>
+          {formatAmount(compareWhat, currencySymbol)}
+        </Text>
       </View>
     </View>
   );
@@ -188,12 +199,23 @@ const styles = StyleSheet.create({
 
   total: {
     marginTop: 32,
-    fontFamily: FONT.NOTO_SERIF.BOLD,
-    fontSize: 34,
-    lineHeight: 34,
   },
   totalWithoutSecondaryComparisons: {
     marginTop: 0,
     marginLeft: 32,
+  },
+
+  totalText: {
+    fontFamily: FONT.NOTO_SERIF.BOLD,
+    fontSize: 34,
+    lineHeight: 34,
+  },
+  totalTextMobile: {
+    fontSize: 24,
+    lineHeight: 24,
+  },
+  totalTextTablet: {
+    fontSize: 28,
+    lineHeight: 28,
   },
 });

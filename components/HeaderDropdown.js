@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   },
 
   arrowIcon: {
-    marginLeft: 8,
+    marginLeft: 12,
   },
 
   list: {

@@ -44,7 +44,7 @@ export default function MonthStats (props) {
   return (
     <View style={[styles.monthStats, style]}>
       <FoldedContainer
-        title={windowWidth >= MEDIA.DESKTOP ? 'Weeks' : 'See expenses by weeks'}
+        title={windowWidth < MEDIA.DESKTOP ? 'View expenses by weeks' : 'Weeks'}
         disable={windowWidth >= MEDIA.DESKTOP}
       >
         <View
@@ -81,18 +81,18 @@ export default function MonthStats (props) {
               </Text>
             </View>
           ))}
-
-          <CompareStats
-            style={styles.compareStats}
-            compareWhat={-totalExpenses}
-            compareTo={monthIncome}
-            previousResult={-previousMonthTotalExpenses}
-            previousResultName={previousMonthName}
-            allTimeAverage={-allTimeMonthAverage}
-            showSecondaryComparisons={showSecondaryComparisons}
-          />
         </View>
       </FoldedContainer>
+
+      <CompareStats
+        style={styles.compareStats}
+        compareWhat={-totalExpenses}
+        compareTo={monthIncome}
+        previousResult={-previousMonthTotalExpenses}
+        previousResultName={previousMonthName}
+        allTimeAverage={-allTimeMonthAverage}
+        showSecondaryComparisons={showSecondaryComparisons}
+      />
     </View>
   );
 }

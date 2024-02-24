@@ -49,12 +49,6 @@ export default function MonthChart (props) {
 
   const daysNumber = daysInMonth(year, monthNumber);
 
-  const loaderMarginLeft = windowWidth < MEDIA.DESKTOP
-    ? windowWidth < MEDIA.TABLET
-      ? 72 // mobile
-      : 40 // tablet
-    : 0; // desktop
-
   return (
     <View
       style={[styles.monthChart, style]}
@@ -62,14 +56,14 @@ export default function MonthChart (props) {
       ref={chartRef}
     >
       <Loader
-        style={{ marginLeft: loaderMarginLeft }}
+        style={styles.loader}
         loading={loading}
         setLoading={setLoading}
         timeout={500}
       />
 
       <BarChart
-        style={styles.chart}
+        style={[styles.chart, windowWidth < MEDIA.TABLET && styles.chartMobile]}
         width={chartWidth}
         height={chartHeight}
         legendHeight={LEGEND_HEIGHT}
@@ -106,8 +100,15 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
 
+  loader: {
+    marginTop: 32,
+  },
+
   chart: {
     width: '100%',
-    marginTop: 72,
+    marginTop: 80,
+  },
+  chartMobile: {
+    marginTop: 180,
   },
 });
