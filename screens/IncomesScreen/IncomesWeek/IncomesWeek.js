@@ -27,7 +27,7 @@ IncomesWeek.propTypes = {
   onScrollTo: PropTypes.func,
   weekExpenses: PropTypes.arrayOf(PropTypes.object), // []
   weekExpensesTotal: PropTypes.number.isRequired,
-  previousWeekTotalExpenses: PropTypes.number.isRequired,
+  previousWeekTotalExpenses: PropTypes.number,
   previousMonthName: PropTypes.string,
 };
 

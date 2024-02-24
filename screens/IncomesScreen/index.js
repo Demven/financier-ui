@@ -36,20 +36,19 @@ export default function IncomesScreen () {
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const selectedYear = useSelector(state => state.ui.selectedYear);
 
-  const expenses = useSelector(state => state.expenses.expenses) || {};
-  const expensesTotal = useSelector(state => state.expenses.expensesTotal) || {};
+  const incomes = useSelector(state => state.incomes.incomes) || {};
   const incomesTotal = useSelector(state => state.incomes.incomesTotal) || {};
 
-  const expensesYears = Object.keys(expensesTotal);
+  const incomesYears = Object.keys(incomes);
 
   const [yearDropdownWidth, setYearDropdownWidth] = useState(0);
 
   const yearsToSelect = useMemo(() => {
     return Array.from(new Set([
       new Date().getFullYear(),
-      ...expensesYears,
+      ...incomesYears,
     ]))
-  }, [expensesYears]);
+  }, [incomesYears]);
 
   const route = useRoute();
   const overviewType = route.params?.type;
@@ -58,11 +57,11 @@ export default function IncomesScreen () {
   const animatedScrollViewRef = useAnimatedRef();
   const scrollViewY = useSharedValue(0);
 
-  const expensesMonths = Object
-    .keys(expenses[selectedYear] || {})
+  const incomesMonths = Object
+    .keys(incomes[selectedYear] || {})
     .map(monthString => Number(monthString))
     .reverse();
-  const firstMonthNumber = expensesMonths[0];
+  const firstMonthNumber = incomesMonths[0];
 
   const monthNumber = route.params?.monthNumber || firstMonthNumber;
   const routeWeekNumber = route.params?.weekNumber;
@@ -97,7 +96,7 @@ export default function IncomesScreen () {
     return [1, 2, 3, 4].map((weekNumber, index) => {
       const previousMonthNumber = monthNumber > 1
         ? monthNumber - 1
-        : getLastMonthNumberInYear(expensesTotal?.[selectedYear - 1]); // the last month of the previous year
+        : getLastMonthNumberInYear(incomesTotal?.[selectedYear - 1]); // the last month of the previous year
 
       return (
         <IncomesWeek
@@ -113,11 +112,11 @@ export default function IncomesScreen () {
           onScrollTo={weekNumber === routeWeekNumber
             ? (scrollY) => scrollViewY.value = scrollY
             : undefined}
-          weekExpenses={expenses?.[selectedYear]?.[monthNumber]?.[weekNumber]}
-          weekExpensesTotal={expensesTotal?.[selectedYear]?.[monthNumber]?.[weekNumber]}
+          weekExpenses={incomes?.[selectedYear]?.[monthNumber]?.[weekNumber]}
+          weekExpensesTotal={incomesTotal?.[selectedYear]?.[monthNumber]?.[weekNumber]}
           previousWeekTotalExpenses={monthNumber > 1
-            ? expensesTotal?.[selectedYear]?.[previousMonthNumber]?.[weekNumber] || 0
-            : expensesTotal?.[selectedYear - 1]?.[previousMonthNumber]?.[weekNumber] || 0
+            ? incomesTotal?.[selectedYear]?.[previousMonthNumber]?.[weekNumber] || 0
+            : incomesTotal?.[selectedYear - 1]?.[previousMonthNumber]?.[weekNumber] || 0
           }
           previousMonthName={MONTH_NAME[previousMonthNumber]}
         />
@@ -126,10 +125,10 @@ export default function IncomesScreen () {
   }
 
   function renderMonths () {
-    return expensesMonths.map((monthNumber, index) => {
+    return incomesMonths.map((monthNumber, index) => {
       const previousMonthNumber = monthNumber > 1
-       ? expensesMonths[index + 1] // + 1 because month numbers are sorted in ASC order
-       : getLastMonthNumberInYear(expensesTotal?.[selectedYear - 1]); // the last month of the previous year
+       ? incomesMonths[index + 1] // + 1 because month numbers are sorted in ASC order
+       : getLastMonthNumberInYear(incomesTotal?.[selectedYear - 1]); // the last month of the previous year
 
       return (
         <IncomesMonth
@@ -141,11 +140,11 @@ export default function IncomesScreen () {
           year={selectedYear}
           monthNumber={monthNumber}
           monthIncome={incomesTotal?.[selectedYear]?.[monthNumber]?.total || 0}
-          monthExpenses={expenses?.[selectedYear]?.[monthNumber]}
-          monthExpensesTotal={expensesTotal?.[selectedYear]?.[monthNumber]}
+          monthExpenses={incomes?.[selectedYear]?.[monthNumber]}
+          monthExpensesTotal={incomesTotal?.[selectedYear]?.[monthNumber]}
           previousMonthTotalExpenses={monthNumber > 1
-            ? expensesTotal?.[selectedYear]?.[previousMonthNumber]?.total || 0
-            : expensesTotal?.[selectedYear - 1]?.[previousMonthNumber]?.total || 0 // compare to the last month of the previous year
+            ? incomesTotal?.[selectedYear]?.[previousMonthNumber]?.total || 0
+            : incomesTotal?.[selectedYear - 1]?.[previousMonthNumber]?.total || 0 // compare to the last month of the previous year
           }
           previousMonthName={MONTH_NAME[previousMonthNumber]}
         />
@@ -164,8 +163,8 @@ export default function IncomesScreen () {
             windowWidth < MEDIA.WIDE_MOBILE && styles.incomesMobile,
           ]}
           year={yearNumber}
-          yearExpenses={expenses[yearNumber]}
-          yearTotalExpenses={expensesTotal[yearNumber]}
+          yearExpenses={incomes[yearNumber]}
+          yearTotalExpenses={incomesTotal[yearNumber]}
           yearIncome={incomesTotal?.[yearNumber]?.total || 0}
           previousYear={yearNumber - 1}
           previousYearTotalExpenses={incomesTotal?.[yearNumber - 1]?.total || 0}
@@ -180,8 +179,8 @@ export default function IncomesScreen () {
     : 40; // wide desktop
   const listContainerPaddingTop = windowWidth < MEDIA.TABLET ? 24 : 40;
 
-  const noDataForSelectedYear = !Object.keys(expenses[selectedYear] || {}).length;
-  const noDataForAnyYear = !Object.keys(expenses).length;
+  const noDataForSelectedYear = !Object.keys(incomes[selectedYear] || {}).length;
+  const noDataForAnyYear = !Object.keys(incomes).length;
 
   const hideYearSelector = selectedTab === TAB.YEARS;
 

@@ -9,12 +9,12 @@ import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import TitleLink from '../../../../components/TitleLink';
 import FoldedContainer from '../../../../components/FoldedContainer';
+import CompareStats from '../../../../components/CompareStats';
 import ExpenseGroup from './ExpenseGroup';
 import { formatAmount, getListTotal } from '../../../../services/amount';
 import { COLOR } from '../../../../styles/colors';
 import { FONT } from '../../../../styles/fonts';
 import { MEDIA } from '../../../../styles/media';
-import CompareStats from "../../../../components/CompareStats";
 
 WeekStats.propTypes = {
   style: PropTypes.any,
@@ -66,7 +66,7 @@ export default function WeekStats (props) {
   return (
     <View style={[styles.weekStats, style]}>
       <FoldedContainer
-        title={windowWidth < MEDIA.DESKTOP ? 'View expenses' : 'Expenses'}
+        title={windowWidth < MEDIA.DESKTOP ? 'View incomes' : 'Incomes'}
         disable={windowWidth >= MEDIA.DESKTOP}
         initiallyFolded={windowWidth < MEDIA.DESKTOP}
       >
@@ -91,7 +91,7 @@ export default function WeekStats (props) {
                         windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
                       ]}
                       alwaysHighlighted
-                      onPress={() => navigation.navigate('Expense', { expense: expenses[0] })}
+                      onPress={() => navigation.navigate('Income', { income: expenses[0] })}
                     >
                       {groupName}
                     </TitleLink>
@@ -114,7 +114,7 @@ export default function WeekStats (props) {
                   styles.statValue,
                   windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
                 ]}>
-                  {formatAmount(-getListTotal(expenses), currencySymbol)}
+                  {formatAmount(getListTotal(expenses), currencySymbol)}
                 </Text>
               </View>
             ))
@@ -125,11 +125,11 @@ export default function WeekStats (props) {
       {windowWidth < MEDIA.DESKTOP && (
         <CompareStats
           style={styles.compareStats}
-          compareWhat={-totalExpenses}
+          compareWhat={totalExpenses}
           compareTo={monthIncome}
-          previousResult={-previousWeekTotalExpenses}
+          previousResult={previousWeekTotalExpenses}
           previousResultName={previousMonthName}
-          allTimeAverage={-allTimeWeekAverage}
+          allTimeAverage={allTimeWeekAverage}
           showSecondaryComparisons={showSecondaryComparisons}
         />
       )}

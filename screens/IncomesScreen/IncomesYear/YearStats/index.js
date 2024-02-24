@@ -45,7 +45,7 @@ export default function YearStats (props) {
   return (
     <View style={[styles.yearStats, style]}>
       <FoldedContainer
-        title={windowWidth < MEDIA.DESKTOP ? 'View expenses by months' : 'Months'}
+        title={windowWidth < MEDIA.DESKTOP ? 'View incomes by months' : 'Months'}
         disable={windowWidth >= MEDIA.DESKTOP}
       >
         <View
@@ -67,7 +67,7 @@ export default function YearStats (props) {
                 ]}
                 alwaysHighlighted={!!total}
                 onPress={total > 0
-                  ? () => navigation.navigate('ExpensesWeeks', { monthNumber: index + 1, year })
+                  ? () => navigation.navigate('IncomesWeeks', { monthNumber: index + 1, year })
                   : undefined
                 }
               >
@@ -79,7 +79,7 @@ export default function YearStats (props) {
                 windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
                 selectedMonthIndex === index && styles.statValueBold,
               ]}>
-                {total > 0 ? formatAmount(-total) : '–'}
+                {total > 0 ? formatAmount(total) : '–'}
               </Text>
             </View>
           ))}
@@ -89,11 +89,11 @@ export default function YearStats (props) {
       {windowWidth < MEDIA.DESKTOP && (
         <CompareStats
           style={styles.compareStats}
-          compareWhat={-totalExpenses}
+          compareWhat={totalExpenses}
           compareTo={yearIncome}
-          previousResult={-previousYearTotalExpenses}
+          previousResult={previousYearTotalExpenses}
           previousResultName={`${previousYear}`}
-          allTimeAverage={-allTimeYearAverage}
+          allTimeAverage={allTimeYearAverage}
           showSecondaryComparisons={showSecondaryComparisons}
         />
       )}

@@ -44,7 +44,7 @@ export default function MonthStats (props) {
   return (
     <View style={[styles.monthStats, style]}>
       <FoldedContainer
-        title={windowWidth < MEDIA.DESKTOP ? 'View expenses by weeks' : 'Weeks'}
+        title={windowWidth < MEDIA.DESKTOP ? 'View incomes by weeks' : 'Weeks'}
         disable={windowWidth >= MEDIA.DESKTOP}
       >
         <View
@@ -66,7 +66,7 @@ export default function MonthStats (props) {
                 ]}
                 alwaysHighlighted={!!total}
                 onPress={total
-                  ? () => navigation.navigate('ExpensesWeeks', { monthNumber, weekNumber: index + 1 })
+                  ? () => navigation.navigate('IncomesWeeks', { monthNumber, weekNumber: index + 1 })
                   : undefined}
               >
                 Week {index + 1}
@@ -77,7 +77,7 @@ export default function MonthStats (props) {
                 windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
                 selectedWeekIndex === index && styles.statValueBold,
               ]}>
-                {total > 0 ? formatAmount(-total, currencySymbol) : '–'}
+                {total > 0 ? formatAmount(total, currencySymbol) : '–'}
               </Text>
             </View>
           ))}
@@ -86,11 +86,11 @@ export default function MonthStats (props) {
 
       <CompareStats
         style={styles.compareStats}
-        compareWhat={-totalExpenses}
+        compareWhat={totalExpenses}
         compareTo={monthIncome}
-        previousResult={-previousMonthTotalExpenses}
+        previousResult={previousMonthTotalExpenses}
         previousResultName={previousMonthName}
-        allTimeAverage={-allTimeMonthAverage}
+        allTimeAverage={allTimeMonthAverage}
         showSecondaryComparisons={showSecondaryComparisons}
       />
     </View>
