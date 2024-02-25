@@ -13,12 +13,12 @@ import { MEDIA } from '../../../../styles/media';
 
 YearStats.propTypes = {
   style: PropTypes.any,
-  expensesByMonths: PropTypes.arrayOf(PropTypes.number).isRequired,
+  incomesByMonths: PropTypes.arrayOf(PropTypes.number).isRequired,
   year: PropTypes.number,
   selectedMonthIndex: PropTypes.number,
-  totalExpenses: PropTypes.number.isRequired,
-  yearIncome: PropTypes.number.isRequired,
-  previousYearTotalExpenses: PropTypes.number,
+  allTimeTotalIncome: PropTypes.number,
+  yearIncomesTotal: PropTypes.number.isRequired,
+  previousYearTotalIncomes: PropTypes.number,
   previousYear: PropTypes.number,
   allTimeYearAverage: PropTypes.number,
   showSecondaryComparisons: PropTypes.bool.isRequired,
@@ -27,12 +27,12 @@ YearStats.propTypes = {
 export default function YearStats (props) {
   const {
     style,
-    expensesByMonths,
+    incomesByMonths,
     year,
     selectedMonthIndex,
-    totalExpenses,
-    yearIncome,
-    previousYearTotalExpenses,
+    allTimeTotalIncome,
+    yearIncomesTotal,
+    previousYearTotalIncomes,
     previousYear,
     allTimeYearAverage,
     showSecondaryComparisons,
@@ -54,7 +54,7 @@ export default function YearStats (props) {
             paddingLeft: windowWidth < MEDIA.DESKTOP ? 16 : 24,
           }]}
         >
-          {expensesByMonths.map((total, index) => (
+          {incomesByMonths.map((total, index) => (
             <View
               key={index}
               style={[styles.statRow, index === 0 && { marginTop: 0 }]}
@@ -89,12 +89,14 @@ export default function YearStats (props) {
       {windowWidth < MEDIA.DESKTOP && (
         <CompareStats
           style={styles.compareStats}
-          compareWhat={totalExpenses}
-          compareTo={yearIncome}
-          previousResult={previousYearTotalExpenses}
+          compareWhat={yearIncomesTotal}
+          compareTo={allTimeTotalIncome}
+          previousResult={previousYearTotalIncomes}
           previousResultName={`${previousYear}`}
           allTimeAverage={allTimeYearAverage}
           showSecondaryComparisons={showSecondaryComparisons}
+          circleSubText='of income'
+          circleSubTextColor={COLOR.GRAY}
         />
       )}
     </View>

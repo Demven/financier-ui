@@ -7,16 +7,17 @@ import BarChart from '../../../../components/chart/BarChart';
 import WeekChartLegend, { LEGEND_HEIGHT } from '../../../../components/chart/legends/WeekChartLegend';
 import CompareStats from '../../../../components/CompareStats';
 import { MEDIA } from '../../../../styles/media';
+import { COLOR } from "../../../../styles/colors";
 
 WeekChart.propTypes = {
   style: PropTypes.any,
-  expensesByDays: PropTypes.arrayOf(PropTypes.number).isRequired,
+  incomesByDays: PropTypes.arrayOf(PropTypes.number).isRequired,
   daysInWeek: PropTypes.number.isRequired,
+  monthIncome: PropTypes.number.isRequired,
   selectedDayIndex: PropTypes.number,
   onDaySelected: PropTypes.func.isRequired,
-  totalExpenses: PropTypes.number.isRequired,
-  monthIncome: PropTypes.number.isRequired,
-  previousWeekTotalExpenses: PropTypes.number,
+  weekIncomesTotal: PropTypes.number.isRequired,
+  previousWeekTotalIncomes: PropTypes.number,
   previousMonthName: PropTypes.string.isRequired,
   allTimeWeekAverage: PropTypes.number,
   showSecondaryComparisons: PropTypes.bool.isRequired,
@@ -25,13 +26,13 @@ WeekChart.propTypes = {
 export default function WeekChart (props) {
   const {
     style,
-    expensesByDays,
+    incomesByDays,
     daysInWeek,
+    monthIncome,
     selectedDayIndex,
     onDaySelected,
-    totalExpenses,
-    monthIncome,
-    previousWeekTotalExpenses,
+    weekIncomesTotal,
+    previousWeekTotalIncomes,
     previousMonthName,
     allTimeWeekAverage,
     showSecondaryComparisons,
@@ -72,7 +73,7 @@ export default function WeekChart (props) {
           width={chartWidth}
           height={chartHeight}
           legendHeight={LEGEND_HEIGHT}
-          data={expensesByDays}
+          data={incomesByDays}
           getColor={(opacity = 1) => `rgba(238, 167, 76, ${opacity})`} // COLOR.MEDIUM_ORANGE
           barSelected={selectedDayIndex}
           onBarSelected={onDaySelected}
@@ -87,12 +88,14 @@ export default function WeekChart (props) {
       {windowWidth >= MEDIA.DESKTOP && (
         <CompareStats
           style={styles.compareStats}
-          compareWhat={-totalExpenses}
+          compareWhat={weekIncomesTotal}
           compareTo={monthIncome}
-          previousResult={-previousWeekTotalExpenses}
+          previousResult={previousWeekTotalIncomes}
           previousResultName={previousMonthName}
           allTimeAverage={-allTimeWeekAverage}
           showSecondaryComparisons={showSecondaryComparisons}
+          circleSubText='of month'
+          circleSubTextColor={COLOR.GRAY}
         />
       )}
     </View>

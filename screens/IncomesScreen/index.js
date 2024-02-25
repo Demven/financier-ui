@@ -112,9 +112,9 @@ export default function IncomesScreen () {
           onScrollTo={weekNumber === routeWeekNumber
             ? (scrollY) => scrollViewY.value = scrollY
             : undefined}
-          weekExpenses={incomes?.[selectedYear]?.[monthNumber]?.[weekNumber]}
-          weekExpensesTotal={incomesTotal?.[selectedYear]?.[monthNumber]?.[weekNumber]}
-          previousWeekTotalExpenses={monthNumber > 1
+          weekIncomes={incomes?.[selectedYear]?.[monthNumber]?.[weekNumber]}
+          weekIncomesTotal={incomesTotal?.[selectedYear]?.[monthNumber]?.[weekNumber]}
+          previousMonthTotalIncomes={monthNumber > 1
             ? incomesTotal?.[selectedYear]?.[previousMonthNumber]?.[weekNumber] || 0
             : incomesTotal?.[selectedYear - 1]?.[previousMonthNumber]?.[weekNumber] || 0
           }
@@ -139,10 +139,10 @@ export default function IncomesScreen () {
           ]}
           year={selectedYear}
           monthNumber={monthNumber}
-          monthIncome={incomesTotal?.[selectedYear]?.[monthNumber]?.total || 0}
-          monthExpenses={incomes?.[selectedYear]?.[monthNumber]}
-          monthExpensesTotal={incomesTotal?.[selectedYear]?.[monthNumber]}
-          previousMonthTotalExpenses={monthNumber > 1
+          yearIncome={incomesTotal?.[selectedYear]?.total || 0}
+          monthIncomes={incomes?.[selectedYear]?.[monthNumber]}
+          monthIncomesTotal={incomesTotal?.[selectedYear]?.[monthNumber]?.total || 0}
+          previousMonthTotalIncomes={monthNumber > 1
             ? incomesTotal?.[selectedYear]?.[previousMonthNumber]?.total || 0
             : incomesTotal?.[selectedYear - 1]?.[previousMonthNumber]?.total || 0 // compare to the last month of the previous year
           }
@@ -163,11 +163,11 @@ export default function IncomesScreen () {
             windowWidth < MEDIA.WIDE_MOBILE && styles.incomesMobile,
           ]}
           year={yearNumber}
-          yearExpenses={incomes[yearNumber]}
-          yearTotalExpenses={incomesTotal[yearNumber]}
-          yearIncome={incomesTotal?.[yearNumber]?.total || 0}
+          allTimeTotalIncome={incomesTotal?.total || 0}
+          yearIncomes={incomes[yearNumber]}
+          yearIncomesTotal={incomesTotal[yearNumber]?.total || 0}
+          previousYearTotalIncomes={incomesTotal?.[yearNumber - 1]?.total || 0}
           previousYear={yearNumber - 1}
-          previousYearTotalExpenses={incomesTotal?.[yearNumber - 1]?.total || 0}
         />
       ));
   }

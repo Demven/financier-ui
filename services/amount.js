@@ -1,5 +1,4 @@
 import { COLOR } from '../styles/colors';
-import expensesTotalData from '../data/expensesTotal';
 
 export function getAmount (item) {
   return item?.shares

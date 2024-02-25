@@ -14,22 +14,22 @@ import { MEDIA } from '../../../styles/media';
 IncomesYear.propTypes = {
   style: PropTypes.any,
   year: PropTypes.number.isRequired,
-  yearExpenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
-  yearTotalExpenses: PropTypes.object, // weeks -> expensesTotal { total: ?, [1]: ?, [2]: ? }
-  yearIncome: PropTypes.number.isRequired,
+  allTimeTotalIncome: PropTypes.number.isRequired,
+  yearIncomes: PropTypes.object.isRequired, // weeks -> incomes { [1]: [], [2]: [] }
+  yearIncomesTotal: PropTypes.number.isRequired,
+  previousYearTotalIncomes: PropTypes.number,
   previousYear: PropTypes.number.isRequired,
-  previousYearTotalExpenses: PropTypes.number.isRequired,
 };
 
 export default function IncomesYear (props) {
   const {
     style,
     year,
-    yearExpenses = {},
-    yearTotalExpenses = {},
-    yearIncome,
+    allTimeTotalIncome = 0,
+    yearIncomes = {},
+    yearIncomesTotal = 0,
+    previousYearTotalIncomes,
     previousYear,
-    previousYearTotalExpenses,
   } = props;
 
   const navigation = useNavigation();
@@ -37,7 +37,7 @@ export default function IncomesYear (props) {
   const [selectedMonthIndex, setSelectedMonthIndex] = useState();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
-  const allTimeYearAverage = useSelector(state => state.expenses.yearAverage);
+  const allTimeYearAverage = useSelector(state => state.incomes.yearAverage);
 
   function groupByMonth (yearItems) {
     const groupedByMonth = new Array(MONTHS_IN_YEAR).fill([]);
@@ -54,10 +54,8 @@ export default function IncomesYear (props) {
     return groupedByMonth;
   }
 
-  const expensesGroupedByMonth = groupByMonth(yearExpenses);
-  const totalAmountsByMonths = getTotalAmountsByMonths(expensesGroupedByMonth);
-
-  const totalExpenses = yearTotalExpenses?.total || 0;
+  const incomesGroupedByMonth = groupByMonth(yearIncomes);
+  const totalAmountsByMonths = getTotalAmountsByMonths(incomesGroupedByMonth);
 
   const columnWidth = windowWidth < MEDIA.DESKTOP
     ? '100%'
@@ -83,7 +81,7 @@ export default function IncomesYear (props) {
       : -24 // desktop
     : -20; // large desktop
 
-  const isEmptyYear = !totalExpenses;
+  const isEmptyYear = !yearIncomesTotal;
 
   if (isEmptyYear) {
     return null;
@@ -99,7 +97,7 @@ export default function IncomesYear (props) {
             lineHeight: subtitleLineHeight,
           }]}
           alwaysHighlighted
-          onPress={() => navigation.navigate('ExpensesMonths', { year })}
+          onPress={() => navigation.navigate('IncomesMonths', { year })}
         >
           {year}
         </TitleLink>
@@ -113,14 +111,14 @@ export default function IncomesYear (props) {
       >
         <YearChart
           style={{ width: chartWidth }}
-          expensesByMonths={totalAmountsByMonths}
+          incomesByMonths={totalAmountsByMonths}
           selectedMonthIndex={selectedMonthIndex}
           onMonthSelected={setSelectedMonthIndex}
-          totalExpenses={totalExpenses}
-          yearIncome={yearIncome}
-          previousYearTotalExpenses={previousYearTotalExpenses}
+          yearIncomesTotal={yearIncomesTotal}
+          previousYearTotalIncomes={previousYearTotalIncomes}
           previousYear={previousYear}
           allTimeYearAverage={allTimeYearAverage}
+          allTimeTotalIncome={allTimeTotalIncome}
           showSecondaryComparisons
         />
 
@@ -131,13 +129,13 @@ export default function IncomesYear (props) {
             paddingLeft: windowWidth < MEDIA.DESKTOP ? 0 : 40,
           }}
           year={year}
-          expensesByMonths={totalAmountsByMonths}
+          incomesByMonths={totalAmountsByMonths}
           selectedMonthIndex={selectedMonthIndex}
-          totalExpenses={totalExpenses}
-          yearIncome={yearIncome}
-          previousYearTotalExpenses={previousYearTotalExpenses}
+          yearIncomesTotal={yearIncomesTotal}
+          previousYearTotalIncomes={previousYearTotalIncomes}
           previousYear={previousYear}
           allTimeYearAverage={allTimeYearAverage}
+          allTimeTotalIncome={allTimeTotalIncome}
           showSecondaryComparisons
         />
       </View>

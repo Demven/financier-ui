@@ -14,10 +14,12 @@ import { MEDIA } from '../styles/media';
 CompareStats.propTypes = {
   style: PropTypes.object,
   compareWhat: PropTypes.number.isRequired,
-  compareTo: PropTypes.number.isRequired,
+  compareTo: PropTypes.number,
   previousResult: PropTypes.number.isRequired,
   previousResultName: PropTypes.string.isRequired,
   allTimeAverage: PropTypes.number.isRequired,
+  circleSubText: PropTypes.string,
+  circleSubTextColor: PropTypes.string,
   showSecondaryComparisons: PropTypes.bool,
 };
 
@@ -25,17 +27,27 @@ export default function CompareStats (props) {
   const {
     style,
     compareWhat,
-    compareTo,
+    compareTo = 0,
     previousResult,
     previousResultName,
     allTimeAverage,
+    circleSubText = 'of income',
+    circleSubTextColor,
     showSecondaryComparisons,
   } = props;
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
   const currencySymbol = useSelector(state => state.account.currencySymbol);
 
-  const expensesToIncomeRatio = Math.round(Math.abs(compareWhat) * 100 / compareTo);
+  function getTrendingIcon (value) {
+    return value === 0
+      ? 'trending-neutral'
+      : value > 0
+        ? 'trending-up'
+        : 'trending-down';
+  }
+
+  const compareRatio = Math.round(Math.abs(compareWhat) * 100 / compareTo);
 
   const compareToPreviousResult = !!previousResult
     ? Math.round(compareWhat * 100 / previousResult)
@@ -47,10 +59,12 @@ export default function CompareStats (props) {
     : 0;
   const changeComparedToAllTimeAverage = 100 - compareToAllTimeAverage;
 
-  const changeComparedToPreviousResultColor = previousResult
+  const changeComparedToPreviousResultColor = previousResult && changeComparedToPreviousResult !== 0
     ? getAmountColor(changeComparedToPreviousResult)
     : COLOR.GRAY;
-  const changeComparedToAllTimeAverageColor = allTimeAverage && getAmountColor(changeComparedToAllTimeAverage);
+  const changeComparedToAllTimeAverageColor = allTimeAverage && changeComparedToAllTimeAverage !== 0
+    ? getAmountColor(changeComparedToAllTimeAverage)
+    : COLOR.GRAY;
 
   const secondaryComparisonsToShow = showSecondaryComparisons && (!!previousResult || !!changeComparedToAllTimeAverage);
 
@@ -63,12 +77,12 @@ export default function CompareStats (props) {
       <View style={styles.comparisons}>
         {!!compareTo && (
           <View style={styles.circle}>
-            <Text style={[styles.circleText, { color: changeComparedToPreviousResultColor }]}>
-              {expensesToIncomeRatio}%
+            <Text style={[styles.circleText, { color: circleSubTextColor || changeComparedToPreviousResultColor }]}>
+              {compareRatio}%
             </Text>
 
             <Text style={styles.circleSubText}>
-              of income
+              {circleSubText}
             </Text>
           </View>
         )}
@@ -79,7 +93,7 @@ export default function CompareStats (props) {
               <View style={styles.comparisonRow}>
                 <Icon
                   style={styles.icon}
-                  name={changeComparedToPreviousResult > 0 ? 'trending-up' : 'trending-down'}
+                  name={getTrendingIcon(changeComparedToPreviousResult)}
                   collection={ICON_COLLECTION.MATERIAL_COMMUNITY}
                   size={36}
                   color={changeComparedToPreviousResultColor}
@@ -99,7 +113,7 @@ export default function CompareStats (props) {
               <View style={[styles.comparisonRow, { marginTop: -6 }]}>
                 <Icon
                   style={styles.icon}
-                  name={changeComparedToAllTimeAverage > 0 ? 'trending-up' : 'trending-down'}
+                  name={getTrendingIcon(changeComparedToAllTimeAverage)}
                   collection={ICON_COLLECTION.MATERIAL_COMMUNITY}
                   size={36}
                   color={changeComparedToAllTimeAverageColor}

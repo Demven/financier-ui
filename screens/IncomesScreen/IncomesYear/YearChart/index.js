@@ -7,31 +7,32 @@ import BarChart from '../../../../components/chart/BarChart';
 import YearChartLegend, { LEGEND_HEIGHT } from '../../../../components/chart/legends/YearChartLegend';
 import CompareStats from '../../../../components/CompareStats';
 import { MEDIA } from '../../../../styles/media';
+import { COLOR } from '../../../../styles/colors';
 
 YearChart.propTypes = {
   style: PropTypes.any,
-  expensesByMonths: PropTypes.arrayOf(PropTypes.number),
+  incomesByMonths: PropTypes.arrayOf(PropTypes.number),
   selectedMonthIndex: PropTypes.number,
   onMonthSelected: PropTypes.func.isRequired,
-  totalExpenses: PropTypes.number.isRequired,
-  yearIncome: PropTypes.number.isRequired,
-  previousYearTotalExpenses: PropTypes.number,
+  yearIncomesTotal: PropTypes.number.isRequired,
+  previousYearTotalIncomes: PropTypes.number,
   previousYear: PropTypes.number,
   allTimeYearAverage: PropTypes.number,
+  allTimeTotalIncome: PropTypes.number,
   showSecondaryComparisons: PropTypes.bool.isRequired,
 };
 
 export default function YearChart (props) {
   const {
     style,
-    expensesByMonths,
+    incomesByMonths,
     selectedMonthIndex,
     onMonthSelected,
-    totalExpenses,
-    yearIncome,
-    previousYearTotalExpenses,
+    yearIncomesTotal,
+    previousYearTotalIncomes,
     previousYear,
     allTimeYearAverage,
+    allTimeTotalIncome,
     showSecondaryComparisons,
   } = props;
 
@@ -74,7 +75,7 @@ export default function YearChart (props) {
           width={chartWidth}
           height={chartHeight}
           legendHeight={LEGEND_HEIGHT}
-          data={expensesByMonths}
+          data={incomesByMonths}
           getColor={(opacity = 1) => `rgba(238, 167, 76, ${opacity})`} // COLOR.MEDIUM_ORANGE
           barSelected={selectedMonthIndex}
           onBarSelected={onMonthSelected}
@@ -89,12 +90,14 @@ export default function YearChart (props) {
       {windowWidth >= MEDIA.DESKTOP && (
         <CompareStats
           style={styles.compareStats}
-          compareWhat={-totalExpenses}
-          compareTo={yearIncome}
-          previousResult={-previousYearTotalExpenses}
+          compareWhat={yearIncomesTotal}
+          compareTo={allTimeTotalIncome}
+          previousResult={previousYearTotalIncomes}
           previousResultName={`${previousYear}`}
-          allTimeAverage={-allTimeYearAverage}
+          allTimeAverage={allTimeYearAverage}
           showSecondaryComparisons={showSecondaryComparisons}
+          circleSubText='of income'
+          circleSubTextColor={COLOR.GRAY}
         />
       )}
     </View>

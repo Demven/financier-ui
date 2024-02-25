@@ -13,32 +13,30 @@ import { MEDIA } from '../../../../styles/media';
 MonthStats.propTypes = {
   style: PropTypes.any,
   monthNumber: PropTypes.number.isRequired,
-  monthIncome: PropTypes.number.isRequired,
-  expensesByWeeks: PropTypes.arrayOf(PropTypes.number).isRequired,
-  totalExpenses: PropTypes.number.isRequired,
-  previousMonthTotalExpenses: PropTypes.number,
+  yearIncome: PropTypes.number.isRequired,
+  incomesByWeeks: PropTypes.arrayOf(PropTypes.number).isRequired,
+  monthIncomesTotal: PropTypes.number.isRequired,
+  previousMonthTotalIncomes: PropTypes.number,
   previousMonthName: PropTypes.string,
   selectedWeekIndex: PropTypes.number,
-  showSecondaryComparisons: PropTypes.bool.isRequired,
 };
 
 export default function MonthStats (props) {
   const {
     style,
     monthNumber,
-    monthIncome,
-    expensesByWeeks,
-    totalExpenses,
-    previousMonthTotalExpenses,
+    yearIncome,
+    incomesByWeeks,
+    monthIncomesTotal,
+    previousMonthTotalIncomes,
     previousMonthName,
     selectedWeekIndex,
-    showSecondaryComparisons,
   } = props;
 
   const navigation = useNavigation();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
-  const allTimeMonthAverage = useSelector(state => state.expenses.monthAverage);
+  const allTimeMonthAverage = useSelector(state => state.incomes.monthAverage);
   const currencySymbol = useSelector(state => state.account.currencySymbol);
 
   return (
@@ -53,7 +51,7 @@ export default function MonthStats (props) {
             paddingLeft: windowWidth < MEDIA.DESKTOP ? 16 : 24,
           }]}
         >
-          {expensesByWeeks.map((total, index) => (
+          {incomesByWeeks.map((total, index) => (
             <View
               key={index}
               style={[styles.statRow, index === 0 && { marginTop: 0 }]}
@@ -86,12 +84,14 @@ export default function MonthStats (props) {
 
       <CompareStats
         style={styles.compareStats}
-        compareWhat={totalExpenses}
-        compareTo={monthIncome}
-        previousResult={previousMonthTotalExpenses}
+        compareWhat={monthIncomesTotal}
+        compareTo={yearIncome}
+        previousResult={previousMonthTotalIncomes}
         previousResultName={previousMonthName}
         allTimeAverage={allTimeMonthAverage}
-        showSecondaryComparisons={showSecondaryComparisons}
+        showSecondaryComparisons
+        circleSubText='of year'
+        circleSubTextColor={COLOR.GRAY}
       />
     </View>
   );

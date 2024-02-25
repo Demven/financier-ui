@@ -15,10 +15,10 @@ IncomesMonth.propTypes = {
   style: PropTypes.any,
   year: PropTypes.number.isRequired,
   monthNumber: PropTypes.number.isRequired,
-  monthIncome: PropTypes.number,
-  monthExpenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
-  monthExpensesTotal: PropTypes.object, // weeks -> expensesTotal { total: ?, [1]: ?, [2]: ? }
-  previousMonthTotalExpenses: PropTypes.number,
+  yearIncome: PropTypes.number.isRequired,
+  monthIncomes: PropTypes.object, // weeks -> incomes { [1]: [], [2]: [] }
+  monthIncomesTotal: PropTypes.number,
+  previousMonthTotalIncomes: PropTypes.number,
   previousMonthName: PropTypes.string,
 };
 
@@ -27,10 +27,10 @@ export default function IncomesMonth (props) {
     style,
     year,
     monthNumber,
-    monthIncome = 0,
-    monthExpenses = {},
-    monthExpensesTotal = {},
-    previousMonthTotalExpenses = 0,
+    yearIncome,
+    monthIncomes = {},
+    monthIncomesTotal = 0,
+    previousMonthTotalIncomes = 0,
     previousMonthName = '',
   } = props;
 
@@ -40,9 +40,7 @@ export default function IncomesMonth (props) {
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
-  const expensesByWeeks = getMonthChartPointsByWeek(monthExpenses);
-
-  const totalExpenses = monthExpensesTotal?.total || 0;
+  const incomesByWeeks = getMonthChartPointsByWeek(monthIncomes);
 
   const columnWidth = windowWidth < MEDIA.DESKTOP
     ? '100%'
@@ -68,7 +66,7 @@ export default function IncomesMonth (props) {
       : -24 // desktop
     : -20; // large desktop
 
-  const isEmptyMonth = !totalExpenses;
+  const isEmptyMonth = !monthIncomesTotal;
 
   if (isEmptyMonth) {
     return null;
@@ -84,7 +82,7 @@ export default function IncomesMonth (props) {
             lineHeight: subtitleLineHeight,
           }]}
           alwaysHighlighted
-          onPress={() => navigation.navigate('ExpensesWeeks', { monthNumber })}
+          onPress={() => navigation.navigate('IncomesWeeks', { monthNumber })}
         >
           {MONTH_NAME[monthNumber]}
         </TitleLink>
@@ -100,7 +98,7 @@ export default function IncomesMonth (props) {
           style={{ width: chartWidth }}
           year={Number(year)}
           monthNumber={monthNumber}
-          expensesByWeeks={expensesByWeeks}
+          incomesByWeeks={incomesByWeeks}
           selectedWeekIndex={selectedWeekIndex}
           onWeekSelected={setSelectedWeekIndex}
         />
@@ -112,13 +110,12 @@ export default function IncomesMonth (props) {
             paddingLeft: windowWidth < MEDIA.DESKTOP ? 0 : 40,
           }}
           monthNumber={monthNumber}
-          monthIncome={monthIncome}
-          expensesByWeeks={expensesByWeeks}
-          totalExpenses={totalExpenses}
-          previousMonthTotalExpenses={previousMonthTotalExpenses}
+          yearIncome={yearIncome}
+          incomesByWeeks={incomesByWeeks}
+          monthIncomesTotal={monthIncomesTotal}
+          previousMonthTotalIncomes={previousMonthTotalIncomes}
           previousMonthName={previousMonthName}
           selectedWeekIndex={selectedWeekIndex}
-          showSecondaryComparisons
         />
       </View>
     </View>

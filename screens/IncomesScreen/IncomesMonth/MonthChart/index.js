@@ -16,7 +16,7 @@ MonthChart.propTypes = {
   style: PropTypes.any,
   year: PropTypes.number.isRequired,
   monthNumber: PropTypes.number.isRequired,
-  expensesByWeeks: PropTypes.arrayOf(PropTypes.number).isRequired,
+  incomesByWeeks: PropTypes.arrayOf(PropTypes.number).isRequired,
   selectedWeekIndex: PropTypes.number,
   onWeekSelected: PropTypes.func.isRequired,
 };
@@ -26,7 +26,7 @@ export default function MonthChart (props) {
     style,
     year,
     monthNumber,
-    expensesByWeeks,
+    incomesByWeeks,
     selectedWeekIndex,
     onWeekSelected,
   } = props;
@@ -67,7 +67,7 @@ export default function MonthChart (props) {
         width={chartWidth}
         height={chartHeight}
         legendHeight={LEGEND_HEIGHT}
-        data={expensesByWeeks}
+        data={incomesByWeeks}
         barsProportion={[
           DAYS_IN_WEEK,
           DAYS_IN_WEEK,

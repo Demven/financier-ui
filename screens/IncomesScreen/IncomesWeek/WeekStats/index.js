@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import TitleLink from '../../../../components/TitleLink';
 import FoldedContainer from '../../../../components/FoldedContainer';
 import CompareStats from '../../../../components/CompareStats';
-import ExpenseGroup from './ExpenseGroup';
+import ItemGroup from '../../../../components/ItemGroup';
 import { formatAmount, getListTotal } from '../../../../services/amount';
 import { COLOR } from '../../../../styles/colors';
 import { FONT } from '../../../../styles/fonts';
@@ -19,15 +19,14 @@ import { MEDIA } from '../../../../styles/media';
 WeekStats.propTypes = {
   style: PropTypes.any,
   monthNumber: PropTypes.number,
-  weekExpenses: PropTypes.arrayOf(PropTypes.shape({
+  monthIncome: PropTypes.number,
+  weekIncomes: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string,
     name: PropTypes.string,
-    categoryId: PropTypes.string,
     dateString: PropTypes.string,
     amount: PropTypes.number,
   })).isRequired,
-  totalExpenses: PropTypes.number.isRequired,
-  monthIncome: PropTypes.number.isRequired,
+  weekIncomesTotal: PropTypes.number.isRequired,
   previousWeekTotalExpenses: PropTypes.number.isRequired,
   previousMonthName: PropTypes.string.isRequired,
   allTimeWeekAverage: PropTypes.number,
@@ -38,9 +37,9 @@ export default function WeekStats (props) {
   const {
     style,
     monthNumber,
-    weekExpenses,
-    totalExpenses,
     monthIncome,
+    weekIncomes,
+    weekIncomesTotal,
     previousWeekTotalExpenses,
     previousMonthName,
     allTimeWeekAverage,
@@ -52,16 +51,16 @@ export default function WeekStats (props) {
   const windowWidth = useSelector(state => state.ui.windowWidth);
   const currencySymbol = useSelector(state => state.account.currencySymbol);
 
-  const expensesGroupedByName = useMemo(() =>
-    weekExpenses.reduce((groupedByName, expense) => {
-      const name = expense.name;
+  const incomesGroupedByName = useMemo(() =>
+    weekIncomes.reduce((groupedByName, income) => {
+      const name = income.name;
 
       groupedByName[name] = Array.isArray(groupedByName[name])
-        ? [...groupedByName[name], expense]
-        : [expense];
+        ? [...groupedByName[name], income]
+        : [income];
 
       return groupedByName;
-    }, {}), [weekExpenses]);
+    }, {}), [weekIncomes]);
 
   return (
     <View style={[styles.weekStats, style]}>
@@ -77,35 +76,36 @@ export default function WeekStats (props) {
           }]}
         >
           {Object
-            .entries(expensesGroupedByName)
-            .map(([groupName, expenses], index) => (
+            .entries(incomesGroupedByName)
+            .map(([groupName, incomes], index) => (
               <View
                 key={groupName}
                 style={[styles.statRow, index === 0 && { marginTop: 0 }]}
               >
                 <View style={styles.statNameWrapper}>
-                  {expenses.length === 1 && (
+                  {incomes.length === 1 && (
                     <TitleLink
                       textStyle={[
                         styles.statName,
                         windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
                       ]}
                       alwaysHighlighted
-                      onPress={() => navigation.navigate('Income', { income: expenses[0] })}
+                      onPress={() => navigation.navigate('Income', { income: incomes[0] })}
                     >
                       {groupName}
                     </TitleLink>
                   )}
 
-                  {expenses.length > 1 && (
-                    <ExpenseGroup
+                  {incomes.length > 1 && (
+                    <ItemGroup
                       titleStyle={[
                         styles.statName,
                         windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
                       ]}
                       title={groupName}
-                      expenses={expenses}
+                      items={incomes}
                       monthNumber={monthNumber}
+                      onPressItem={income => navigation.navigate('Income', { income })}
                     />
                   )}
                 </View>
@@ -114,7 +114,7 @@ export default function WeekStats (props) {
                   styles.statValue,
                   windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
                 ]}>
-                  {formatAmount(getListTotal(expenses), currencySymbol)}
+                  {formatAmount(getListTotal(incomes), currencySymbol)}
                 </Text>
               </View>
             ))
@@ -125,12 +125,14 @@ export default function WeekStats (props) {
       {windowWidth < MEDIA.DESKTOP && (
         <CompareStats
           style={styles.compareStats}
-          compareWhat={totalExpenses}
+          compareWhat={weekIncomesTotal}
           compareTo={monthIncome}
           previousResult={previousWeekTotalExpenses}
           previousResultName={previousMonthName}
           allTimeAverage={allTimeWeekAverage}
           showSecondaryComparisons={showSecondaryComparisons}
+          circleSubText='of month'
+          circleSubTextColor={COLOR.GRAY}
         />
       )}
     </View>

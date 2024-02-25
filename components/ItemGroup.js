@@ -7,19 +7,19 @@ import {
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
-import TitleLink from '../../../../components/TitleLink';
-import FoldedContainer from '../../../../components/FoldedContainer';
-import { getAmount } from '../../../../services/amount';
-import { MONTH_NAME } from '../../../../services/date';
-import { COLOR } from '../../../../styles/colors';
-import { FONT } from '../../../../styles/fonts';
+import TitleLink from './TitleLink';
+import FoldedContainer from './FoldedContainer';
+import { getAmount } from '../services/amount';
+import { MONTH_NAME } from '../services/date';
+import { COLOR } from '../styles/colors';
+import { FONT } from '../styles/fonts';
 
-ExpenseGroup.propTypes = {
+ItemGroup.propTypes = {
   style: PropTypes.any,
   titleStyle: PropTypes.any,
   title: PropTypes.string.isRequired,
   arrowIconSize: PropTypes.number,
-  expenses: PropTypes.arrayOf(PropTypes.shape({
+  items: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string,
     name: PropTypes.string,
     categoryId: PropTypes.string,
@@ -27,19 +27,19 @@ ExpenseGroup.propTypes = {
     amount: PropTypes.number,
   })).isRequired,
   monthNumber: PropTypes.number.isRequired,
+  onPressItem: PropTypes.func,
 };
 
-export default function ExpenseGroup (props) {
+export default function ItemGroup (props) {
   const {
     style,
     titleStyle,
     title,
     arrowIconSize = 16,
-    expenses,
+    items,
     monthNumber,
+    onPressItem,
   } = props;
-
-  const navigation = useNavigation();
 
   const [folded, setFolded] = useState(true);
   const [width, setWidth] = useState();
@@ -52,7 +52,7 @@ export default function ExpenseGroup (props) {
 
   return (
     <View
-      style={[styles.expenseGroup, style]}
+      style={[styles.itemGroup, style]}
       onLayout={onLayout}
     >
       <FoldedContainer
@@ -64,14 +64,14 @@ export default function ExpenseGroup (props) {
         onFold={() => setFolded(true)}
         onUnfold={() => setFolded(false)}
       >
-        <View style={styles.groupExpensesList}>
-          {expenses.map(expense => (
+        <View style={styles.groupItemsList}>
+          {items.map(item => (
             <TitleLink
-              key={expense.id}
-              textStyle={[styles.groupExpenses, styles.groupExpensesUnfolded]}
-              onPress={() => navigation.navigate('Expense', { expense })}
+              key={item.id}
+              textStyle={[styles.groupItems, styles.groupItemsUnfolded]}
+              onPress={() => onPressItem(item)}
             >
-              {MONTH_NAME[monthNumber].slice(0, 3)} {Number(expense.dateString.split('-')[2])}:  {currencySymbol}{getAmount(expense)}
+              {MONTH_NAME[monthNumber].slice(0, 3)} {Number(item.dateString.split('-')[2])}:  {currencySymbol}{getAmount(item)}
             </TitleLink>
           ))}
         </View>
@@ -80,13 +80,13 @@ export default function ExpenseGroup (props) {
       {folded && (
         <Text
           style={[
-            styles.groupExpenses,
-            styles.groupExpensesFolded,
+            styles.groupItems,
+            styles.groupItemsFolded,
             !!width && { width: width * 0.7 },
           ]}
         >
-          {expenses
-            .map(expense => getAmount(expense))
+          {items
+            .map(item => getAmount(item))
             .join(' + ')}
         </Text>
       )}
@@ -95,7 +95,7 @@ export default function ExpenseGroup (props) {
 }
 
 const styles = StyleSheet.create({
-  expenseGroup: {
+  itemGroup: {
     width: '100%',
   },
 
@@ -110,13 +110,13 @@ const styles = StyleSheet.create({
     color: COLOR.DARK_GRAY,
   },
 
-  groupExpensesList: {
+  groupItemsList: {
     width: '100%',
     paddingLeft: 12,
     alignItems: 'flex-start',
   },
 
-  groupExpenses: {
+  groupItems: {
     marginTop: 4,
     marginLeft: 12,
     fontFamily: FONT.NOTO_SERIF.REGULAR,
@@ -124,10 +124,10 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     color: COLOR.DARK_GRAY,
   },
-  groupExpensesFolded: {
+  groupItemsFolded: {
     width: 300,
   },
-  groupExpensesUnfolded: {
+  groupItemsUnfolded: {
     marginLeft: 0,
   },
 });

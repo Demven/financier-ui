@@ -9,12 +9,12 @@ import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import TitleLink from '../../../../components/TitleLink';
 import FoldedContainer from '../../../../components/FoldedContainer';
-import ExpenseGroup from './ExpenseGroup';
+import ItemGroup from '../../../../components/ItemGroup';
+import CompareStats from '../../../../components/CompareStats';
 import { formatAmount, getListTotal } from '../../../../services/amount';
 import { COLOR } from '../../../../styles/colors';
 import { FONT } from '../../../../styles/fonts';
 import { MEDIA } from '../../../../styles/media';
-import CompareStats from "../../../../components/CompareStats";
 
 WeekStats.propTypes = {
   style: PropTypes.any,
@@ -98,14 +98,15 @@ export default function WeekStats (props) {
                   )}
 
                   {expenses.length > 1 && (
-                    <ExpenseGroup
+                    <ItemGroup
                       titleStyle={[
                         styles.statName,
                         windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
                       ]}
                       title={groupName}
-                      expenses={expenses}
+                      items={expenses}
                       monthNumber={monthNumber}
+                      onPressItem={expense => navigation.navigate('Expense', { expense })}
                     />
                   )}
                 </View>
