@@ -61,7 +61,7 @@ export default function ExpenseScreen () {
       setDateString(dateToDateString(yesterdayDate));
       setDateDisabled(true);
     } else {
-      setDateString(dateToDateString(todayDate));
+      setDateString(expenseToEdit?.dateString || dateToDateString(todayDate));
       setDateDisabled(false);
     }
   }, [dateOptionId]);

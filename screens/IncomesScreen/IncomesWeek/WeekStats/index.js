@@ -62,6 +62,8 @@ export default function WeekStats (props) {
       return groupedByName;
     }, {}), [weekIncomes]);
 
+  console.info('incomesGroupedByName', incomesGroupedByName);
+
   return (
     <View style={[styles.weekStats, style]}>
       <FoldedContainer

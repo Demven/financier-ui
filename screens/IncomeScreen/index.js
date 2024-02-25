@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import Modal from '../../components/Modal';
 import Input, { INPUT_TYPE } from '../../components/Input';
@@ -21,18 +22,21 @@ const DATE_OPTIONS = [
 
 export default function IncomeScreen () {
   const dispatch = useDispatch();
+  const route = useRoute();
 
-  const [name, setName] = useState('');
+  const incomeToEdit = route.params?.income;
+
+  const [name, setName] = useState(incomeToEdit?.name || '');
   const [nameError, setNameError] = useState('');
 
   const [dateOptionsSelectOpen, setDateOptionsSelectOpen] = useState(false);
-  const [dateOptionId, setDateOptionId] = useState(DATE_OPTION.TODAY);
+  const [dateOptionId, setDateOptionId] = useState(incomeToEdit?.dateString ? DATE_OPTION.CHOOSE_DATE : DATE_OPTION.TODAY);
   const [dateOptions, setDateOptions] = useState(DATE_OPTIONS);
 
-  const [dateString, setDateString] = useState(dateToDateString(new Date()));
+  const [dateString, setDateString] = useState(incomeToEdit?.dateString || dateToDateString(new Date()));
   const [dateDisabled, setDateDisabled] = useState(false);
 
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState(incomeToEdit?.amount ? String(incomeToEdit.amount) : '');
   const [amountError, setAmountError] = useState('');
 
   const todayDate = new Date();
@@ -49,7 +53,7 @@ export default function IncomeScreen () {
       setDateString(dateToDateString(yesterdayDate));
       setDateDisabled(true);
     } else {
-      setDateString(dateToDateString(todayDate));
+      setDateString(incomeToEdit?.dateString || dateToDateString(todayDate));
       setDateDisabled(false);
     }
   }, [dateOptionId]);
@@ -124,7 +128,7 @@ export default function IncomeScreen () {
   return (
     <Modal
       contentStyle={styles.incomeScreen}
-      title='Add an Income'
+      title={incomeToEdit ? 'Edit an income' : 'Add an income' }
       disableSave={formIsInvalid}
       onSave={onSave}
     >

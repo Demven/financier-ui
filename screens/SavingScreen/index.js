@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import Modal from '../../components/Modal';
 import Input, { INPUT_TYPE } from '../../components/Input';
@@ -7,7 +8,6 @@ import Dropdown from '../../components/Dropdown';
 import DatePicker from '../../components/DatePicker';
 import { addSavingAction, addInvestmentAction } from '../../redux/reducers/savings';
 import { dateToDateString } from '../../services/date';
-import { useRoute } from "@react-navigation/native";
 
 const TYPE = {
   SAVING: 'saving',
@@ -78,7 +78,7 @@ export default function SavingScreen () {
       setDateString(dateToDateString(yesterdayDate));
       setDateDisabled(true);
     } else {
-      setDateString(dateToDateString(todayDate));
+      setDateString(savingToEdit?.dateString || investmentToEdit?.dateString || dateToDateString(todayDate));
       setDateDisabled(false);
     }
   }, [dateOptionId]);
