@@ -21,7 +21,6 @@ YearStats.propTypes = {
   previousYearTotalIncomes: PropTypes.number,
   previousYear: PropTypes.number,
   allTimeYearAverage: PropTypes.number,
-  showSecondaryComparisons: PropTypes.bool.isRequired,
 };
 
 export default function YearStats (props) {
@@ -35,7 +34,6 @@ export default function YearStats (props) {
     previousYearTotalIncomes,
     previousYear,
     allTimeYearAverage,
-    showSecondaryComparisons,
   } = props;
 
   const navigation = useNavigation();
@@ -94,7 +92,7 @@ export default function YearStats (props) {
           previousResult={previousYearTotalIncomes}
           previousResultName={`${previousYear}`}
           allTimeAverage={allTimeYearAverage}
-          showSecondaryComparisons={showSecondaryComparisons}
+          showSecondaryComparisons
           circleSubText='of income'
           circleSubTextColor={COLOR.GRAY}
         />

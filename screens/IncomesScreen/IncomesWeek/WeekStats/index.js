@@ -30,7 +30,6 @@ WeekStats.propTypes = {
   previousWeekTotalExpenses: PropTypes.number.isRequired,
   previousMonthName: PropTypes.string.isRequired,
   allTimeWeekAverage: PropTypes.number,
-  showSecondaryComparisons: PropTypes.bool.isRequired,
 };
 
 export default function WeekStats (props) {
@@ -43,7 +42,6 @@ export default function WeekStats (props) {
     previousWeekTotalExpenses,
     previousMonthName,
     allTimeWeekAverage,
-    showSecondaryComparisons,
   } = props;
 
   const navigation = useNavigation();
@@ -61,8 +59,6 @@ export default function WeekStats (props) {
 
       return groupedByName;
     }, {}), [weekIncomes]);
-
-  console.info('incomesGroupedByName', incomesGroupedByName);
 
   return (
     <View style={[styles.weekStats, style]}>
@@ -132,7 +128,7 @@ export default function WeekStats (props) {
           previousResult={previousWeekTotalExpenses}
           previousResultName={previousMonthName}
           allTimeAverage={allTimeWeekAverage}
-          showSecondaryComparisons={showSecondaryComparisons}
+          showSecondaryComparisons
           circleSubText='of month'
           circleSubTextColor={COLOR.GRAY}
         />

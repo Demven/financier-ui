@@ -119,7 +119,6 @@ export default function IncomesYear (props) {
           previousYear={previousYear}
           allTimeYearAverage={allTimeYearAverage}
           allTimeTotalIncome={allTimeTotalIncome}
-          showSecondaryComparisons
         />
 
         <YearStats
@@ -136,7 +135,6 @@ export default function IncomesYear (props) {
           previousYear={previousYear}
           allTimeYearAverage={allTimeYearAverage}
           allTimeTotalIncome={allTimeTotalIncome}
-          showSecondaryComparisons
         />
       </View>
     </View>

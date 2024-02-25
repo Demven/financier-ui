@@ -19,7 +19,6 @@ YearChart.propTypes = {
   previousYear: PropTypes.number,
   allTimeYearAverage: PropTypes.number,
   allTimeTotalIncome: PropTypes.number,
-  showSecondaryComparisons: PropTypes.bool.isRequired,
 };
 
 export default function YearChart (props) {
@@ -33,7 +32,6 @@ export default function YearChart (props) {
     previousYear,
     allTimeYearAverage,
     allTimeTotalIncome,
-    showSecondaryComparisons,
   } = props;
 
   const chartRef = useRef();
@@ -53,7 +51,7 @@ export default function YearChart (props) {
   }
 
   return (
-    <View style={[styles.monthChart, style]}>
+    <View style={[styles.yearChart, style]}>
       <View
         style={styles.chartContainer}
         ref={chartRef}
@@ -95,7 +93,7 @@ export default function YearChart (props) {
           previousResult={previousYearTotalIncomes}
           previousResultName={`${previousYear}`}
           allTimeAverage={allTimeYearAverage}
-          showSecondaryComparisons={showSecondaryComparisons}
+          showSecondaryComparisons
           circleSubText='of income'
           circleSubTextColor={COLOR.GRAY}
         />
@@ -105,7 +103,7 @@ export default function YearChart (props) {
 }
 
 const styles = StyleSheet.create({
-  monthChart: {
+  yearChart: {
     flexGrow: 1,
   },
 

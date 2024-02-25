@@ -135,7 +135,6 @@ export default function IncomesWeek (props) {
           previousWeekTotalIncomes={previousWeekTotalIncomes}
           previousMonthName={previousMonthName}
           allTimeWeekAverage={allTimeWeekAverage}
-          showSecondaryComparisons
         />
 
         <WeekStats
@@ -151,7 +150,6 @@ export default function IncomesWeek (props) {
           previousWeekTotalExpenses={previousWeekTotalIncomes}
           previousMonthName={previousMonthName}
           allTimeWeekAverage={allTimeWeekAverage}
-          showSecondaryComparisons
         />
       </View>
     </View>

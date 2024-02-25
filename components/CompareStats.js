@@ -52,12 +52,16 @@ export default function CompareStats (props) {
   const compareToPreviousResult = !!previousResult
     ? Math.round(compareWhat * 100 / previousResult)
     : 0;
-  const changeComparedToPreviousResult = 100 - compareToPreviousResult;
+  const changeComparedToPreviousResult = Math.sign(previousResult) === -1
+    ? 100 - compareToPreviousResult
+    : compareToPreviousResult - 100;
 
   const compareToAllTimeAverage = !!allTimeAverage
     ? Math.round(compareWhat * 100 / allTimeAverage)
     : 0;
-  const changeComparedToAllTimeAverage = 100 - compareToAllTimeAverage;
+  const changeComparedToAllTimeAverage = Math.sign(allTimeAverage) === -1
+    ? 100 - compareToAllTimeAverage
+    : compareToAllTimeAverage - 100;
 
   const changeComparedToPreviousResultColor = previousResult && changeComparedToPreviousResult !== 0
     ? getAmountColor(changeComparedToPreviousResult)

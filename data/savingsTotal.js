@@ -1,8 +1,8 @@
 const savingsTotal = {
   total: 8000,
   yearAverage: 8000,
-  monthAverage: 1333.33,
-  weekAverage: 333.33,
+  monthAverage: 666.67,
+  weekAverage: 166.67,
   2023: {
     total: 8000,
     average: 1333.33,

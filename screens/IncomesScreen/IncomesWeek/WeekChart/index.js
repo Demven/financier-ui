@@ -20,7 +20,6 @@ WeekChart.propTypes = {
   previousWeekTotalIncomes: PropTypes.number,
   previousMonthName: PropTypes.string.isRequired,
   allTimeWeekAverage: PropTypes.number,
-  showSecondaryComparisons: PropTypes.bool.isRequired,
 };
 
 export default function WeekChart (props) {
@@ -35,7 +34,6 @@ export default function WeekChart (props) {
     previousWeekTotalIncomes,
     previousMonthName,
     allTimeWeekAverage,
-    showSecondaryComparisons,
   } = props;
 
   const [loading, setLoading] = useState(true);
@@ -93,7 +91,7 @@ export default function WeekChart (props) {
           previousResult={previousWeekTotalIncomes}
           previousResultName={previousMonthName}
           allTimeAverage={-allTimeWeekAverage}
-          showSecondaryComparisons={showSecondaryComparisons}
+          showSecondaryComparisons
           circleSubText='of month'
           circleSubTextColor={COLOR.GRAY}
         />

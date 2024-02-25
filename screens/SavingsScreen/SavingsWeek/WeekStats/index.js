@@ -4,7 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import TitleLink from '../../../../components/TitleLink';
 import FoldedContainer from '../../../../components/FoldedContainer';
-import { formatAmount, getAmount, getAmountColor } from '../../../../services/amount';
+import CompareStats from '../../../../components/CompareStats';
+import { getAmount } from '../../../../services/amount';
 import { COLOR } from '../../../../styles/colors';
 import { FONT } from '../../../../styles/fonts';
 import { MEDIA } from '../../../../styles/media';
@@ -14,6 +15,10 @@ WeekStats.propTypes = {
   savingsAndInvestmentsGroupedByDay: PropTypes.arrayOf(PropTypes.number).isRequired,
   totalSavingsAndInvestments: PropTypes.number.isRequired,
   selectedDayIndex: PropTypes.number,
+  monthTotalSavingsAndInvestments: PropTypes.number.isRequired,
+  previousWeekSavingsAndInvestments: PropTypes.number,
+  previousMonthName: PropTypes.string,
+  allTimeWeekAverage: PropTypes.number.isRequired,
 };
 
 export default function WeekStats (props) {
@@ -22,13 +27,15 @@ export default function WeekStats (props) {
     savingsAndInvestmentsGroupedByDay,
     totalSavingsAndInvestments,
     selectedDayIndex,
+    monthTotalSavingsAndInvestments,
+    previousWeekSavingsAndInvestments,
+    previousMonthName,
+    allTimeWeekAverage,
   } = props;
 
   const navigation = useNavigation();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
-
-  const totalColor = getAmountColor(totalSavingsAndInvestments);
 
   return (
     <View style={[styles.weekStats, style]}>
@@ -84,37 +91,22 @@ export default function WeekStats (props) {
               ))}
             </>
           ))}
-
-          <View style={styles.underline} />
-
-          <View style={[styles.statRow, { marginTop: 24 }]}>
-            <Text
-              style={[
-                styles.statName,
-                styles.statNameBold,
-                windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
-                {
-                  color: totalColor,
-                  marginLeft: 4,
-                },
-              ]}
-            >
-              Total
-            </Text>
-
-            <Text
-              style={[
-                styles.statValue,
-                styles.statValueBold,
-                windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
-                { color: totalColor },
-              ]}
-            >
-              {formatAmount(totalSavingsAndInvestments)}
-            </Text>
-          </View>
         </View>
       </FoldedContainer>
+
+      {windowWidth < MEDIA.DESKTOP && (
+        <CompareStats
+          style={styles.compareStats}
+          compareWhat={totalSavingsAndInvestments}
+          compareTo={monthTotalSavingsAndInvestments}
+          previousResult={previousWeekSavingsAndInvestments}
+          previousResultName={previousMonthName}
+          allTimeAverage={allTimeWeekAverage}
+          showSecondaryComparisons
+          circleSubText='of month'
+          circleSubTextColor={COLOR.GRAY}
+        />
+      )}
     </View>
   );
 }
@@ -176,10 +168,7 @@ const styles = StyleSheet.create({
     color: COLOR.DARK_GRAY,
   },
 
-  underline: {
-    height: 1,
-    marginTop: 12,
-    marginLeft: '50%',
-    backgroundColor: COLOR.BLACK,
+  compareStats: {
+    marginTop: 40,
   },
 });

@@ -23,6 +23,7 @@ import SavingsYear from './SavingsYear/SavingsYear';
 import NoDataPlaceholder from '../../components/NoDataPlaceholder';
 import HeaderDropdown from '../../components/HeaderDropdown';
 import { TAB } from '../../components/HeaderTabs';
+import { getLastMonthNumberInYear, MONTH_NAME } from '../../services/date';
 import { COLOR } from '../../styles/colors';
 import { MEDIA } from '../../styles/media';
 
@@ -35,7 +36,9 @@ export default function SavingsScreen () {
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const selectedYear = useSelector(state => state.ui.selectedYear);
   const savings = useSelector(state => state.savings.savings) || {};
+  const savingsTotal = useSelector(state => state.savings.savingsTotal) || {};
   const investments = useSelector(state => state.savings.investments) || {};
+  const investmentsTotal = useSelector(state => state.savings.investmentsTotal) || {};
 
   const savingsYears = Object.keys(savings);
   const investmentsYears = Object.keys(investments);
@@ -98,33 +101,67 @@ export default function SavingsScreen () {
   }
 
   function renderWeeks () {
-    return [1, 2, 3, 4].map((weekNumber, index) => (
-      <SavingsWeek
-        key={index}
-        style={styles.overview}
-        year={selectedYear}
-        monthNumber={monthNumber}
-        weekNumber={weekNumber}
-        onScrollTo={weekNumber === routeWeekNumber
-          ? (scrollY) => scrollViewY.value = scrollY
-          : undefined}
-        savings={savings?.[selectedYear]?.[monthNumber]}
-        investments={investments?.[selectedYear]?.[monthNumber]}
-      />
-    ));
+    return [1, 2, 3, 4].map((weekNumber, index) => {
+      const previousMonthNumber = monthNumber > 1
+        ? monthNumber - 1
+          // the last month of the previous year
+        : getLastMonthNumberInYear(savingsTotal?.[selectedYear - 1] || investmentsTotal?.[selectedYear - 1]);
+
+      return (
+        <SavingsWeek
+          key={index}
+          style={[
+            styles.savings,
+            windowWidth < MEDIA.WIDE_MOBILE && styles.savingsMobile,
+          ]}
+          year={selectedYear}
+          monthNumber={monthNumber}
+          weekNumber={weekNumber}
+          onScrollTo={weekNumber === routeWeekNumber
+            ? (scrollY) => scrollViewY.value = scrollY
+            : undefined}
+          savings={savings?.[selectedYear]?.[monthNumber]}
+          investments={investments?.[selectedYear]?.[monthNumber]}
+          monthTotalSavingsAndInvestments={(savingsTotal?.[selectedYear]?.[monthNumber]?.total || 0) + (investmentsTotal?.[selectedYear]?.[monthNumber]?.total || 0)}
+          previousWeekTotalSavingsAndInvestments={monthNumber > 1
+            ? (savingsTotal?.[selectedYear]?.[previousMonthNumber]?.[weekNumber] || 0)
+            : investmentsTotal?.[selectedYear - 1]?.[previousMonthNumber]?.[weekNumber] || 0
+          }
+          previousMonthName={MONTH_NAME[previousMonthNumber]}
+        />
+      );
+    });
   }
 
   function renderMonths () {
-    return months.map((monthNumber, index) => (
-      <SavingsMonth
-        key={index}
-        style={styles.overview}
-        year={selectedYear}
-        monthNumber={monthNumber}
-        savings={savings?.[selectedYear]?.[monthNumber]}
-        investments={investments?.[selectedYear]?.[monthNumber]}
-      />
-    ));
+    return months.map((monthNumber, index) => {
+      const previousMonthNumber = monthNumber > 1
+        ? months[index + 1] // + 1 because month numbers are sorted in ASC order
+          // the last month of the previous year
+        : getLastMonthNumberInYear(savingsTotal?.[selectedYear - 1] || investmentsTotal?.[selectedYear - 1]);
+
+      return (
+        <SavingsMonth
+          key={index}
+          style={[
+            styles.savings,
+            windowWidth < MEDIA.WIDE_MOBILE && styles.savingsMobile,
+          ]}
+          year={selectedYear}
+          monthNumber={monthNumber}
+          savings={savings?.[selectedYear]?.[monthNumber]}
+          yearSavingsTotal={savingsTotal?.[selectedYear]?.total}
+          investments={investments?.[selectedYear]?.[monthNumber]}
+          yearInvestmentsTotal={investmentsTotal?.[selectedYear]?.total}
+          previousMonthTotalSavingsAndInvestments={monthNumber > 1
+            ? (savingsTotal?.[selectedYear]?.[previousMonthNumber]?.total || 0) + (investmentsTotal?.[selectedYear]?.[previousMonthNumber]?.total || 0)
+              // compare to the last month of the previous year
+            : (savingsTotal?.[selectedYear - 1]?.[previousMonthNumber]?.total || 0) + (investmentsTotal?.[selectedYear - 1]?.[previousMonthNumber]?.total || 0)
+          }
+          previousMonthName={MONTH_NAME[previousMonthNumber]}
+        />
+      );
+    });
   }
 
   function renderYears () {
@@ -133,10 +170,16 @@ export default function SavingsScreen () {
       .map((yearNumber, index) => (
         <SavingsYear
           key={index}
-          style={styles.overview}
+          style={[
+            styles.savings,
+            windowWidth < MEDIA.WIDE_MOBILE && styles.savingsMobile,
+          ]}
           year={yearNumber}
           savings={savings[yearNumber]}
           investments={investments[yearNumber]}
+          allTimeTotalSavingsAndInvestments={(savingsTotal?.total || 0) + (investmentsTotal?.total || 0)}
+          previousYearTotalSavingsAndInvestments={(savingsTotal?.[yearNumber - 1]?.total || 0) + (investmentsTotal?.[yearNumber - 1]?.total || 0)}
+          previousYear={yearNumber - 1}
         />
       ));
   }
@@ -223,7 +266,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 
-  overview: {
+  savings: {
+    paddingBottom: 120,
+  },
+  savingsMobile: {
     paddingBottom: 80,
   },
 });

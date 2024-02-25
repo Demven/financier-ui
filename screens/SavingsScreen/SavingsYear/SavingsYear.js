@@ -16,6 +16,9 @@ SavingsYear.propTypes = {
   year: PropTypes.number.isRequired,
   savings: PropTypes.object, // weeks -> savings { [1]: [], [2]: [] }
   investments: PropTypes.object, // weeks -> investments { [1]: [], [2]: [] }
+  allTimeTotalSavingsAndInvestments: PropTypes.number,
+  previousYearTotalSavingsAndInvestments: PropTypes.number,
+  previousYear: PropTypes.number,
 };
 
 export default function SavingsYear (props) {
@@ -24,6 +27,9 @@ export default function SavingsYear (props) {
     year,
     savings = {},
     investments = {},
+    allTimeTotalSavingsAndInvestments,
+    previousYearTotalSavingsAndInvestments,
+    previousYear,
   } = props;
 
   const navigation = useNavigation();
@@ -31,6 +37,10 @@ export default function SavingsYear (props) {
   const [selectedMonthIndex, setSelectedMonthIndex] = useState();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
+  const savingsAllTimeYearAverage = useSelector(state => state.savings.savingsYearAverage);
+  const investmentsAllTimeYearAverage = useSelector(state => state.savings.investmentsYearAverage);
+
+  const allTimeYearAverage = savingsAllTimeYearAverage + investmentsAllTimeYearAverage;
 
   function groupByMonth (yearItems) {
     const groupedByMonth = new Array(MONTHS_IN_YEAR).fill([]);
@@ -121,6 +131,11 @@ export default function SavingsYear (props) {
           savingsByMonths={savingsByMonths}
           selectedMonthIndex={selectedMonthIndex}
           onMonthSelected={setSelectedMonthIndex}
+          total={totalSavingsAndInvestments}
+          allTimeYearAverage={allTimeYearAverage}
+          allTimeTotalSavingsAndInvestments={allTimeTotalSavingsAndInvestments}
+          previousYearTotalSavingsAndInvestments={previousYearTotalSavingsAndInvestments}
+          previousYear={previousYear}
         />
 
         <YearStats
@@ -133,6 +148,10 @@ export default function SavingsYear (props) {
           savingsByMonths={savingsByMonths}
           total={totalSavingsAndInvestments}
           selectedMonthIndex={selectedMonthIndex}
+          allTimeYearAverage={allTimeYearAverage}
+          allTimeTotalSavingsAndInvestments={allTimeTotalSavingsAndInvestments}
+          previousYearTotalSavingsAndInvestments={previousYearTotalSavingsAndInvestments}
+          previousYear={previousYear}
         />
       </View>
     </View>

@@ -27,6 +27,9 @@ SavingsWeek.propTypes = {
   onScrollTo: PropTypes.func,
   savings: PropTypes.object, // weeks -> savings { [1]: [], [2]: [] }
   investments: PropTypes.object, // weeks -> investments { [1]: [], [2]: [] }
+  monthTotalSavingsAndInvestments: PropTypes.number,
+  previousWeekSavingsAndInvestments: PropTypes.number,
+  previousMonthName: PropTypes.string,
 };
 
 export default function SavingsWeek (props) {
@@ -38,11 +41,17 @@ export default function SavingsWeek (props) {
     onScrollTo,
     savings = {},
     investments = {},
+    monthTotalSavingsAndInvestments,
+    previousWeekSavingsAndInvestments,
+    previousMonthName,
   } = props;
 
   const [selectedDayIndex, setSelectedDayIndex] = useState();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
+  const savingsAllTimeWeekAverage = useSelector(state => state.savings.savingsWeekAverage) || 0;
+  const investmentsAllTimeWeekAverage = useSelector(state => state.savings.investmentsWeekAverage) || 0;
+  const allTimeWeekAverage = savingsAllTimeWeekAverage + investmentsAllTimeWeekAverage;
 
   const daysInMonth = getDaysInMonth(year, monthNumber);
   const daysInWeek = getDaysInWeek(weekNumber, daysInMonth);
@@ -133,6 +142,11 @@ export default function SavingsWeek (props) {
           savingsAndInvestmentsByDays={savingsAndInvestmentsByDays}
           selectedDayIndex={selectedDayIndex}
           onDaySelected={setSelectedDayIndex}
+          totalSavingsAndInvestments={totalSavingsAndInvestments}
+          monthTotalSavingsAndInvestments={monthTotalSavingsAndInvestments}
+          previousWeekSavingsAndInvestments={previousWeekSavingsAndInvestments}
+          previousMonthName={previousMonthName}
+          allTimeWeekAverage={allTimeWeekAverage}
         />
 
         <WeekStats
@@ -144,6 +158,10 @@ export default function SavingsWeek (props) {
           savingsAndInvestmentsGroupedByDay={savingsAndInvestmentsGroupedByDay}
           totalSavingsAndInvestments={totalSavingsAndInvestments}
           selectedDayIndex={selectedDayIndex}
+          monthTotalSavingsAndInvestments={monthTotalSavingsAndInvestments}
+          previousWeekSavingsAndInvestments={previousWeekSavingsAndInvestments}
+          previousMonthName={previousMonthName}
+          allTimeWeekAverage={allTimeWeekAverage}
         />
       </View>
     </View>

@@ -4,7 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import TitleLink from '../../../../components/TitleLink';
 import FoldedContainer from '../../../../components/FoldedContainer';
-import { formatAmount, getAmountColor } from '../../../../services/amount';
+import CompareStats from '../../../../components/CompareStats';
+import { formatAmount } from '../../../../services/amount';
 import { MONTH_NAME } from '../../../../services/date';
 import { FONT } from '../../../../styles/fonts';
 import { COLOR } from '../../../../styles/colors';
@@ -16,6 +17,10 @@ YearStats.propTypes = {
   total: PropTypes.number,
   year: PropTypes.number,
   selectedMonthIndex: PropTypes.number,
+  allTimeYearAverage: PropTypes.number,
+  allTimeTotalSavingsAndInvestments: PropTypes.number,
+  previousYearTotalSavingsAndInvestments: PropTypes.number,
+  previousYear: PropTypes.number,
 };
 
 export default function YearStats (props) {
@@ -25,13 +30,15 @@ export default function YearStats (props) {
     total,
     year,
     selectedMonthIndex,
+    allTimeYearAverage,
+    allTimeTotalSavingsAndInvestments,
+    previousYearTotalSavingsAndInvestments,
+    previousYear,
   } = props;
 
   const navigation = useNavigation();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
-
-  const totalColor = getAmountColor(total);
 
   return (
     <View style={[styles.yearStats, style]}>
@@ -74,37 +81,22 @@ export default function YearStats (props) {
               </Text>
             </View>
           ))}
-
-          <View style={styles.underline} />
-
-          <View style={styles.statRow}>
-            <Text
-              style={[
-                styles.statName,
-                styles.statNameBold,
-                windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
-                {
-                  color: totalColor,
-                  marginLeft: 4,
-                },
-              ]}
-            >
-              Total
-            </Text>
-
-            <Text
-              style={[
-                styles.statValue,
-                styles.statValueBold,
-                windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
-                { color: totalColor },
-              ]}
-            >
-              {formatAmount(total)}
-            </Text>
-          </View>
         </View>
       </FoldedContainer>
+
+      {windowWidth < MEDIA.DESKTOP && (
+        <CompareStats
+          style={styles.compareStats}
+          compareWhat={total}
+          compareTo={allTimeTotalSavingsAndInvestments}
+          previousResult={previousYearTotalSavingsAndInvestments}
+          previousResultName={`${previousYear}`}
+          allTimeAverage={allTimeYearAverage}
+          showSecondaryComparisons
+          circleSubText='of income'
+          circleSubTextColor={COLOR.GRAY}
+        />
+      )}
     </View>
   );
 }
@@ -153,10 +145,7 @@ const styles = StyleSheet.create({
     lineHeight: 23,
   },
 
-  underline: {
-    height: 1,
-    marginTop: 12,
-    marginLeft: '50%',
-    backgroundColor: COLOR.BLACK,
+  compareStats: {
+    marginTop: 40,
   },
 });

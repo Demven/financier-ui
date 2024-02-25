@@ -1,8 +1,8 @@
 const investmentsTotal = {
   total: 3721.53,
   yearAverage: 3721.53,
-  monthAverage: 1240.51,
-  weekAverage: 310.13,
+  monthAverage: 310.13,
+  weekAverage: 77.53,
   2023: {
     total: 3721.53,
     average: 1240.51,

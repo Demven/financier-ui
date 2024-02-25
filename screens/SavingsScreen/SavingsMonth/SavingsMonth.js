@@ -16,7 +16,11 @@ SavingsMonth.propTypes = {
   year: PropTypes.number.isRequired,
   monthNumber: PropTypes.number.isRequired,
   savings: PropTypes.object, // weeks -> savings { [1]: [], [2]: [] }
+  yearSavingsTotal: PropTypes.number.isRequired,
   investments: PropTypes.object, // weeks -> investments { [1]: [], [2]: [] }
+  yearInvestmentsTotal: PropTypes.object.isRequired,
+  previousMonthTotalSavingsAndInvestments: PropTypes.number,
+  previousMonthName: PropTypes.string,
 };
 
 export default function SavingsMonth (props) {
@@ -25,7 +29,11 @@ export default function SavingsMonth (props) {
     year,
     monthNumber,
     savings = {},
+    yearSavingsTotal = 0,
     investments = {},
+    yearInvestmentsTotal = 0,
+    previousMonthTotalSavingsAndInvestments,
+    previousMonthName,
   } = props;
 
   const [selectedWeekIndex, setSelectedWeekIndex] = useState();
@@ -108,6 +116,9 @@ export default function SavingsMonth (props) {
           savingsAndInvestmentsByWeeks={savingsAndInvestmentsByWeeks}
           totalSavingsAndInvestments={totalSavingsAndInvestments}
           selectedWeekIndex={selectedWeekIndex}
+          yearSavingsAndInvestments={yearSavingsTotal + yearInvestmentsTotal}
+          previousMonthTotalSavingsAndInvestments={previousMonthTotalSavingsAndInvestments}
+          previousMonthName={previousMonthName}
         />
       </View>
     </View>
