@@ -22,7 +22,7 @@ import { COLOR } from '../styles/colors';
 FoldedContainer.propTypes = {
   style: PropTypes.any,
   titleStyle: PropTypes.any,
-  title: PropTypes.string.isRequired,
+  title: PropTypes.any.isRequired,
   children: PropTypes.any.isRequired,
   arrowIconSize: PropTypes.number,
   disable: PropTypes.bool,
@@ -124,14 +124,17 @@ export default function FoldedContainer (props) {
         onPress={active ? onPress : undefined}
       >
         <View style={styles.titleContainer}>
-          <Text
-            style={[styles.title, {
-              fontSize: titleFontSize,
-              lineHeight: titleFontSize,
-            }, titleStyle]}
-          >
-            {title}
-          </Text>
+          {typeof title === 'string' && (
+            <Text
+              style={[styles.title, {
+                fontSize: titleFontSize,
+                lineHeight: titleFontSize,
+              }, titleStyle]}
+            >
+              {title}
+            </Text>
+          )}
+          {typeof title !== 'string' && title}
 
           {active && (
             <Icon
