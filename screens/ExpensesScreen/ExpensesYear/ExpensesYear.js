@@ -66,6 +66,8 @@ export default function ExpensesYear (props) {
     ? yearTotalExpenses?.total || 0
     : totalAmountsByMonths.reduce((total, month) => total + month, 0);
 
+  const categoryIds = Array.from(new Set(expensesGroupedByMonth.flatMap(monthExpenses => monthExpenses.map(expense => expense.categoryId))));
+
   const columnWidth = windowWidth < MEDIA.DESKTOP
     ? '100%'
     : '50%';
@@ -122,6 +124,7 @@ export default function ExpensesYear (props) {
             lineHeight: windowWidth < MEDIA.WIDE_MOBILE ? 22 : 24,
           }}
           categoryId={categoryId}
+          includeCategoryIds={categoryIds}
           showAll
           onSelect={setCategoryId}
         />

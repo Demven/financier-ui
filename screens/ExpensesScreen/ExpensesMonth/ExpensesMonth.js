@@ -53,6 +53,15 @@ export default function ExpensesMonth (props) {
     ? monthExpensesTotal?.total || 0
     : expensesByWeeks.reduce((total, weekTotal) => total + weekTotal, 0);
 
+  const categoryIds = Array.from(
+    new Set([
+      ...(monthExpenses?.[1] || []),
+      ...(monthExpenses?.[2] || []),
+      ...(monthExpenses?.[3] || []),
+      ...(monthExpenses?.[4] || []),
+    ].map(expense => expense.categoryId))
+  );
+
   const columnWidth = windowWidth < MEDIA.DESKTOP
     ? '100%'
     : '50%';
@@ -109,6 +118,7 @@ export default function ExpensesMonth (props) {
             fontSize: windowWidth < MEDIA.WIDE_MOBILE ? 18 : 20,
             lineHeight: windowWidth < MEDIA.WIDE_MOBILE ? 22 : 24,
           }}
+          includeCategoryIds={categoryIds}
           showAll
           onSelect={setCategoryId}
         />

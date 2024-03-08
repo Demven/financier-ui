@@ -18,6 +18,7 @@ CategoryDropdown.propTypes = {
     PRESELECTED_CATEGORY.LAST,
   ]),
   placeholderStyle: PropTypes.any,
+  includeCategoryIds: PropTypes.arrayOf(PropTypes.string),
   showAll: PropTypes.bool,
   onSelect: PropTypes.func,
 };
@@ -28,6 +29,7 @@ export default function CategoryDropdown (props) {
     categoryId,
     preselectedCategory,
     placeholderStyle,
+    includeCategoryIds,
     showAll,
     onSelect = () => {},
   } = props;
@@ -38,11 +40,14 @@ export default function CategoryDropdown (props) {
       name: 'Show All',
       description: '',
     } : undefined,
-    ...useSelector(state => state.categories),
+    ...useSelector(state => state.categories)
+      .filter(category => !!includeCategoryIds?.length
+        ? includeCategoryIds.includes(category.id)
+        : true
+      ),
   ].filter(Boolean));
 
   const [categorySelectOpen, setCategorySelectOpen] = useState(false);
-  // const [categoryId, setCategoryId] = useState(selectedId || null);
   const [categories, setCategories] = useState(categoriesList);
 
   useEffect(() => {

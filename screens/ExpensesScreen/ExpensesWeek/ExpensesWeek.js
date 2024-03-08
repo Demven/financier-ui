@@ -65,6 +65,8 @@ export default function ExpensesWeek (props) {
     ? weekExpensesTotal
     : expensesByDays.reduce((total, weekTotal) => total + weekTotal, 0);
 
+  const categoryIds = Array.from(new Set(currentWeekExpenses.map(expense => expense.categoryId)));
+
   function onLayout (event) {
     if (typeof onScrollTo === 'function') {
       onScrollTo(event.nativeEvent.layout.y);
@@ -136,6 +138,7 @@ export default function ExpensesWeek (props) {
             fontSize: windowWidth < MEDIA.WIDE_MOBILE ? 18 : 20,
             lineHeight: windowWidth < MEDIA.WIDE_MOBILE ? 22 : 24,
           }}
+          includeCategoryIds={categoryIds}
           categoryId={categoryId}
           showAll
           onSelect={setCategoryId}
