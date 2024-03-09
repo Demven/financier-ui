@@ -21,6 +21,7 @@ CompareStats.propTypes = {
   circleSubText: PropTypes.string,
   circleSubTextColor: PropTypes.string,
   showSecondaryComparisons: PropTypes.bool,
+  showTotal: PropTypes.bool,
 };
 
 export default function CompareStats (props) {
@@ -34,6 +35,7 @@ export default function CompareStats (props) {
     circleSubText = 'of income',
     circleSubTextColor,
     showSecondaryComparisons,
+    showTotal = true,
   } = props;
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
@@ -136,18 +138,20 @@ export default function CompareStats (props) {
         )}
       </View>
 
-      <View style={[
-        styles.total,
-        !secondaryComparisonsToShow && styles.totalWithoutSecondaryComparisons,
-      ]}>
-        <Text style={[
-          styles.totalText,
-          windowWidth < MEDIA.TABLET && styles.totalTextMobile,
-          windowWidth >= MEDIA.TABLET && windowWidth < MEDIA.DESKTOP && styles.totalTextTablet,
+      {showTotal && (
+        <View style={[
+          styles.total,
+          !secondaryComparisonsToShow && styles.totalWithoutSecondaryComparisons,
         ]}>
-          {formatAmount(compareWhat, currencySymbol)}
-        </Text>
-      </View>
+          <Text style={[
+            styles.totalText,
+            windowWidth < MEDIA.TABLET && styles.totalTextMobile,
+            windowWidth >= MEDIA.TABLET && windowWidth < MEDIA.DESKTOP && styles.totalTextTablet,
+          ]}>
+            {formatAmount(compareWhat, currencySymbol)}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }

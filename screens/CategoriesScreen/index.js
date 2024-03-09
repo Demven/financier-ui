@@ -143,9 +143,9 @@ export default function CategoriesScreen () {
           monthIncome={incomesTotal?.[selectedYear]?.[monthNumber]?.total || 0}
           monthExpenses={expenses?.[selectedYear]?.[monthNumber]}
           monthExpensesTotal={expensesTotal?.[selectedYear]?.[monthNumber]}
-          previousMonthTotalExpenses={monthNumber > 1
-            ? expensesTotal?.[selectedYear]?.[previousMonthNumber]?.total || 0
-            : expensesTotal?.[selectedYear - 1]?.[previousMonthNumber]?.total || 0 // compare to the last month of the previous year
+          previousMonthExpenses={monthNumber > 1
+            ? expenses?.[selectedYear]?.[previousMonthNumber] || {}
+            : expenses?.[selectedYear - 1]?.[previousMonthNumber] || {} // compare to the last month of the previous year
           }
           previousMonthName={MONTH_NAME[previousMonthNumber]}
         />
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
   },
 
   categories: {
-    paddingBottom: 120,
+    paddingBottom: 80,
   },
   categoriesMobile: {
     paddingBottom: 80,

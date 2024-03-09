@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
@@ -8,7 +8,7 @@ import MonthStats from './MonthStats';
 import TitleLink from '../../../components/TitleLink';
 import FoldedContainer from '../../../components/FoldedContainer';
 import { MONTH_NAME } from '../../../services/date';
-import { getMonthChartPointsByWeek } from '../../../services/dataItems';
+import { getMonthChartPointsByWeek, groupExpensesByCategoryId } from '../../../services/dataItems';
 import { FONT } from '../../../styles/fonts';
 import { MEDIA } from '../../../styles/media';
 
@@ -19,7 +19,7 @@ CategoriesMonth.propTypes = {
   monthIncome: PropTypes.number,
   monthExpenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
   monthExpensesTotal: PropTypes.object, // weeks -> expensesTotal { total: ?, [1]: ?, [2]: ? }
-  previousMonthTotalExpenses: PropTypes.number,
+  previousMonthExpenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
   previousMonthName: PropTypes.string,
 };
 
@@ -31,7 +31,7 @@ export default function CategoriesMonth (props) {
     monthIncome = 0,
     monthExpenses = {},
     monthExpensesTotal = {},
-    previousMonthTotalExpenses = 0,
+    previousMonthExpenses = {},
     previousMonthName = '',
   } = props;
 
@@ -40,9 +40,24 @@ export default function CategoriesMonth (props) {
   const navigation = useNavigation();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
+  const categories = useSelector(state => state.categories);
 
   const expensesByWeeks = getMonthChartPointsByWeek(monthExpenses);
   const totalExpenses = monthExpensesTotal?.total || 0;
+
+  const expensesGroupedByCategoryId = useMemo(() => groupExpensesByCategoryId([
+    ...(monthExpenses[1] || []),
+    ...(monthExpenses[2] || []),
+    ...(monthExpenses[3] || []),
+    ...(monthExpenses[4] || []),
+  ]),[monthExpenses]);
+
+  const previousMonthExpensesGroupedByCategoryId = useMemo(() => groupExpensesByCategoryId([
+    ...(previousMonthExpenses[1] || []),
+    ...(previousMonthExpenses[2] || []),
+    ...(previousMonthExpenses[3] || []),
+    ...(previousMonthExpenses[4] || []),
+  ]),[previousMonthExpenses]);
 
   const columnWidth = windowWidth < MEDIA.DESKTOP
     ? '100%'
@@ -96,14 +111,12 @@ export default function CategoriesMonth (props) {
               width: columnWidth,
               marginTop: 40,
             }}
-            monthNumber={monthNumber}
+            categories={categories}
+            expensesGroupedByCategoryId={expensesGroupedByCategoryId}
+            previousMonthExpensesGroupedByCategoryId={previousMonthExpensesGroupedByCategoryId}
             monthIncome={monthIncome}
-            expensesByWeeks={expensesByWeeks}
-            totalExpenses={totalExpenses}
-            previousMonthTotalExpenses={previousMonthTotalExpenses}
             previousMonthName={previousMonthName}
-            selectedWeekIndex={selectedWeekIndex}
-            showSecondaryComparisons
+            onSelectCategoryId={(selectedCategoryId) => {}}
           />
 
           <MonthChart
@@ -124,9 +137,7 @@ export default function CategoriesMonth (props) {
 }
 
 const styles = StyleSheet.create({
-  categoriesMonth: {
-    flexGrow: 1,
-  },
+  categoriesMonth: {},
 
   subtitleLink: {
     alignSelf: 'flex-start',

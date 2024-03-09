@@ -34,6 +34,18 @@ export function groupMonthByDay (groupedByWeeks, daysInMonth) {
   return groupedByDay;
 }
 
+export function groupExpensesByCategoryId (expenses) {
+  return expenses.reduce((groupedByCategoryId, expense) => {
+      const categoryId = expense.categoryId;
+
+      groupedByCategoryId[categoryId] = Array.isArray(groupedByCategoryId[categoryId])
+        ? [...groupedByCategoryId[categoryId], expense]
+        : [expense];
+
+      return groupedByCategoryId;
+    }, {});
+}
+
 export function mergeGroupedByDay (groupedByDay1, groupedByDay2) {
   return groupedByDay1.map((byDay1, index) => {
     const byDay2 = groupedByDay2[index] || [];
