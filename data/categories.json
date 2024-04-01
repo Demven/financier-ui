@@ -2,31 +2,37 @@
   {
     "id": "1234",
     "name": "Primary Expenses",
-    "description": "Food, clothes, transport, medicine, taxes, mobile, internet, etc."
+    "description": "Food, clothes, transport, medicine, taxes, mobile, internet, etc.",
+    "colorId": "1234"
   },
   {
     "id": "2345",
     "name": "Secondary Expenses",
-    "description": "Home goods, furniture, renovation, car, hobbies, etc."
+    "description": "Home goods, furniture, renovation, car, hobbies, etc.",
+    "colorId": "2345"
   },
   {
     "id": "3456",
     "name": "Housing",
-    "description": "Mortgage, rent, insurance"
+    "description": "Mortgage, rent, insurance",
+    "colorId": "3456"
   },
   {
     "id": "4567",
     "name": "Major",
-    "description": "Traveling, expensive purchases"
+    "description": "Traveling, expensive purchases",
+    "colorId": "4567"
   },
   {
     "id": "5678",
     "name": "Entertainment",
-    "description": "Dining, bars, night clubs, concerts, casual trips, etc."
+    "description": "Dining, bars, night clubs, concerts, casual trips, etc.",
+    "colorId": "5678"
   },
   {
     "id": "6789",
     "name": "Gifts & Charity",
-    "description": "Donations, presents, street musicians, etc."
+    "description": "Donations, presents, street musicians, etc.",
+    "colorId": "6789"
   }
 ]

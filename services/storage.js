@@ -6,6 +6,7 @@ export const STORAGE_KEY = {
   SELECTED_YEAR: 'selectedYear',
   SETTINGS: 'settings',
   CATEGORIES: 'categories',
+  COLORS: 'colors',
   EXPENSES: 'expenses',
   SAVINGS: 'savings',
   INVESTMENTS: 'investments',

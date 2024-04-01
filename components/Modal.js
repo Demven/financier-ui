@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Platform,
 } from 'react-native';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useNavigation } from '@react-navigation/native';
 import CloseButton from './CloseButton';
@@ -12,7 +13,6 @@ import Button, { BUTTON_LOOK } from './Button';
 import { FONT } from '../styles/fonts';
 import { COLOR } from '../styles/colors';
 import { MEDIA } from '../styles/media';
-import { useSelector } from "react-redux";
 
 Modal.propTypes = {
   style: PropTypes.object,
@@ -68,7 +68,14 @@ export default function Modal (props) {
       >
         {Platform.OS === 'web' && (
           <View style={styles.header}>
-            <Text style={styles.title}>{title}</Text>
+            <Text
+              style={[styles.title, {
+                fontSize: windowWidth < MEDIA.WIDE_MOBILE ? 26 : 30,
+                lineHeight: windowWidth < MEDIA.WIDE_MOBILE ? 34 : 38,
+              }]}
+            >
+              {title}
+            </Text>
           </View>
         )}
 
@@ -88,14 +95,18 @@ export default function Modal (props) {
           style={[styles.footer, { justifyContent: windowWidth < MEDIA.TABLET ? 'center' : 'flex-end' }]}
         >
           <Button
-            style={styles.cancelButton}
+            style={[styles.cancelButton, {
+              width: windowWidth < MEDIA.MOBILE ? 120 : 150,
+            }]}
             look={BUTTON_LOOK.SECONDARY}
             text='Cancel'
             onPress={onPressClose}
           />
 
           <Button
-            style={styles.saveButton}
+            style={[styles.saveButton, {
+              width: windowWidth < MEDIA.MOBILE ? 120 : 150,
+            }]}
             look={BUTTON_LOOK.PRIMARY}
             text='Save'
             disabled={disableSave}
@@ -142,8 +153,6 @@ const styles = StyleSheet.create({
     height: 34,
     paddingLeft: 20,
     fontFamily: FONT.NOTO_SERIF.BOLD,
-    fontSize: 30,
-    lineHeight: 38,
     color: COLOR.DARK_GRAY,
   },
   closeButton: {
@@ -160,18 +169,17 @@ const styles = StyleSheet.create({
 
   footer: {
     marginTop: Platform.select({ ios: 'auto' }),
-    marginBottom: Platform.select({ ios: 34 }),
-    paddingTop: Platform.select({ ios: 80, web: 24 }),
+    marginBottom: Platform.select({ ios: 0 }),
+    paddingTop: Platform.select({ ios: 24, web: 24 }),
     flexDirection: 'row',
     borderTopWidth: Platform.select({ web: 1 }),
     borderTopColor: COLOR.LIGHTER_GRAY,
+    zIndex: 10,
+    backgroundColor: COLOR.WHITE,
   },
 
   cancelButton: {
-    width: 150,
     marginRight: 24,
   },
-  saveButton: {
-    width: 150,
-  },
+  saveButton: {},
 });

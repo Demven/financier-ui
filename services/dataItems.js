@@ -1,5 +1,5 @@
 import { SHOW_ALL_CATEGORY_ID } from '../components/CategoryDropdown';
-import { getListTotal } from './amount';
+import { getAmount, getListTotal } from './amount';
 import { dayOfMonthToDayOfWeek } from './date';
 
 export function groupWeekByDay (weekItems, daysInWeek) {
@@ -34,15 +34,15 @@ export function groupMonthByDay (groupedByWeeks, daysInMonth) {
   return groupedByDay;
 }
 
-export function groupExpensesByCategoryId (expenses) {
-  return expenses.reduce((groupedByCategoryId, expense) => {
+export function groupExpensesTotalsByCategoryId (expenses) {
+  return expenses.reduce((groupedTotalsByCategoryId, expense) => {
       const categoryId = expense.categoryId;
 
-      groupedByCategoryId[categoryId] = Array.isArray(groupedByCategoryId[categoryId])
-        ? [...groupedByCategoryId[categoryId], expense]
-        : [expense];
+    groupedTotalsByCategoryId[categoryId] = !!groupedTotalsByCategoryId[categoryId]
+        ? groupedTotalsByCategoryId[categoryId] + getAmount(expense)
+        : getAmount(expense);
 
-      return groupedByCategoryId;
+      return groupedTotalsByCategoryId;
     }, {});
 }
 

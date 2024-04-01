@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
@@ -8,13 +8,12 @@ import MonthStats from './MonthStats';
 import TitleLink from '../../../components/TitleLink';
 import FoldedContainer from '../../../components/FoldedContainer';
 import { MONTH_NAME } from '../../../services/date';
-import { getMonthChartPointsByWeek, groupExpensesByCategoryId } from '../../../services/dataItems';
+import { groupExpensesTotalsByCategoryId } from '../../../services/dataItems';
 import { FONT } from '../../../styles/fonts';
 import { MEDIA } from '../../../styles/media';
 
 CategoriesMonth.propTypes = {
   style: PropTypes.any,
-  year: PropTypes.number.isRequired,
   monthNumber: PropTypes.number.isRequired,
   monthIncome: PropTypes.number,
   monthExpenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
@@ -26,7 +25,6 @@ CategoriesMonth.propTypes = {
 export default function CategoriesMonth (props) {
   const {
     style,
-    year,
     monthNumber,
     monthIncome = 0,
     monthExpenses = {},
@@ -35,24 +33,29 @@ export default function CategoriesMonth (props) {
     previousMonthName = '',
   } = props;
 
-  const [selectedWeekIndex, setSelectedWeekIndex] = useState();
+  const [selectedCategoryId, setSelectedCategoryId] = useState();
 
   const navigation = useNavigation();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
   const categories = useSelector(state => state.categories);
 
-  const expensesByWeeks = getMonthChartPointsByWeek(monthExpenses);
+  useEffect(() => {
+    if (categories?.[0]?.id) {
+      setSelectedCategoryId(categories[0].id);
+    }
+  }, [categories]);
+
   const totalExpenses = monthExpensesTotal?.total || 0;
 
-  const expensesGroupedByCategoryId = useMemo(() => groupExpensesByCategoryId([
+  const expensesTotalsGroupedByCategoryId = useMemo(() => groupExpensesTotalsByCategoryId([
     ...(monthExpenses[1] || []),
     ...(monthExpenses[2] || []),
     ...(monthExpenses[3] || []),
     ...(monthExpenses[4] || []),
   ]),[monthExpenses]);
 
-  const previousMonthExpensesGroupedByCategoryId = useMemo(() => groupExpensesByCategoryId([
+  const previousMonthExpensesTotalsGroupedByCategoryId = useMemo(() => groupExpensesTotalsByCategoryId([
     ...(previousMonthExpenses[1] || []),
     ...(previousMonthExpenses[2] || []),
     ...(previousMonthExpenses[3] || []),
@@ -107,28 +110,28 @@ export default function CategoriesMonth (props) {
           }]}
         >
           <MonthStats
-            style={{
+            style={[styles.monthStats, {
               width: columnWidth,
-              marginTop: 40,
-            }}
+            }]}
             categories={categories}
-            expensesGroupedByCategoryId={expensesGroupedByCategoryId}
-            previousMonthExpensesGroupedByCategoryId={previousMonthExpensesGroupedByCategoryId}
+            expensesTotalsGroupedByCategoryId={expensesTotalsGroupedByCategoryId}
+            previousMonthExpensesTotalsGroupedByCategoryId={previousMonthExpensesTotalsGroupedByCategoryId}
             monthIncome={monthIncome}
             previousMonthName={previousMonthName}
-            onSelectCategoryId={(selectedCategoryId) => {}}
+            selectedCategoryId={selectedCategoryId}
+            onSelectCategoryId={setSelectedCategoryId}
           />
 
           <MonthChart
-            style={{
+            style={[styles.monthChart, {
               width: chartWidth,
-              marginLeft: windowWidth < MEDIA.DESKTOP ? 0 : 40,
-            }}
-            year={Number(year)}
-            monthNumber={monthNumber}
-            expensesByWeeks={expensesByWeeks}
-            selectedWeekIndex={selectedWeekIndex}
-            onWeekSelected={setSelectedWeekIndex}
+              paddingLeft: windowWidth < MEDIA.DESKTOP ? 0 : 80,
+            }]}
+            categories={categories}
+            monthTotal={totalExpenses}
+            expensesTotalsGroupedByCategoryId={expensesTotalsGroupedByCategoryId}
+            selectedCategoryId={selectedCategoryId}
+            onSelectCategoryId={setSelectedCategoryId}
           />
         </View>
       </FoldedContainer>
@@ -144,6 +147,14 @@ const styles = StyleSheet.create({
   },
   subtitleLinkText: {
     fontFamily: FONT.NOTO_SERIF.BOLD,
+  },
+
+  monthStats: {
+    marginTop: 40,
+  },
+
+  monthChart: {
+    marginTop: 40,
   },
 
   content: {

@@ -4,17 +4,17 @@ import PropTypes from 'prop-types';
 import CategoryCompareStats from '../../CategoryCompareStats/CategoryCompareStats';
 import { COLOR } from '../../../../styles/colors';
 import { FONT } from '../../../../styles/fonts';
-import { getListTotal } from "../../../../services/amount";
 
 MonthStats.propTypes = {
   style: PropTypes.any,
   categories: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
   })).isRequired,
-  expensesGroupedByCategoryId: PropTypes.object.isRequired,
-  previousMonthExpensesGroupedByCategoryId: PropTypes.object.isRequired,
+  expensesTotalsGroupedByCategoryId: PropTypes.object.isRequired,
+  previousMonthExpensesTotalsGroupedByCategoryId: PropTypes.object.isRequired,
   monthIncome: PropTypes.number.isRequired,
   previousMonthName: PropTypes.string,
+  selectedCategoryId: PropTypes.number,
   onSelectCategoryId: PropTypes.func,
 };
 
@@ -22,10 +22,11 @@ export default function MonthStats (props) {
   const {
     style,
     categories,
-    expensesGroupedByCategoryId,
-    previousMonthExpensesGroupedByCategoryId,
+    expensesTotalsGroupedByCategoryId,
+    previousMonthExpensesTotalsGroupedByCategoryId,
     monthIncome,
     previousMonthName,
+    selectedCategoryId,
     onSelectCategoryId,
   } = props;
 
@@ -34,8 +35,8 @@ export default function MonthStats (props) {
   return (
     <View style={[styles.monthStats, style]}>
       {categories.map((category, index) => {
-        const totalExpenses = getListTotal(expensesGroupedByCategoryId[category.id] || []) || 0;
-        const previousMonthTotalExpenses = getListTotal(previousMonthExpensesGroupedByCategoryId[category.id] || []) || 0;
+        const totalExpenses = expensesTotalsGroupedByCategoryId[category.id] || 0;
+        const previousMonthTotalExpenses = previousMonthExpensesTotalsGroupedByCategoryId[category.id] || 0;
 
         return (
           <CategoryCompareStats
@@ -47,6 +48,7 @@ export default function MonthStats (props) {
             previousResult={-previousMonthTotalExpenses}
             previousResultName={previousMonthName}
             allTimeAverage={-allTimeMonthAverage}
+            selected={selectedCategoryId === category.id}
             onPress={() => onSelectCategoryId(category.id)}
           />
         );

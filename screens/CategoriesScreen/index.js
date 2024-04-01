@@ -138,7 +138,6 @@ export default function CategoriesScreen () {
             styles.categories,
             windowWidth < MEDIA.WIDE_MOBILE && styles.categoriesMobile,
           ]}
-          year={selectedYear}
           monthNumber={monthNumber}
           monthIncome={incomesTotal?.[selectedYear]?.[monthNumber]?.total || 0}
           monthExpenses={expenses?.[selectedYear]?.[monthNumber]}

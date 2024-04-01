@@ -1,0 +1,56 @@
+[
+  {
+    "id": "1234",
+    "name": "Red",
+    "hex": "#FF4F69",
+    "red": 255,
+    "green": 79,
+    "blue": 105,
+    "intensity": "light"
+  },
+  {
+    "id": "2345",
+    "name": "Orange",
+    "hex": "#F8B559",
+    "red": 248,
+    "green": 181,
+    "blue": 89,
+    "intensity": "light"
+  },
+  {
+    "id": "3456",
+    "name": "Yellow",
+    "hex": "#EBDA04",
+    "red": 235,
+    "green": 218,
+    "blue": 4,
+    "intensity": "light"
+  },
+  {
+    "id": "4567",
+    "name": "Green",
+    "hex": "#19C87E",
+    "red": 25,
+    "green": 200,
+    "blue": 126,
+    "intensity": "light"
+  },
+  {
+    "id": "5678",
+    "name": "Sky",
+    "hex": "#219FDD",
+    "red": 33,
+    "green": 159,
+    "blue": 221,
+    "intensity": "light"
+  },
+  {
+    "id": "6789",
+    "name": "Purple",
+    "hex": "#696DFB",
+    "red": 105,
+    "green": 109,
+    "blue": 251,
+    "intensity": "light"
+  }
+]

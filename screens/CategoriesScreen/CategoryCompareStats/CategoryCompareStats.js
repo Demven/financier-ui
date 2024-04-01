@@ -6,6 +6,7 @@ import CompareStats from '../../../components/CompareStats';
 import { formatAmount } from '../../../services/amount';
 import { FONT } from '../../../styles/fonts';
 import { MEDIA } from '../../../styles/media';
+import { COLOR } from '../../../styles/colors';
 
 CategoryCompareStats.propTypes = {
   style: PropTypes.any,
@@ -13,12 +14,16 @@ CategoryCompareStats.propTypes = {
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     description: PropTypes.string,
+    color: PropTypes.shape({
+      hex: PropTypes.string,
+    }).isRequired,
   }).isRequired,
   compareWhat: PropTypes.number,
   compareTo: PropTypes.number,
   previousResult: PropTypes.number,
   previousResultName: PropTypes.string,
   allTimeAverage: PropTypes.number,
+  selected: PropTypes.bool,
   onPress: PropTypes.func,
 };
 
@@ -28,12 +33,14 @@ export default function CategoryCompareStats (props) {
     category: {
       name,
       description,
+      color: { hex },
     },
     compareWhat,
     compareTo,
     previousResult,
     previousResultName,
     allTimeAverage,
+    selected,
     onPress = () => {},
   } = props;
 
@@ -55,12 +62,14 @@ export default function CategoryCompareStats (props) {
     <View style={[styles.categoryCompareStats, style]}>
       <View style={styles.statsColumn}>
         <View style={styles.titles}>
+          <View style={[styles.colorCode, { backgroundColor: hex }]} />
+
           <TitleLink
             style={styles.titleLink}
             textStyle={[styles.titleLinkText, {
               fontSize: titleFontSize,
               lineHeight: titleLineHeight,
-            }]}
+            }, selected && styles.titleLinkTextSelected]}
             alwaysHighlighted
             onPress={onPress}
           >
@@ -105,7 +114,20 @@ const styles = StyleSheet.create({
     width: '70%',
   },
 
-  titles: {},
+  titles: {
+    position: 'relative',
+  },
+
+  colorCode: {
+    width: 24,
+    height: 24,
+    position: 'absolute',
+    left: -36,
+    top: 7,
+    borderWidth: 1,
+    borderRadius: '50%',
+    borderColor: COLOR.LIGHT_GRAY,
+  },
 
   titleLink: {
     alignSelf: 'flex-start',
@@ -114,6 +136,9 @@ const styles = StyleSheet.create({
     fontFamily: FONT.NOTO_SERIF.REGULAR,
     fontSize: 24,
     lineHeight: 32,
+  },
+  titleLinkTextSelected: {
+    fontFamily: FONT.NOTO_SERIF.BOLD,
   },
 
   description: {

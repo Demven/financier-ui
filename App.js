@@ -42,6 +42,7 @@ import { setExpensesAction } from './redux/reducers/expenses';
 import { setInvestmentsAction, setSavingsAction } from './redux/reducers/savings';
 import { setWindowWidthAction, setSelectedTabAction, setSelectedYearAction } from './redux/reducers/ui';
 import { setIncomesAction } from './redux/reducers/incomes';
+import { setColorsAction } from './redux/reducers/colors';
 import { store } from './redux/store';
 import { MEDIA } from './styles/media';
 import { FONT } from './styles/fonts';
@@ -641,6 +642,11 @@ function Navigator () {
     const incomes = await retrieveFromStorage(STORAGE_KEY.INCOMES);
     if (incomes) {
       dispatch(setIncomesAction(incomes));
+    }
+
+    const colors = await retrieveFromStorage(STORAGE_KEY.COLORS);
+    if (colors) {
+      dispatch(setColorsAction(colors));
     }
   }
 

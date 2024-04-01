@@ -3,32 +3,33 @@ import { View, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Loader from '../../../../components/Loader';
-import BarChart from '../../../../components/chart/BarChart';
-import MonthChartLegend, { LEGEND_HEIGHT } from '../../../../components/chart/legends/MonthChartLegend';
-import { DAYS_IN_WEEK, WEEKS_IN_MONTH } from '../../../../services/date';
+import RadialChart from '../../../../components/chart/RadialChart';
 import { MEDIA } from '../../../../styles/media';
-
-function daysInMonth (year, month) {
-  return new Date(year, month, 0).getDate();
-}
 
 MonthChart.propTypes = {
   style: PropTypes.any,
-  year: PropTypes.number.isRequired,
-  monthNumber: PropTypes.number.isRequired,
-  expensesByWeeks: PropTypes.arrayOf(PropTypes.number).isRequired,
-  selectedWeekIndex: PropTypes.number,
-  onWeekSelected: PropTypes.func.isRequired,
+  categories: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    color: PropTypes.shape({
+      red: PropTypes.number,
+      green: PropTypes.number,
+      blue: PropTypes.number,
+    })
+  })).isRequired,
+  expensesTotalsGroupedByCategoryId: PropTypes.object.isRequired,
+  monthTotal: PropTypes.number.isRequired,
+  selectedCategoryId: PropTypes.number,
+  onSelectCategoryId: PropTypes.func,
 };
 
 export default function MonthChart (props) {
   const {
     style,
-    year,
-    monthNumber,
-    expensesByWeeks,
-    selectedWeekIndex,
-    onWeekSelected,
+    categories,
+    expensesTotalsGroupedByCategoryId,
+    monthTotal,
+    selectedCategoryId,
+    onSelectCategoryId,
   } = props;
 
   const [loading, setLoading] = useState(true);
@@ -37,22 +38,17 @@ export default function MonthChart (props) {
 
   const chartRef = useRef();
 
-  const [chartWidth, setChartWidth] = useState(0);
-  const [chartHeight, setChartHeight] = useState(0);
-
-  function onLayout (event) {
-    const { width } = event.nativeEvent.layout;
-
-    setChartWidth(width);
-    setChartHeight(Math.floor(width / 16 * 9));
-  }
-
-  const daysNumber = daysInMonth(year, monthNumber);
+  const chartData = categories.map(category => ({
+    id: category.id,
+    value: expensesTotalsGroupedByCategoryId[category.id] * 100 / monthTotal,
+    label: category.name,
+    getColor: (opacity = 1) => `rgba(${category.color.red}, ${category.color.green}, ${category.color.blue}, ${opacity})`,
+    selected: selectedCategoryId === category.id,
+  }));
 
   return (
     <View
       style={[styles.monthChart, style]}
-      onLayout={onLayout}
       ref={chartRef}
     >
       <Loader
@@ -62,33 +58,10 @@ export default function MonthChart (props) {
         timeout={500}
       />
 
-      <BarChart
+      <RadialChart
         style={[styles.chart, windowWidth < MEDIA.TABLET && styles.chartMobile]}
-        width={chartWidth}
-        height={chartHeight}
-        legendHeight={LEGEND_HEIGHT}
-        data={expensesByWeeks}
-        barsProportion={[
-          DAYS_IN_WEEK,
-          DAYS_IN_WEEK,
-          DAYS_IN_WEEK,
-          DAYS_IN_WEEK + (daysNumber - DAYS_IN_WEEK * WEEKS_IN_MONTH),
-        ]}
-        getColor={(opacity = 1) => `rgba(100, 100, 100, ${opacity})`} // COLOR.GRAY
-        barSelected={selectedWeekIndex}
-        onBarSelected={onWeekSelected}
-      />
-
-      <MonthChartLegend
-        width={chartWidth}
-        daysInMonth={daysNumber}
-        selectedWeekIndex={selectedWeekIndex}
-        barsProportion={[
-          DAYS_IN_WEEK,
-          DAYS_IN_WEEK,
-          DAYS_IN_WEEK,
-          DAYS_IN_WEEK + (daysNumber - DAYS_IN_WEEK * WEEKS_IN_MONTH),
-        ]}
+        data={chartData}
+        onSelectSegment={onSelectCategoryId}
       />
     </View>
   );
