@@ -65,3 +65,18 @@ export function getLastMonthNumberInYear (yearItems = {}) {
     .sort((a, b) => a - b)
     .pop();
 }
+
+export function getWeekNumberByDayNumber (day) {
+  let week = 1;
+  if (day <= 7) {
+    week = 1;
+  } else if (day > 7 && day <= 14) {
+    week = 2;
+  } else if (day > 14 && day <= 21) {
+    week = 3;
+  } else if (day > 21) {
+    week = 4;
+  }
+
+  return week;
+}

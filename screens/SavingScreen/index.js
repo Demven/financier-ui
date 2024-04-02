@@ -6,8 +6,13 @@ import Modal from '../../components/Modal';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import Dropdown from '../../components/Dropdown';
 import DatePicker from '../../components/DatePicker';
-import { addSavingAction, addInvestmentAction } from '../../redux/reducers/savings';
-import { dateToDateString } from '../../services/date';
+import {
+  addSavingAction,
+  updateSavingAction,
+  addInvestmentAction,
+  updateInvestmentAction,
+} from '../../redux/reducers/savings';
+import { dateToDateString, getWeekNumberByDayNumber } from '../../services/date';
 
 const TYPE = {
   SAVING: 'saving',
@@ -159,45 +164,78 @@ export default function SavingScreen () {
 
   function onSave () {
     if (isValid()) {
-      const [year, month, day] = dateString.split('-').map(string => Number(string));
-
-      let week = 1;
-      if (day <= 7) {
-        week = 1;
-      } else if (day > 7 && day <= 14) {
-        week = 2;
-      } else if (day > 14 && day <= 21) {
-        week = 3;
-      } else if (day > 21) {
-        week = 4;
-      }
-
       if (typeId === TYPE.SAVING) {
-        dispatch(addSavingAction({
-          year,
-          month,
-          week,
-          saving: {
-            id: `${Math.floor(Math.random() * 100000)}`,
-            name,
-            dateString,
-            amount: parseFloat(amount),
-          },
-        }));
+        if (savingToEdit) {
+          const [year, month, day] = savingToEdit.dateString.split('-').map(string => Number(string));
+          const week = getWeekNumberByDayNumber(day);
+
+          // update
+          dispatch(updateSavingAction({
+            year, // old year
+            month, // old month
+            week, // old week
+            saving: {
+              id: savingToEdit.id,
+              name,
+              dateString, // new date
+              amount: parseFloat(amount),
+            },
+          }));
+        } else {
+          const [year, month, day] = dateString.split('-').map(string => Number(string));
+          const week = getWeekNumberByDayNumber(day);
+
+          // create
+          dispatch(addSavingAction({
+            year,
+            month,
+            week,
+            saving: {
+              id: `${Math.floor(Math.random() * 100000)}`,
+              name,
+              dateString,
+              amount: parseFloat(amount),
+            },
+          }));
+        }
       } else if (typeId === TYPE.INVESTMENT) {
-        dispatch(addInvestmentAction({
-          year,
-          month,
-          week,
-          investment: {
-            id: `${Math.floor(Math.random() * 100000)}`,
-            name,
-            dateString,
-            ticker,
-            shares: parseFloat(shares),
-            pricePerShare: parseFloat(pricePerShare),
-          },
-        }));
+        if (investmentToEdit) {
+          // update
+          const [year, month, day] = investmentToEdit.dateString.split('-').map(string => Number(string));
+          const week = getWeekNumberByDayNumber(day);
+
+          dispatch(updateInvestmentAction({
+            year, // old year
+            month, // old month
+            week, // old week
+            investment: {
+              id: investmentToEdit.id,
+              name,
+              dateString, // new date
+              ticker,
+              shares: parseFloat(shares),
+              pricePerShare: parseFloat(pricePerShare),
+            },
+          }));
+        } else {
+          // create
+          const [year, month, day] = dateString.split('-').map(string => Number(string));
+          const week = getWeekNumberByDayNumber(day);
+
+          dispatch(addInvestmentAction({
+            year,
+            month,
+            week,
+            investment: {
+              id: `${Math.floor(Math.random() * 100000)}`,
+              name,
+              dateString,
+              ticker,
+              shares: parseFloat(shares),
+              pricePerShare: parseFloat(pricePerShare),
+            },
+          }));
+        }
       }
     }
   }

@@ -23,6 +23,7 @@ ColorPicker.propTypes = {
     name: PropTypes.string,
     hex: PropTypes.string,
   }),
+  errorText: PropTypes.string,
   onChange: PropTypes.func.isRequired,
 };
 
@@ -31,6 +32,7 @@ export default function ColorPicker (props) {
     style,
     label,
     color,
+    errorText,
     onChange,
   } = props;
 
@@ -148,6 +150,10 @@ export default function ColorPicker (props) {
         {colorsByRow[colorsByRow.length - 1].length === colorsPerRow && addColorButton}
       </View>
 
+      {!!errorText && (
+        <Text style={styles.error}>{errorText}</Text>
+      )}
+
       {showPicker && (
         <ReanimatedColorPicker
           style={styles.picker}
@@ -197,5 +203,12 @@ const styles = StyleSheet.create({
   picker: {
     width: '100%',
     marginTop: 24,
+  },
+
+  error: {
+    marginTop: 10,
+    paddingLeft: 4,
+    fontSize: 12,
+    color: COLOR.RED,
   },
 });

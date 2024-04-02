@@ -9,8 +9,8 @@ import { ICON_COLLECTION } from '../../components/Icon';
 import IconButton from '../../components/IconButton';
 import DatePicker from '../../components/DatePicker';
 import CategoryDropdown from '../../components/CategoryDropdown';
-import { addExpenseAction } from '../../redux/reducers/expenses';
-import { dateToDateString } from '../../services/date';
+import { addExpenseAction, updateExpenseAction } from '../../redux/reducers/expenses';
+import { dateToDateString, getWeekNumberByDayNumber } from '../../services/date';
 import { COLOR } from '../../styles/colors';
 
 const DATE_OPTION = {
@@ -108,31 +108,41 @@ export default function ExpenseScreen () {
 
   function onSave () {
     if (isValid()) {
-      const [year, month, day] = dateString.split('-').map(string => Number(string));
+      if (expenseToEdit) {
+        // update
+        const [year, month, day] = expenseToEdit.dateString.split('-').map(string => Number(string));
+        const week = getWeekNumberByDayNumber(day);
 
-      let week = 1;
-      if (day <= 7) {
-        week = 1;
-      } else if (day > 7 && day <= 14) {
-        week = 2;
-      } else if (day > 14 && day <= 21) {
-        week = 3;
-      } else if (day > 21) {
-        week = 4;
+        dispatch(updateExpenseAction({
+          year, // old year
+          month, // old month
+          week, // old week
+          expense: {
+            id: expenseToEdit.id,
+            name,
+            categoryId,
+            dateString, // new date
+            amount: parseFloat(amount),
+          },
+        }));
+      } else {
+        // create
+        const [year, month, day] = dateString.split('-').map(string => Number(string));
+        const week = getWeekNumberByDayNumber(day);
+
+        dispatch(addExpenseAction({
+          year,
+          month,
+          week,
+          expense: {
+            id: `${Math.floor(Math.random() * 100000)}`,
+            name,
+            categoryId,
+            dateString,
+            amount: parseFloat(amount),
+          },
+        }));
       }
-
-      dispatch(addExpenseAction({
-        year,
-        month,
-        week,
-        expense: {
-          id: `${Math.floor(Math.random() * 100000)}`,
-          name,
-          categoryId,
-          dateString,
-          amount: parseFloat(amount),
-        },
-      }));
     }
   }
 

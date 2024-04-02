@@ -4,9 +4,12 @@ import PropTypes from 'prop-types';
 import TitleLink from '../../../components/TitleLink';
 import CompareStats from '../../../components/CompareStats';
 import { formatAmount } from '../../../services/amount';
+import IconButton from '../../../components/IconButton';
+import { ICON_COLLECTION } from '../../../components/Icon';
 import { FONT } from '../../../styles/fonts';
 import { MEDIA } from '../../../styles/media';
 import { COLOR } from '../../../styles/colors';
+import { useNavigation } from "@react-navigation/native";
 
 CategoryCompareStats.propTypes = {
   style: PropTypes.any,
@@ -30,10 +33,11 @@ CategoryCompareStats.propTypes = {
 export default function CategoryCompareStats (props) {
   const {
     style,
+    category,
     category: {
       name,
       description,
-      color: { hex },
+      colorId,
     },
     compareWhat,
     compareTo,
@@ -44,8 +48,11 @@ export default function CategoryCompareStats (props) {
     onPress = () => {},
   } = props;
 
+  const navigation = useNavigation();
+
   const windowWidth = useSelector(state => state.ui.windowWidth);
   const currencySymbol = useSelector(state => state.account.currencySymbol);
+  const colors = useSelector(state => state.colors);
 
   const titleFontSize = windowWidth < MEDIA.DESKTOP
     ? windowWidth < MEDIA.TABLET
@@ -58,23 +65,36 @@ export default function CategoryCompareStats (props) {
       : 40 // tablet
     : 32; // desktop
 
+  const { hex } = colors.find(color => color.id === colorId) || {};
+
   return (
     <View style={[styles.categoryCompareStats, style]}>
       <View style={styles.statsColumn}>
         <View style={styles.titles}>
           <View style={[styles.colorCode, { backgroundColor: hex }]} />
 
-          <TitleLink
-            style={styles.titleLink}
-            textStyle={[styles.titleLinkText, {
-              fontSize: titleFontSize,
-              lineHeight: titleLineHeight,
-            }, selected && styles.titleLinkTextSelected]}
-            alwaysHighlighted
-            onPress={onPress}
-          >
-            {name}
-          </TitleLink>
+          <View style={styles.titleWrapper}>
+            <TitleLink
+              style={styles.titleLink}
+              textStyle={[styles.titleLinkText, {
+                fontSize: titleFontSize,
+                lineHeight: titleLineHeight,
+              }, selected && styles.titleLinkTextSelected]}
+              alwaysHighlighted
+              onPress={onPress}
+            >
+              {name}
+            </TitleLink>
+
+            <IconButton
+              style={styles.editButton}
+              iconName='edit'
+              iconCollection={ICON_COLLECTION.MATERIAL}
+              size={24}
+              color={COLOR.GRAY}
+              onPress={() => navigation.navigate('Category', { category })}
+            />
+          </View>
 
           {!!description && (
             <Text style={styles.description}>
@@ -127,6 +147,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: '50%',
     borderColor: COLOR.LIGHT_GRAY,
+  },
+
+  titleWrapper: {
+    flexDirection: 'row',
+  },
+
+  editButton: {
+    marginLeft: 16,
   },
 
   titleLink: {

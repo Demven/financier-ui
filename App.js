@@ -691,6 +691,7 @@ function Navigator () {
           name='Expense'
           component={ExpenseScreen}
           initialParams={{
+            expense: undefined,
             preselectedCategory: 'first', // 'first' or 'last'
           }}
           options={{
@@ -715,6 +716,9 @@ function Navigator () {
         <Stack.Screen
           name='Income'
           component={IncomeScreen}
+          initialParams={{
+            income: undefined,
+          }}
           options={{
             title: 'Add an Income',
             ...modalScreenOptions,
@@ -724,6 +728,9 @@ function Navigator () {
         <Stack.Screen
           name='Category'
           component={CategoryScreen}
+          initialParams={{
+            category: undefined,
+          }}
           options={{
             title: 'Create a Category',
             ...modalScreenOptions,

@@ -19,9 +19,8 @@ RadialChart.propTypes = {
     value: PropTypes.number.isRequired,
     label: PropTypes.string.isRequired,
     getColor: PropTypes.func.isRequired,
-    selected: PropTypes.bool,
   })).isRequired,
-  selectedSegmentId: PropTypes.number,
+  selectedSegmentId: PropTypes.string,
   onSelectSegment: PropTypes.func,
 };
 
@@ -48,12 +47,12 @@ export default function RadialChart (props) {
   }
 
   function moveSelectedToTheTop (data) {
-    const selectedItem = data.find(item => item.selected);
+    const selectedItem = data.find(item => item.id === selectedSegmentId);
 
     return [
       ...data.filter(item => item.id !== selectedSegmentId),
       selectedItem,
-    ];
+    ].filter(Boolean);
   }
 
   let cumulativePercent = 0;
@@ -81,7 +80,7 @@ export default function RadialChart (props) {
           />
 
           {/* Segments */}
-          {moveSelectedToTheTop(data).map(({ id, value, getColor, selected }) => {
+          {moveSelectedToTheTop(data).map(({ id, value, getColor }) => {
             const [startX, startY] = getCoordinatesForPercent(cumulativePercent);
 
             cumulativePercent += value/100;
@@ -89,17 +88,18 @@ export default function RadialChart (props) {
             const [endX, endY] = getCoordinatesForPercent(cumulativePercent);
             const largeArcFlag = value / 100 > 0.5 ? 1 : 0;
 
-            const isHighlighted = highlightedId === id && !selected;
+            const isSelected = id === selectedSegmentId;
+            const isHighlighted = highlightedId === id && !isSelected;
 
             return (
               <G
                 key={id}
-                transform={selected ? 'translate(-0.02,0.02)' : 'translate(0,0)'}
+                transform={isSelected ? 'translate(-0.02,0.02)' : 'translate(0,0)'}
               >
                 <Path
                   style={[
                     styles.segment,
-                    selected && { transform: [{ scale: 1.1 }] },
+                    isSelected && { transform: [{ scale: 1.1 }] },
                   ]}
                   d={[
                     `M ${startX} ${startY}`, // Move
@@ -107,8 +107,8 @@ export default function RadialChart (props) {
                     'L 0 0', // Line
                   ].join(' ')}
                   // strokeWidth={width / 100 / 1000}
-                  // stroke={selected ? COLOR.BLACK : undefined}
-                  fill={selected
+                  // stroke={isSelected ? COLOR.BLACK : undefined}
+                  fill={isSelected
                     ? getColor(1)
                     : isHighlighted ? getColor(0.85) : getColor(0.7)
                   }

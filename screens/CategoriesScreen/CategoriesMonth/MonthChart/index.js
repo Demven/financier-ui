@@ -10,11 +10,7 @@ MonthChart.propTypes = {
   style: PropTypes.any,
   categories: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
-    color: PropTypes.shape({
-      red: PropTypes.number,
-      green: PropTypes.number,
-      blue: PropTypes.number,
-    })
+    colorId: PropTypes.string.isRequired,
   })).isRequired,
   expensesTotalsGroupedByCategoryId: PropTypes.object.isRequired,
   monthTotal: PropTypes.number.isRequired,
@@ -35,16 +31,20 @@ export default function MonthChart (props) {
   const [loading, setLoading] = useState(true);
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
+  const colors = useSelector(state => state.colors);
 
   const chartRef = useRef();
 
-  const chartData = categories.map(category => ({
-    id: category.id,
-    value: expensesTotalsGroupedByCategoryId[category.id] * 100 / monthTotal,
-    label: category.name,
-    getColor: (opacity = 1) => `rgba(${category.color.red}, ${category.color.green}, ${category.color.blue}, ${opacity})`,
-    selected: selectedCategoryId === category.id,
-  }));
+  const chartData = categories.map(category => {
+    const { red, green, blue } = colors.find(color => color.id === category.colorId);
+
+    return {
+      id: category.id,
+      value: expensesTotalsGroupedByCategoryId[category.id] * 100 / monthTotal,
+      label: category.name,
+      getColor: (opacity = 1) => `rgba(${red}, ${green}, ${blue}, ${opacity})`,
+    };
+  });
 
   return (
     <View
@@ -61,6 +61,7 @@ export default function MonthChart (props) {
       <RadialChart
         style={[styles.chart, windowWidth < MEDIA.TABLET && styles.chartMobile]}
         data={chartData}
+        selectedSegmentId={selectedCategoryId}
         onSelectSegment={onSelectCategoryId}
       />
     </View>

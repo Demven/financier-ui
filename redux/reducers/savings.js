@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { getWeekNumberByDayNumber } from '../../services/date';
 import { saveToStorage, STORAGE_KEY } from '../../services/storage';
 import savingsData from '../../data/savings';
 import savingsTotalData from '../../data/savingsTotal';
@@ -54,6 +55,50 @@ const savingsSlice = createSlice({
         savings: updatedSavings,
       };
     },
+    updateSaving: (state, action) => {
+      const {
+        year: oldYear,
+        month: oldMonth,
+        week: oldWeek,
+        saving,
+      } = action.payload;
+      const [newYear, newMonth, newDay] = saving.dateString.split('-').map(string => Number(string));
+      let newWeek = getWeekNumberByDayNumber(newDay);
+
+      const updatedSavings = {
+        ...state.savings,
+        [oldYear]: {
+          ...(state.savings?.[oldYear] || {}),
+          [oldMonth]: {
+            ...(state.savings?.[oldYear]?.[oldMonth] || {}),
+            [oldWeek]: (state.savings?.[oldYear]?.[oldMonth]?.[oldWeek] || [])
+              .filter(savingItem => savingItem.id !== saving.id),
+          },
+        },
+      };
+      updatedSavings[newYear] = {
+        ...(updatedSavings?.[newYear] || {}),
+        [newMonth]: {
+          ...(updatedSavings?.[newYear]?.[newMonth] || {}),
+          [newWeek]: [
+            ...(updatedSavings?.[newYear]?.[newMonth]?.[newWeek] || []),
+            saving,
+          ].sort((saving1, saving2) => {
+            const date1 = +(new Date(saving1.dateString));
+            const date2 = +(new Date(saving2.dateString));
+
+            return date1 - date2; // asc
+          }),
+        },
+      };
+
+      saveToStorage(STORAGE_KEY.SAVINGS, updatedSavings);
+
+      return {
+        ...state,
+        savings: updatedSavings,
+      };
+    },
 
     setInvestments: (state, action) => {
       saveToStorage(STORAGE_KEY.INVESTMENTS, action.payload);
@@ -87,12 +132,58 @@ const savingsSlice = createSlice({
         investments: updatedInvestments,
       };
     },
+    updateInvestment: (state, action) => {
+      const {
+        year: oldYear,
+        month: oldMonth,
+        week: oldWeek,
+        investment,
+      } = action.payload;
+      const [newYear, newMonth, newDay] = investment.dateString.split('-').map(string => Number(string));
+      let newWeek = getWeekNumberByDayNumber(newDay);
+
+      const updatedInvestments = {
+        ...state.investments,
+        [oldYear]: {
+          ...(state.investments?.[oldYear] || {}),
+          [oldMonth]: {
+            ...(state.investments?.[oldYear]?.[oldMonth] || {}),
+            [oldWeek]: (state.investments?.[oldYear]?.[oldMonth]?.[oldWeek] || [])
+              .filter(investmentItem => investmentItem.id !== investment.id),
+          },
+        },
+      };
+      updatedInvestments[newYear] = {
+        ...(updatedInvestments?.[newYear] || {}),
+        [newMonth]: {
+          ...(updatedInvestments?.[newYear]?.[newMonth] || {}),
+          [newWeek]: [
+            ...(updatedInvestments?.[newYear]?.[newMonth]?.[newWeek] || []),
+            investment,
+          ].sort((investment1, investment2) => {
+            const date1 = +(new Date(investment1.dateString));
+            const date2 = +(new Date(investment2.dateString));
+
+            return date1 - date2; // asc
+          }),
+        },
+      };
+
+      saveToStorage(STORAGE_KEY.INVESTMENTS, updatedInvestments);
+
+      return {
+        ...state,
+        investments: updatedInvestments,
+      };
+    },
   },
 });
 
 export const setSavingsAction = savingsSlice.actions.setSavings;
 export const addSavingAction = savingsSlice.actions.addSaving;
+export const updateSavingAction = savingsSlice.actions.updateSaving;
 export const setInvestmentsAction = savingsSlice.actions.setInvestments;
 export const addInvestmentAction = savingsSlice.actions.addInvestment;
+export const updateInvestmentAction = savingsSlice.actions.updateInvestment;
 
 export default savingsSlice.reducer;

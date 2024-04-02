@@ -6,8 +6,8 @@ import Modal from '../../components/Modal';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import Dropdown from '../../components/Dropdown';
 import DatePicker from '../../components/DatePicker';
-import { addIncomeAction } from '../../redux/reducers/incomes';
-import { dateToDateString } from '../../services/date';
+import { addIncomeAction, updateIncomeAction } from '../../redux/reducers/incomes';
+import { dateToDateString, getWeekNumberByDayNumber } from '../../services/date';
 
 const DATE_OPTION = {
   TODAY: 'today',
@@ -96,30 +96,39 @@ export default function IncomeScreen () {
 
   function onSave () {
     if (isValid()) {
-      const [year, month, day] = dateString.split('-').map(string => Number(string));
+      if (incomeToEdit) {
+        // update
+        const [year, month, day] = incomeToEdit.dateString.split('-').map(string => Number(string));
+        const week = getWeekNumberByDayNumber(day);
 
-      let week = 1;
-      if (day <= 7) {
-        week = 1;
-      } else if (day > 7 && day <= 14) {
-        week = 2;
-      } else if (day > 14 && day <= 21) {
-        week = 3;
-      } else if (day > 21) {
-        week = 4;
+        dispatch(updateIncomeAction({
+          year, // old year
+          month, // old month
+          week, // old week
+          income: {
+            id: incomeToEdit.id,
+            name,
+            dateString, // new date
+            amount: parseFloat(amount),
+          },
+        }));
+      } else {
+        // create
+        const [year, month, day] = dateString.split('-').map(string => Number(string));
+        const week = getWeekNumberByDayNumber(day);
+
+        dispatch(addIncomeAction({
+          year,
+          month,
+          week,
+          income: {
+            id: `${Math.floor(Math.random() * 100000)}`,
+            name,
+            dateString,
+            amount: parseFloat(amount),
+          },
+        }));
       }
-
-      dispatch(addIncomeAction({
-        year,
-        month,
-        week,
-        income: {
-          id: `${Math.floor(Math.random() * 100000)}`,
-          name,
-          dateString,
-          amount: parseFloat(amount),
-        },
-      }));
     }
   }
 

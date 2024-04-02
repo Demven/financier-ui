@@ -6,30 +6,44 @@ import {
   View,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import Modal from '../../components/Modal';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import ColorPicker from '../../components/ColorPicker';
-import { addCategoryAction } from '../../redux/reducers/categories';
+import { addCategoryAction, updateCategoryAction } from '../../redux/reducers/categories';
 import { MEDIA } from '../../styles/media';
 
 export default function CategoryScreen () {
-  const windowWidth = useSelector(state => state.ui.windowWidth);
+  const route = useRoute();
 
-  const [name, setName] = useState('');
+  const windowWidth = useSelector(state => state.ui.windowWidth);
+  const colors = useSelector(state => state.colors);
+
+  const categoryToEdit = route.params?.category;
+
+  const [name, setName] = useState(categoryToEdit?.name || '');
   const [nameError, setNameError] = useState('');
 
-  const [description, setDescription] = useState('');
-  const [color, setColor] = useState();
+  const [description, setDescription] = useState(categoryToEdit?.description || '');
+
+  const [color, setColor] = useState(categoryToEdit?.colorId ? getColorById(categoryToEdit.colorId) : undefined);
+  const [colorError, setColorError] = useState('');
 
   const dispatch = useDispatch();
   const navigation = useNavigation();
+
+  function getColorById (id) {
+    return colors.find(color => color.id === id);
+  }
 
   function validate () {
     let valid = true;
 
     if (!name.trim().length) {
       setNameError('Name can\'t be empty');
+      valid = false;
+    } else if (!color) {
+      setColorError('Select a color');
       valid = false;
     } else {
       setNameError('');
@@ -42,16 +56,30 @@ export default function CategoryScreen () {
     const isValid = validate();
 
     if (isValid) {
-      dispatch(addCategoryAction({
-        id: `${Math.floor(Math.random() * 100000)}`,
-        name,
-        description,
-      }));
+      if (categoryToEdit) {
+        dispatch(updateCategoryAction({
+          id: categoryToEdit.id,
+          name,
+          description,
+          colorId: color.id,
+        }));
+      } else {
+        dispatch(addCategoryAction({
+          id: `${Math.floor(Math.random() * 100000)}`,
+          name,
+          description,
+          colorId: color.id,
+        }));
+      }
     }
   }
 
   function onClose () {
-    navigation.navigate('Expense', { preselectedCategory: 'last' });
+    if (categoryToEdit) {
+      navigation.goBack();
+    } else {
+      navigation.navigate('Expense', { preselectedCategory: 'last' });
+    }
   }
 
   return (
@@ -65,7 +93,7 @@ export default function CategoryScreen () {
       maxWidth={568}
       onSave={onSave}
       onCloseRequest={onClose}
-      disableSave={!!nameError || !name.length}
+      disableSave={!!nameError || !name.length || !!colorError}
     >
       <ScrollView>
         <View style={{ flexGrow: 1, paddingBottom: 100 }}>
@@ -99,6 +127,7 @@ export default function CategoryScreen () {
               style={styles.formElement}
               label='Color'
               color={color}
+              errorText={colorError}
               onChange={setColor}
             />
           </View>
