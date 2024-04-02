@@ -89,7 +89,7 @@ export default function CategoryScreen () {
         paddingBottom: Platform.select({ web: windowWidth <= MEDIA.WIDE_MOBILE ? 32 : 48 }),
         paddingRight: windowWidth <= MEDIA.TABLET ? 0 : 52,
       }]}
-      title='New category'
+      title={categoryToEdit ? 'Edit category' : 'New category' }
       maxWidth={568}
       onSave={onSave}
       onCloseRequest={onClose}
