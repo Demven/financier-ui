@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useLayoutEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
@@ -40,9 +40,11 @@ export default function CategoriesMonth (props) {
   const windowWidth = useSelector(state => state.ui.windowWidth);
   const categories = useSelector(state => state.categories);
 
-  useEffect(() => {
-    if (categories?.[0]?.id) {
-      setSelectedCategoryId(categories[0].id);
+  useLayoutEffect(() => {
+    if (!selectedCategoryId && categories?.[0]?.id) {
+      setTimeout(() => {
+        setSelectedCategoryId(categories[0].id);
+      }, 1000);
     }
   }, [categories]);
 
@@ -154,7 +156,7 @@ const styles = StyleSheet.create({
   },
 
   monthChart: {
-    marginTop: 40,
+    marginTop: 24,
   },
 
   content: {

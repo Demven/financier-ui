@@ -12,6 +12,7 @@ import Input, { INPUT_TYPE } from '../../components/Input';
 import ColorPicker from '../../components/ColorPicker';
 import { addCategoryAction, updateCategoryAction } from '../../redux/reducers/categories';
 import { MEDIA } from '../../styles/media';
+import { deleteColorAction } from "../../redux/reducers/colors";
 
 export default function CategoryScreen () {
   const route = useRoute();
@@ -74,6 +75,20 @@ export default function CategoryScreen () {
     }
   }
 
+  function onDeleteColor (colorIdToDelete) {
+    // can delete the color only after updating the color to teh default one for the current category
+    if (categoryToEdit) {
+      dispatch(updateCategoryAction({
+        id: categoryToEdit.id,
+        name,
+        description,
+        colorId: colors[0].id,
+      }));
+    }
+
+    dispatch(deleteColorAction(colorIdToDelete));
+  }
+
   function onClose () {
     if (categoryToEdit) {
       navigation.goBack();
@@ -129,6 +144,7 @@ export default function CategoryScreen () {
               color={color}
               errorText={colorError}
               onChange={setColor}
+              onDelete={onDeleteColor}
             />
           </View>
         </View>

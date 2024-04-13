@@ -1,10 +1,12 @@
 import { useRef, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Loader from '../../../../components/Loader';
-import RadialChart from '../../../../components/chart/RadialChart';
+import RadialChart from '../../../../components/chart/RadialChart/RadialChart';
 import { MEDIA } from '../../../../styles/media';
+import { FONT } from "../../../../styles/fonts";
+import { COLOR } from "../../../../styles/colors";
 
 MonthChart.propTypes = {
   style: PropTypes.any,
@@ -14,7 +16,7 @@ MonthChart.propTypes = {
   })).isRequired,
   expensesTotalsGroupedByCategoryId: PropTypes.object.isRequired,
   monthTotal: PropTypes.number.isRequired,
-  selectedCategoryId: PropTypes.number,
+  selectedCategoryId: PropTypes.string,
   onSelectCategoryId: PropTypes.func,
 };
 
@@ -36,15 +38,18 @@ export default function MonthChart (props) {
   const chartRef = useRef();
 
   const chartData = categories.map(category => {
-    const { red, green, blue } = colors.find(color => color.id === category.colorId);
+    const { red, green, blue, intensity } = colors.find(color => color.id === category.colorId);
 
     return {
       id: category.id,
       value: expensesTotalsGroupedByCategoryId[category.id] * 100 / monthTotal,
       label: category.name,
+      textColor: intensity === 'light' ? COLOR.DARK_GRAY : COLOR.WHITE,
       getColor: (opacity = 1) => `rgba(${red}, ${green}, ${blue}, ${opacity})`,
     };
   });
+
+  const selectedChartSegment = chartData.find(category => category.id === selectedCategoryId);
 
   return (
     <View
@@ -64,6 +69,14 @@ export default function MonthChart (props) {
         selectedSegmentId={selectedCategoryId}
         onSelectSegment={onSelectCategoryId}
       />
+
+      {!!selectedChartSegment && (
+        <View style={styles.selectedChartSegmentTextContainer}>
+          <Text style={styles.selectedChartSegmentText}>
+            {selectedChartSegment.label} ({Math.round(selectedChartSegment.value)}%)
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -80,9 +93,19 @@ const styles = StyleSheet.create({
 
   chart: {
     width: '100%',
-    marginTop: 80,
   },
   chartMobile: {
-    marginTop: 180,
+    marginTop: 40,
+  },
+
+  selectedChartSegmentTextContainer: {
+    marginTop: 16,
+    marginLeft: 32,
+  },
+  selectedChartSegmentText: {
+    fontFamily: FONT.NOTO_SERIF.BOLD,
+    fontSize: 24,
+    lineHeight: 32,
+    color: COLOR.DARK_GRAY,
   },
 });

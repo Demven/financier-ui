@@ -26,7 +26,7 @@ export function getColorIntensityName ([red, green, blue]) {
 
   if (intensity >= 80 && intensity <= 100){
     txt = COLOR_INTENSITY_NAME.SEMI_DARK;
-  } else if (intensity < 40){
+  } else if (intensity < 80){
     txt = COLOR_INTENSITY_NAME.DARK;
   }
 

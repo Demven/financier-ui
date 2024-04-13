@@ -749,7 +749,6 @@ export default function App () {
     [FONT.NOTO_SERIF.BOLD]: require('./assets/fonts/NotoSerif/NotoSerif-Bold.ttf'),
   });
 
-
   const checkIfNeedToHideSplashScreen = useCallback(async () => {
     if (fontsLoaded) {
       await SplashScreen.hideAsync();

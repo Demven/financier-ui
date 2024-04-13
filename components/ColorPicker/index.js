@@ -25,6 +25,7 @@ ColorPicker.propTypes = {
   }),
   errorText: PropTypes.string,
   onChange: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
 };
 
 export default function ColorPicker (props) {
@@ -34,6 +35,7 @@ export default function ColorPicker (props) {
     color,
     errorText,
     onChange,
+    onDelete,
   } = props;
 
   const dispatch = useDispatch();
@@ -82,11 +84,11 @@ export default function ColorPicker (props) {
   }
 
   function onDeleteColor (id) {
-    dispatch(deleteColorAction(id));
-
     if (id === color.id) {
-      onChange(undefined);
+      onChooseColor(colors[0]);
     }
+
+    onDelete(id);
   }
 
   const colorsPerRow = windowWidth < MEDIA.MOBILE
