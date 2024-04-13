@@ -3,10 +3,10 @@ import { View, StyleSheet, Text } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Loader from '../../../../components/Loader';
-import RadialChart from '../../../../components/chart/RadialChart/RadialChart';
+import RadialChart from '../../../../components/chart/RadialChart';
 import { MEDIA } from '../../../../styles/media';
-import { FONT } from "../../../../styles/fonts";
-import { COLOR } from "../../../../styles/colors";
+import { FONT } from '../../../../styles/fonts';
+import { COLOR } from '../../../../styles/colors';
 
 MonthChart.propTypes = {
   style: PropTypes.any,

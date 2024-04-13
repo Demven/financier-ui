@@ -29,7 +29,7 @@ export default function RadialChart (props) {
     onSelectSegment = (id) => {},
   } = props;
 
-  const [width, setWidth] = useState();
+  const [width, setWidth] = useState(400);
   const [highlightedId, setHighlightedId] = useState();
 
   function onLayout (event) {

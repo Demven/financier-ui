@@ -1,5 +1,6 @@
 import { StyleSheet, View, Text } from 'react-native';
 import { useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import TitleLink from '../../../components/TitleLink';
 import CompareStats from '../../../components/CompareStats';
@@ -9,7 +10,6 @@ import { ICON_COLLECTION } from '../../../components/Icon';
 import { FONT } from '../../../styles/fonts';
 import { MEDIA } from '../../../styles/media';
 import { COLOR } from '../../../styles/colors';
-import { useNavigation } from "@react-navigation/native";
 
 CategoryCompareStats.propTypes = {
   style: PropTypes.any,
@@ -17,9 +17,7 @@ CategoryCompareStats.propTypes = {
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     description: PropTypes.string,
-    color: PropTypes.shape({
-      hex: PropTypes.string,
-    }).isRequired,
+    colorId: PropTypes.string.isRequired,
   }).isRequired,
   compareWhat: PropTypes.number,
   compareTo: PropTypes.number,

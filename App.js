@@ -747,6 +747,11 @@ export default function App () {
 
     [FONT.NOTO_SERIF.REGULAR]: require('./assets/fonts/NotoSerif/NotoSerif-Regular.ttf'),
     [FONT.NOTO_SERIF.BOLD]: require('./assets/fonts/NotoSerif/NotoSerif-Bold.ttf'),
+
+    Ionicons: require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf'),
+    FontAwesome5: require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf'),
+    MaterialIcons: require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialIcons.ttf'),
+    MaterialCommunityIcons: require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf'),
   });
 
   const checkIfNeedToHideSplashScreen = useCallback(async () => {
