@@ -23,7 +23,7 @@ import CategoriesYear from './CategoriesYear/CategoriesYear';
 import NoDataPlaceholder from '../../components/NoDataPlaceholder';
 import HeaderDropdown from '../../components/HeaderDropdown';
 import { TAB } from '../../components/HeaderTabs';
-import { getLastMonthNumberInYear, MONTH_NAME } from '../../services/date';
+import { getDaysInMonth, getLastMonthNumberInYear, MONTH_NAME } from '../../services/date';
 import { COLOR } from '../../styles/colors';
 import { MEDIA } from '../../styles/media';
 
@@ -131,6 +131,8 @@ export default function CategoriesScreen () {
        ? expensesMonths[index + 1] // + 1 because month numbers are sorted in ASC order
        : getLastMonthNumberInYear(expensesTotal?.[selectedYear - 1]); // the last month of the previous year
 
+      const daysNumber = getDaysInMonth(selectedYear, monthNumber);
+
       return (
         <CategoriesMonth
           key={index}
@@ -138,6 +140,7 @@ export default function CategoriesScreen () {
             styles.categories,
             windowWidth < MEDIA.WIDE_MOBILE && styles.categoriesMobile,
           ]}
+          daysNumber={daysNumber}
           monthNumber={monthNumber}
           monthIncome={incomesTotal?.[selectedYear]?.[monthNumber]?.total || 0}
           monthExpenses={expenses?.[selectedYear]?.[monthNumber]}

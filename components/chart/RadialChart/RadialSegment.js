@@ -89,11 +89,11 @@ export default function RadialSegment (props) {
     <AnimatedPath
       style={styles.radialSegment}
       animatedProps={animatedProps}
-      stroke={isSelected ? COLOR.BLACK : COLOR.GRAY}
-      strokeWidth={isSelected ? chartWidth / 100 / 650 : chartWidth / 100 / 1500}
+      stroke={isSelected ? getColor(1) : COLOR.GRAY}
+      strokeWidth={isSelected ? chartWidth / 100 / 450 : chartWidth / 100 / 1200}
       fill={isSelected
-        ? getColor(0.9)
-        : isHighlighted ? getColor(0.82) : getColor(0.67)
+        ? getColor(0.7)
+        : isHighlighted ? getColor(0.7) : getColor(0.5)
       }
       onClick={() => onSelect(id)}
       onMouseEnter={() => onHighlight(id)}

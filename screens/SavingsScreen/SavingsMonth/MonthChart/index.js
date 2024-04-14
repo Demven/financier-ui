@@ -1,14 +1,10 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
 import Loader from '../../../../components/Loader';
 import BarChart from '../../../../components/chart/BarChart';
 import MonthChartLegend, { LEGEND_HEIGHT } from '../../../../components/chart/legends/MonthChartLegend';
-import { DAYS_IN_WEEK, WEEKS_IN_MONTH } from '../../../../services/date';
-
-function daysInMonth (year, month) {
-  return new Date(year, month, 0).getDate();
-}
+import { DAYS_IN_WEEK, WEEKS_IN_MONTH, getDaysInMonth } from '../../../../services/date';
 
 MonthChart.propTypes = {
   style: PropTypes.any,
@@ -31,8 +27,6 @@ export default function MonthChart (props) {
 
   const [loading, setLoading] = useState(true);
 
-  const chartRef = useRef();
-
   const [chartWidth, setChartWidth] = useState(0);
   const [chartHeight, setChartHeight] = useState(0);
 
@@ -43,13 +37,12 @@ export default function MonthChart (props) {
     setChartHeight(Math.floor(width / 16 * 9));
   }
 
-  const daysNumber = daysInMonth(year, monthNumber);
+  const daysNumber = getDaysInMonth(year, monthNumber);
 
   return (
     <View
       style={[styles.monthChart, style]}
       onLayout={onLayout}
-      ref={chartRef}
     >
       <Loader
         loading={loading}

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
@@ -38,8 +38,6 @@ export default function WeekChart (props) {
 
   const [loading, setLoading] = useState(true);
 
-  const chartRef = useRef();
-
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
   const [chartWidth, setChartWidth] = useState(0);
@@ -57,7 +55,6 @@ export default function WeekChart (props) {
       <View
         style={styles.chartContainer}
         onLayout={onLayout}
-        ref={chartRef}
       >
         <Loader
           style={styles.loader}

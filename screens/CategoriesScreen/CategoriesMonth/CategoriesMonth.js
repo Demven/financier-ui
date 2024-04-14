@@ -14,6 +14,7 @@ import { MEDIA } from '../../../styles/media';
 
 CategoriesMonth.propTypes = {
   style: PropTypes.any,
+  daysNumber: PropTypes.number.isRequired,
   monthNumber: PropTypes.number.isRequired,
   monthIncome: PropTypes.number,
   monthExpenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
@@ -25,6 +26,7 @@ CategoriesMonth.propTypes = {
 export default function CategoriesMonth (props) {
   const {
     style,
+    daysNumber,
     monthNumber,
     monthIncome = 0,
     monthExpenses = {},
@@ -49,6 +51,13 @@ export default function CategoriesMonth (props) {
   }, [categories]);
 
   const totalExpenses = monthExpensesTotal?.total || 0;
+
+  const weekExpensesTotalsGroupedByCategoryId = useMemo(() => ({
+    [1]: groupExpensesTotalsByCategoryId(monthExpenses[1] || []),
+    [2]: groupExpensesTotalsByCategoryId(monthExpenses[2] || []),
+    [3]: groupExpensesTotalsByCategoryId(monthExpenses[3] || []),
+    [4]: groupExpensesTotalsByCategoryId(monthExpenses[4] || []),
+  }), [monthExpenses]);
 
   const expensesTotalsGroupedByCategoryId = useMemo(() => groupExpensesTotalsByCategoryId([
     ...(monthExpenses[1] || []),
@@ -130,7 +139,9 @@ export default function CategoriesMonth (props) {
               paddingLeft: windowWidth < MEDIA.DESKTOP ? 0 : 80,
             }]}
             categories={categories}
+            daysNumber={daysNumber}
             monthTotal={totalExpenses}
+            weekExpensesTotalsGroupedByCategoryId={weekExpensesTotalsGroupedByCategoryId}
             expensesTotalsGroupedByCategoryId={expensesTotalsGroupedByCategoryId}
             selectedCategoryId={selectedCategoryId}
             onSelectCategoryId={setSelectedCategoryId}

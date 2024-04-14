@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import PointInfo from '../../../../components/chart/PointInfo';
 import Loader from '../../../../components/Loader';
 import MonthChartLegend from './MonthChartLegend';
-import { formatDateString } from '../../../../services/date';
+import { formatDateString, getDaysInMonth } from '../../../../services/date';
 import {
   groupMonthByDay,
   mergeGroupedByDay,
@@ -14,10 +14,6 @@ import {
 } from '../../../../services/dataItems';
 import { COLOR } from '../../../../styles/colors';
 import { MEDIA } from '../../../../styles/media';
-
-function daysInMonth (year, month) {
-  return new Date(year, month, 0).getDate();
-}
 
 export const CHART_VIEW = {
   INCOME: 'income',
@@ -111,7 +107,7 @@ export default function MonthChart (props) {
     }
   }
 
-  const daysNumber = daysInMonth(year, monthNumber);
+  const daysNumber = getDaysInMonth(year, monthNumber);
 
   function onPointClick ({ index, value, dataset, x, y }) {
     const clickedChartViewType = dataset.type;

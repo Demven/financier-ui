@@ -5,12 +5,8 @@ import PropTypes from 'prop-types';
 import Loader from '../../../../components/Loader';
 import BarChart from '../../../../components/chart/BarChart';
 import MonthChartLegend, { LEGEND_HEIGHT } from '../../../../components/chart/legends/MonthChartLegend';
-import { DAYS_IN_WEEK, WEEKS_IN_MONTH } from '../../../../services/date';
+import { DAYS_IN_WEEK, WEEKS_IN_MONTH, getDaysInMonth } from '../../../../services/date';
 import { MEDIA } from '../../../../styles/media';
-
-function daysInMonth (year, month) {
-  return new Date(year, month, 0).getDate();
-}
 
 MonthChart.propTypes = {
   style: PropTypes.any,
@@ -47,7 +43,7 @@ export default function MonthChart (props) {
     setChartHeight(Math.floor(width / 16 * 9));
   }
 
-  const daysNumber = daysInMonth(year, monthNumber);
+  const daysNumber = getDaysInMonth(year, monthNumber);
 
   return (
     <View
