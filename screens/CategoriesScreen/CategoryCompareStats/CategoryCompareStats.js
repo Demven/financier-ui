@@ -54,16 +54,26 @@ export default function CategoryCompareStats (props) {
 
   const titleFontSize = windowWidth < MEDIA.DESKTOP
     ? windowWidth < MEDIA.TABLET
-      ? 28 // mobile
-      : 36 // tablet
+      ? 19 // mobile
+      : 24 // tablet
     : 24; // desktop
   const titleLineHeight = windowWidth < MEDIA.DESKTOP
     ? windowWidth < MEDIA.TABLET
-      ? 32 // mobile
-      : 40 // tablet
+      ? 24 // mobile
+      : 30 // tablet
     : 32; // desktop
 
   const { hex } = colors.find(color => color.id === colorId) || {};
+
+  const totalText = (
+    <Text style={[styles.totalText, {
+      fontSize: titleFontSize,
+      lineHeight: titleLineHeight,
+      textAlign: windowWidth <= MEDIA.WIDE_MOBILE ? 'left' : 'right',
+    }]}>
+      {formatAmount(compareWhat, currencySymbol)}
+    </Text>
+  );
 
   return (
     <View style={[styles.categoryCompareStats, style]}>
@@ -99,10 +109,19 @@ export default function CategoryCompareStats (props) {
               {description}
             </Text>
           )}
+
+          {windowWidth <= MEDIA.WIDE_MOBILE && (
+            <View style={styles.totalTextMobileWrapper}>
+              {totalText}
+            </View>
+          )}
         </View>
 
         <CompareStats
-          style={styles.compareStats}
+          style={[styles.compareStats, windowWidth < MEDIA.TABLET && {
+            transform: [{ translateX: windowWidth < MEDIA.WIDE_MOBILE ? -25: -36 }, { scale: 0.8 }],
+            marginTop: windowWidth < MEDIA.WIDE_MOBILE ? 20 : 32,
+          }]}
           compareWhat={compareWhat}
           compareTo={compareTo}
           previousResult={previousResult}
@@ -113,11 +132,11 @@ export default function CategoryCompareStats (props) {
         />
       </View>
 
-      <View style={styles.totalColumn}>
-        <Text style={styles.totalText}>
-          {formatAmount(compareWhat, currencySymbol)}
-        </Text>
-      </View>
+      {windowWidth > MEDIA.WIDE_MOBILE && (
+        <View style={styles.totalColumn}>
+          {totalText}
+        </View>
+      )}
     </View>
   );
 }
@@ -175,20 +194,20 @@ const styles = StyleSheet.create({
   },
 
   compareStats: {
-    marginTop: 32,
     alignItems: 'flex-start',
   },
 
   totalColumn: {
-    paddingTop: 12,
+    paddingTop: 6,
     flexShrink: 0,
     flexGrow: 1,
   },
 
+  totalTextMobileWrapper: {
+    marginTop: 20,
+  },
+
   totalText: {
-    textAlign: 'right',
     fontFamily: FONT.NOTO_SERIF.BOLD,
-    fontSize: 24,
-    lineHeight: 24,
   },
 });

@@ -136,6 +136,7 @@ export default function CategoriesMonth (props) {
           <MonthChart
             style={[styles.monthChart, {
               width: chartWidth,
+              maxWidth: windowWidth < MEDIA.DESKTOP ? 600 : '100%',
               paddingLeft: windowWidth < MEDIA.DESKTOP ? 0 : 80,
             }]}
             categories={categories}

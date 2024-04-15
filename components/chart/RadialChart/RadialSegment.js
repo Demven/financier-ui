@@ -89,7 +89,7 @@ export default function RadialSegment (props) {
     <AnimatedPath
       style={styles.radialSegment}
       animatedProps={animatedProps}
-      stroke={isSelected ? getColor(1) : COLOR.GRAY}
+      stroke={isSelected ? getColor(1) : COLOR.LIGHT_GRAY}
       strokeWidth={isSelected ? chartWidth / 100 / 450 : chartWidth / 100 / 1200}
       fill={isSelected
         ? getColor(0.7)

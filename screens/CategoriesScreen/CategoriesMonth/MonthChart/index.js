@@ -87,7 +87,9 @@ export default function MonthChart (props) {
       />
 
       <View
-        style={styles.barChartContainer}
+        style={[styles.barChartContainer, {
+          marginTop: windowWidth < MEDIA.DESKTOP ? 32 : 52,
+        }]}
         onLayout={onBarChartLayout}
       >
         {selectedChartSegment && (
@@ -148,7 +150,6 @@ const styles = StyleSheet.create({
   },
 
   barChartContainer: {
-    marginTop: 52,
     marginLeft: 32,
     position: 'relative',
   },

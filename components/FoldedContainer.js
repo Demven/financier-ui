@@ -61,8 +61,11 @@ export default function FoldedContainer (props) {
   }, [folded]);
 
   useEffect(() => {
-    if (!folded && !initialized && childrenHeight) {
-      setInitialized(true);
+    if (!folded && childrenHeight) {
+      if (!initialized) {
+        setInitialized(true);
+      }
+
       animateOpen();
     }
   }, [childrenHeight]);
