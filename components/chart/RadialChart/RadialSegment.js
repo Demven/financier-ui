@@ -96,6 +96,7 @@ export default function RadialSegment (props) {
         : isHighlighted ? getColor(0.7) : getColor(0.5)
       }
       onClick={() => onSelect(id)}
+      onPress={() => onSelect(id)}
       onMouseEnter={() => onHighlight(id)}
       onMouseLeave={() => onHighlight(undefined)}
     />

@@ -144,8 +144,9 @@ export default function RadialChart (props) {
                 textAnchor='middle'
                 alignmentBaseline='middle'
                 fill={textColor}
-                fontSize={isSelected ? 0.1 : 0.085}
-                fontFamily={FONT.NOTO_SERIF.BOLD}
+                fontSize={isSelected ? 0.1 : 0.08}
+                fontWeight={isSelected ? 'bold' : 'normal'}
+                fontFamily={FONT.NOTO_SERIF.REGULAR}
               >
                 {value.toFixed(1).replace('.0', '')}
               </Text>
