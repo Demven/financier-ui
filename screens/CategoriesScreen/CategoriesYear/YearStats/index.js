@@ -1,102 +1,56 @@
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
-import TitleLink from '../../../../components/TitleLink';
-import FoldedContainer from '../../../../components/FoldedContainer';
-import CompareStats from '../../../../components/CompareStats';
-import { formatAmount } from '../../../../services/amount';
-import { MONTH_NAME } from '../../../../services/date';
-import { FONT } from '../../../../styles/fonts';
-import { COLOR } from '../../../../styles/colors';
-import { MEDIA } from '../../../../styles/media';
+import CategoryCompareStats from '../../CategoryCompareStats/CategoryCompareStats';
 
 YearStats.propTypes = {
   style: PropTypes.any,
-  expensesByMonths: PropTypes.arrayOf(PropTypes.number).isRequired,
-  year: PropTypes.number,
-  selectedMonthIndex: PropTypes.number,
-  totalExpenses: PropTypes.number.isRequired,
-  yearIncome: PropTypes.number.isRequired,
-  previousYearTotalExpenses: PropTypes.number,
+  categories: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+  })).isRequired,
+  expensesTotalsGroupedByCategoryId: PropTypes.object.isRequired,
+  previousYearExpensesTotalsGroupedByCategoryId: PropTypes.object.isRequired,
   previousYear: PropTypes.number,
-  allTimeYearAverage: PropTypes.number,
-  showSecondaryComparisons: PropTypes.bool.isRequired,
+  yearIncome: PropTypes.number.isRequired,
+  selectedCategoryId: PropTypes.string,
+  onSelectCategoryId: PropTypes.func,
 };
 
 export default function YearStats (props) {
   const {
     style,
-    expensesByMonths,
-    year,
-    selectedMonthIndex,
-    totalExpenses,
-    yearIncome,
-    previousYearTotalExpenses,
+    categories,
+    expensesTotalsGroupedByCategoryId,
+    previousYearExpensesTotalsGroupedByCategoryId,
     previousYear,
-    allTimeYearAverage,
-    showSecondaryComparisons,
+    yearIncome,
+    selectedCategoryId,
+    onSelectCategoryId,
   } = props;
 
-  const navigation = useNavigation();
-
-  const windowWidth = useSelector(state => state.ui.windowWidth);
+  const allTimeYearAverage = useSelector(state => state.expenses.yearAverage);
 
   return (
     <View style={[styles.yearStats, style]}>
-      <FoldedContainer
-        title={windowWidth < MEDIA.DESKTOP ? 'View expenses by months' : 'Months'}
-        disable={windowWidth >= MEDIA.DESKTOP}
-      >
-        <View
-          style={[styles.stats, {
-            marginTop: windowWidth < MEDIA.DESKTOP ? 16 : 24,
-            paddingLeft: windowWidth < MEDIA.DESKTOP ? 16 : 24,
-          }]}
-        >
-          {expensesByMonths.map((total, index) => (
-            <View
-              key={index}
-              style={[styles.statRow, index === 0 && { marginTop: 0 }]}
-            >
-              <TitleLink
-                textStyle={[
-                  styles.statName,
-                  windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
-                  selectedMonthIndex === index && styles.statNameBold,
-                ]}
-                alwaysHighlighted={!!total}
-                onPress={total > 0
-                  ? () => navigation.navigate('ExpensesWeeks', { monthNumber: index + 1, year })
-                  : undefined
-                }
-              >
-                {MONTH_NAME[index + 1]}
-              </TitleLink>
+      {categories.map((category, index) => {
+        const totalExpenses = expensesTotalsGroupedByCategoryId[category.id] || 0;
+        const previousYearTotalExpenses = previousYearExpensesTotalsGroupedByCategoryId[category.id] || 0;
 
-              <Text style={[
-                styles.statValue,
-                windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
-                selectedMonthIndex === index && styles.statValueBold,
-              ]}>
-                {total > 0 ? formatAmount(-total) : '–'}
-              </Text>
-            </View>
-          ))}
-        </View>
-      </FoldedContainer>
-
-      {windowWidth < MEDIA.DESKTOP && (
-        <CompareStats
-          style={styles.compareStats}
-          compareWhat={-totalExpenses}
-          compareTo={yearIncome}
-          previousResult={-previousYearTotalExpenses}
-          previousResultName={`${previousYear}`}
-          allTimeAverage={-allTimeYearAverage}
-          showSecondaryComparisons={showSecondaryComparisons}
-        />
-      )}
+        return (
+          <CategoryCompareStats
+            key={category.id}
+            style={[styles.compareStats, index === 0 && { marginTop: 0 }]}
+            category={category}
+            compareWhat={-totalExpenses}
+            compareTo={yearIncome}
+            previousResult={-previousYearTotalExpenses}
+            previousResultName={previousYear}
+            allTimeAverage={-allTimeYearAverage}
+            selected={selectedCategoryId === category.id}
+            onPress={() => onSelectCategoryId(category.id)}
+          />
+        );
+      })}
     </View>
   );
 }
@@ -104,45 +58,7 @@ export default function YearStats (props) {
 const styles = StyleSheet.create({
   yearStats: {
     width: '100%',
-  },
-
-  stats: {
-    width: '100%',
-  },
-
-  statRow: {
-    marginTop: 16,
-    flexDirection: 'row',
-  },
-
-  statName: {
-    fontFamily: FONT.NOTO_SERIF.REGULAR,
-    fontSize: 20,
-    lineHeight: 24,
-    color: COLOR.DARK_GRAY,
-  },
-  statNameBold: {
-    fontFamily: FONT.NOTO_SERIF.BOLD,
-  },
-  statNameSmaller: {
-    fontSize: 18,
-    lineHeight: 23,
-  },
-
-  statValue: {
-    marginLeft: 'auto',
-    fontFamily: FONT.NOTO_SERIF.REGULAR,
-    fontSize: 20,
-    lineHeight: 24,
-    color: COLOR.DARK_GRAY,
-    userSelect: 'text',
-  },
-  statValueBold: {
-    fontFamily: FONT.NOTO_SERIF.BOLD,
-  },
-  statValueSmaller: {
-    fontSize: 18,
-    lineHeight: 23,
+    paddingLeft: 40,
   },
 
   compareStats: {

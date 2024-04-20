@@ -2,8 +2,6 @@ import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import CategoryCompareStats from '../../CategoryCompareStats/CategoryCompareStats';
-import { COLOR } from '../../../../styles/colors';
-import { FONT } from '../../../../styles/fonts';
 
 MonthStats.propTypes = {
   style: PropTypes.any,
@@ -61,45 +59,6 @@ const styles = StyleSheet.create({
   monthStats: {
     width: '100%',
     paddingLeft: 40,
-  },
-
-  stats: {
-    width: '100%',
-  },
-
-  statRow: {
-    marginTop: 16,
-    flexDirection: 'row',
-  },
-
-  statName: {
-    fontFamily: FONT.NOTO_SERIF.REGULAR,
-    fontSize: 20,
-    lineHeight: 24,
-    color: COLOR.DARK_GRAY,
-  },
-  statNameBold: {
-    fontFamily: FONT.NOTO_SERIF.BOLD,
-  },
-  statNameSmaller: {
-    fontSize: 18,
-    lineHeight: 23,
-  },
-
-  statValue: {
-    marginLeft: 'auto',
-    fontFamily: FONT.NOTO_SERIF.REGULAR,
-    fontSize: 20,
-    lineHeight: 24,
-    color: COLOR.DARK_GRAY,
-    userSelect: 'text',
-  },
-  statValueBold: {
-    fontFamily: FONT.NOTO_SERIF.BOLD,
-  },
-  statValueSmaller: {
-    fontSize: 18,
-    lineHeight: 23,
   },
 
   compareStats: {

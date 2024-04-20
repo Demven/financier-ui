@@ -166,11 +166,11 @@ export default function CategoriesScreen () {
             windowWidth < MEDIA.WIDE_MOBILE && styles.categoriesMobile,
           ]}
           year={yearNumber}
+          previousYear={yearNumber - 1}
+          yearIncome={incomesTotal?.[yearNumber]?.total || 0}
           yearExpenses={expenses[yearNumber]}
           yearTotalExpenses={expensesTotal[yearNumber]}
-          yearIncome={incomesTotal?.[yearNumber]?.total || 0}
-          previousYear={yearNumber - 1}
-          previousYearTotalExpenses={incomesTotal?.[yearNumber - 1]?.total || 0}
+          previousYearExpenses={expenses?.[yearNumber - 1]}
         />
       ));
   }

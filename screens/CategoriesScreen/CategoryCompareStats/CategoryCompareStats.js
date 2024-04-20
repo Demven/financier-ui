@@ -118,10 +118,15 @@ export default function CategoryCompareStats (props) {
         </View>
 
         <CompareStats
-          style={[styles.compareStats, windowWidth < MEDIA.TABLET && {
-            transform: [{ translateX: windowWidth < MEDIA.WIDE_MOBILE ? -25: -36 }, { scale: 0.8 }],
-            marginTop: windowWidth < MEDIA.WIDE_MOBILE ? 20 : 32,
-          }]}
+          style={[
+            styles.compareStats,
+            {
+              marginTop: windowWidth < MEDIA.WIDE_MOBILE ? 20 : 24,
+            },
+            windowWidth < MEDIA.TABLET && {
+              transform: [{ translateX: windowWidth < MEDIA.WIDE_MOBILE ? -25: -36 }, { scale: 0.8 }],
+            },
+          ]}
           compareWhat={compareWhat}
           compareTo={compareTo}
           previousResult={previousResult}

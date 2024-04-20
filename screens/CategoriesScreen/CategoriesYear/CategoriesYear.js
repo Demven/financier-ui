@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useLayoutEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
@@ -7,58 +7,116 @@ import YearChart from './YearChart';
 import YearStats from './YearStats';
 import TitleLink from '../../../components/TitleLink';
 import FoldedContainer from '../../../components/FoldedContainer';
-import { MONTHS_IN_YEAR } from '../../../services/date';
-import { getTotalAmountsByMonths } from '../../../services/amount';
+import { groupExpensesTotalsByCategoryId } from '../../../services/dataItems';
 import { FONT } from '../../../styles/fonts';
 import { MEDIA } from '../../../styles/media';
 
 CategoriesYear.propTypes = {
   style: PropTypes.any,
   year: PropTypes.number.isRequired,
-  yearExpenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
-  yearTotalExpenses: PropTypes.object, // weeks -> expensesTotal { total: ?, [1]: ?, [2]: ? }
-  yearIncome: PropTypes.number.isRequired,
   previousYear: PropTypes.number.isRequired,
-  previousYearTotalExpenses: PropTypes.number.isRequired,
+  yearIncome: PropTypes.number.isRequired,
+  yearExpenses: PropTypes.object.isRequired, // weeks -> expenses { [1]: [], [2]: [] }
+  yearTotalExpenses: PropTypes.object.isRequired, // weeks -> expensesTotal { total: ?, [1]: ?, [2]: ? }
+  previousYearExpenses: PropTypes.object.isRequired,
 };
 
 export default function CategoriesYear (props) {
   const {
     style,
     year,
+    previousYear,
+    yearIncome,
     yearExpenses = {},
     yearTotalExpenses = {},
-    yearIncome,
-    previousYear,
-    previousYearTotalExpenses,
+    previousYearExpenses = {},
   } = props;
 
   const navigation = useNavigation();
 
-  const [selectedMonthIndex, setSelectedMonthIndex] = useState();
+  const [selectedCategoryId, setSelectedCategoryId] = useState();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
-  const allTimeYearAverage = useSelector(state => state.expenses.yearAverage);
+  const categories = useSelector(state => state.categories);
 
-  function groupByMonth (yearItems) {
-    const groupedByMonth = new Array(MONTHS_IN_YEAR).fill([]);
-
-    Object.keys(yearItems).forEach(monthNumber => {
-      groupedByMonth[monthNumber - 1] = [
-        ...(yearItems[monthNumber][1] || []),
-        ...(yearItems[monthNumber][2] || []),
-        ...(yearItems[monthNumber][3] || []),
-        ...(yearItems[monthNumber][4] || []),
-      ];
-    });
-
-    return groupedByMonth;
-  }
-
-  const expensesGroupedByMonth = groupByMonth(yearExpenses);
-  const totalAmountsByMonths = getTotalAmountsByMonths(expensesGroupedByMonth);
+  useLayoutEffect(() => {
+    if (!selectedCategoryId && categories?.[0]?.id) {
+      setTimeout(() => {
+        setSelectedCategoryId(categories[0].id);
+      }, 1000);
+    }
+  }, [categories]);
 
   const totalExpenses = yearTotalExpenses?.total || 0;
+
+  function getAllMonthExpenses (expenses, monthNumber) {
+    return [
+      ...(expenses?.[monthNumber]?.[1] || []),
+      ...(expenses?.[monthNumber]?.[2] || []),
+      ...(expenses?.[monthNumber]?.[3] || []),
+      ...(expenses?.[monthNumber]?.[4] || []),
+    ];
+  }
+
+  const expensesGroupedByMonths = useMemo(() => ({
+    [1]: getAllMonthExpenses(yearExpenses, 1),
+    [2]: getAllMonthExpenses(yearExpenses, 2),
+    [3]: getAllMonthExpenses(yearExpenses, 3),
+    [4]: getAllMonthExpenses(yearExpenses, 4),
+    [5]: getAllMonthExpenses(yearExpenses, 5),
+    [6]: getAllMonthExpenses(yearExpenses, 6),
+    [7]: getAllMonthExpenses(yearExpenses, 7),
+    [8]: getAllMonthExpenses(yearExpenses, 8),
+    [9]: getAllMonthExpenses(yearExpenses, 9),
+    [10]: getAllMonthExpenses(yearExpenses, 10),
+    [11]: getAllMonthExpenses(yearExpenses, 11),
+    [12]: getAllMonthExpenses(yearExpenses, 12),
+  }), [yearExpenses]);
+
+  const monthExpensesTotalsGroupedByCategoryId = useMemo(() => ({
+    [1]: groupExpensesTotalsByCategoryId(expensesGroupedByMonths[1]),
+    [2]: groupExpensesTotalsByCategoryId(expensesGroupedByMonths[2]),
+    [3]: groupExpensesTotalsByCategoryId(expensesGroupedByMonths[3]),
+    [4]: groupExpensesTotalsByCategoryId(expensesGroupedByMonths[4]),
+    [5]: groupExpensesTotalsByCategoryId(expensesGroupedByMonths[5]),
+    [6]: groupExpensesTotalsByCategoryId(expensesGroupedByMonths[6]),
+    [7]: groupExpensesTotalsByCategoryId(expensesGroupedByMonths[7]),
+    [8]: groupExpensesTotalsByCategoryId(expensesGroupedByMonths[8]),
+    [9]: groupExpensesTotalsByCategoryId(expensesGroupedByMonths[9]),
+    [10]: groupExpensesTotalsByCategoryId(expensesGroupedByMonths[10]),
+    [11]: groupExpensesTotalsByCategoryId(expensesGroupedByMonths[11]),
+    [12]: groupExpensesTotalsByCategoryId(expensesGroupedByMonths[12]),
+  }), [expensesGroupedByMonths]);
+
+  const expensesTotalsGroupedByCategoryId = useMemo(() => groupExpensesTotalsByCategoryId([
+    ...expensesGroupedByMonths[1],
+    ...expensesGroupedByMonths[2],
+    ...expensesGroupedByMonths[3],
+    ...expensesGroupedByMonths[4],
+    ...expensesGroupedByMonths[5],
+    ...expensesGroupedByMonths[6],
+    ...expensesGroupedByMonths[7],
+    ...expensesGroupedByMonths[8],
+    ...expensesGroupedByMonths[9],
+    ...expensesGroupedByMonths[10],
+    ...expensesGroupedByMonths[11],
+    ...expensesGroupedByMonths[12],
+  ]),[expensesGroupedByMonths]);
+
+  const previousYearExpensesTotalsGroupedByCategoryId = useMemo(() => groupExpensesTotalsByCategoryId([
+    ...getAllMonthExpenses(previousYearExpenses, 1),
+    ...getAllMonthExpenses(previousYearExpenses, 2),
+    ...getAllMonthExpenses(previousYearExpenses, 3),
+    ...getAllMonthExpenses(previousYearExpenses, 4),
+    ...getAllMonthExpenses(previousYearExpenses, 5),
+    ...getAllMonthExpenses(previousYearExpenses, 6),
+    ...getAllMonthExpenses(previousYearExpenses, 7),
+    ...getAllMonthExpenses(previousYearExpenses, 8),
+    ...getAllMonthExpenses(previousYearExpenses, 9),
+    ...getAllMonthExpenses(previousYearExpenses, 10),
+    ...getAllMonthExpenses(previousYearExpenses, 11),
+    ...getAllMonthExpenses(previousYearExpenses, 12),
+  ]),[previousYearExpenses]);
 
   const columnWidth = windowWidth < MEDIA.DESKTOP
     ? '100%'
@@ -108,35 +166,30 @@ export default function CategoriesYear (props) {
           }]}
         >
           <YearStats
-            style={{
+            style={[styles.yearStats, {
               width: columnWidth,
-              marginTop: 40,
-            }}
-            year={year}
-            expensesByMonths={totalAmountsByMonths}
-            selectedMonthIndex={selectedMonthIndex}
-            totalExpenses={totalExpenses}
-            yearIncome={yearIncome}
-            previousYearTotalExpenses={previousYearTotalExpenses}
+            }]}
             previousYear={previousYear}
-            allTimeYearAverage={allTimeYearAverage}
-            showSecondaryComparisons
+            categories={categories}
+            yearIncome={yearIncome}
+            expensesTotalsGroupedByCategoryId={expensesTotalsGroupedByCategoryId}
+            previousYearExpensesTotalsGroupedByCategoryId={previousYearExpensesTotalsGroupedByCategoryId}
+            selectedCategoryId={selectedCategoryId}
+            onSelectCategoryId={setSelectedCategoryId}
           />
 
           <YearChart
-            style={{
+            style={[styles.yearChart, {
               width: chartWidth,
-              marginLeft: windowWidth < MEDIA.DESKTOP ? 0 : 40,
-            }}
-            expensesByMonths={totalAmountsByMonths}
-            selectedMonthIndex={selectedMonthIndex}
-            onMonthSelected={setSelectedMonthIndex}
-            totalExpenses={totalExpenses}
-            yearIncome={yearIncome}
-            previousYearTotalExpenses={previousYearTotalExpenses}
-            previousYear={previousYear}
-            allTimeYearAverage={allTimeYearAverage}
-            showSecondaryComparisons
+              maxWidth: windowWidth < MEDIA.DESKTOP ? 600 : '100%',
+              paddingLeft: windowWidth < MEDIA.DESKTOP ? 0 : 80,
+            }]}
+            categories={categories}
+            monthExpensesTotalsGroupedByCategoryId={monthExpensesTotalsGroupedByCategoryId}
+            expensesTotalsGroupedByCategoryId={expensesTotalsGroupedByCategoryId}
+            yearTotal={totalExpenses}
+            selectedCategoryId={selectedCategoryId}
+            onSelectCategoryId={setSelectedCategoryId}
           />
         </View>
       </FoldedContainer>
@@ -149,18 +202,19 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
 
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    position: 'relative',
-    zIndex: 1,
-  },
-
   subtitleLink: {
     alignSelf: 'flex-start',
   },
   subtitleLinkText: {
     fontFamily: FONT.NOTO_SERIF.BOLD,
+  },
+
+  yearStats: {
+    marginTop: 40,
+  },
+
+  yearChart: {
+    marginTop: 24,
   },
 
   content: {

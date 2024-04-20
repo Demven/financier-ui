@@ -37,11 +37,11 @@ export default function MonthChart (props) {
     onSelectCategoryId,
   } = props;
 
-  const [loading, setLoading] = useState(true);
-  const [barChartWidth, setBarChartWidth] = useState(0);
-
   const windowWidth = useSelector(state => state.ui.windowWidth);
   const colors = useSelector(state => state.colors);
+
+  const [loading, setLoading] = useState(true);
+  const [barChartWidth, setBarChartWidth] = useState(0);
 
   function onBarChartLayout (event) {
     const { width } = event.nativeEvent.layout;

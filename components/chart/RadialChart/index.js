@@ -148,7 +148,7 @@ export default function RadialChart (props) {
                 fontWeight={isSelected ? 'bold' : 'normal'}
                 fontFamily={FONT.NOTO_SERIF.REGULAR}
               >
-                {value.toFixed(1).replace('.0', '')}
+                {value.toFixed(1).replace('.0', '')}%
               </Text>
             );
           })}

@@ -35,9 +35,9 @@ export default function CategoriesMonth (props) {
     previousMonthName = '',
   } = props;
 
-  const [selectedCategoryId, setSelectedCategoryId] = useState();
-
   const navigation = useNavigation();
+
+  const [selectedCategoryId, setSelectedCategoryId] = useState();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
   const categories = useSelector(state => state.categories);
