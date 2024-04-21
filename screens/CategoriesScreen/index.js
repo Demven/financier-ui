@@ -115,9 +115,9 @@ export default function CategoriesScreen () {
             : undefined}
           weekExpenses={expenses?.[selectedYear]?.[monthNumber]?.[weekNumber]}
           weekExpensesTotal={expensesTotal?.[selectedYear]?.[monthNumber]?.[weekNumber]}
-          previousWeekTotalExpenses={monthNumber > 1
-            ? expensesTotal?.[selectedYear]?.[previousMonthNumber]?.[weekNumber] || 0
-            : expensesTotal?.[selectedYear - 1]?.[previousMonthNumber]?.[weekNumber] || 0
+          previousWeekExpenses={monthNumber > 1
+            ? expenses?.[selectedYear]?.[previousMonthNumber]?.[weekNumber] || 0
+            : expenses?.[selectedYear - 1]?.[previousMonthNumber]?.[weekNumber] || 0
           }
           previousMonthName={MONTH_NAME[previousMonthNumber]}
         />

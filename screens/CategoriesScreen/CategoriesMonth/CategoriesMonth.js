@@ -52,6 +52,12 @@ export default function CategoriesMonth (props) {
 
   const totalExpenses = monthExpensesTotal?.total || 0;
 
+  const isEmptyMonth = !totalExpenses;
+
+  if (isEmptyMonth) {
+    return null;
+  }
+
   const weekExpensesTotalsGroupedByCategoryId = useMemo(() => ({
     [1]: groupExpensesTotalsByCategoryId(monthExpenses[1] || []),
     [2]: groupExpensesTotalsByCategoryId(monthExpenses[2] || []),
@@ -90,12 +96,6 @@ export default function CategoriesMonth (props) {
       ? 32 // mobile
       : 40 // tablet
     : 44; // desktop
-
-  const isEmptyMonth = !totalExpenses;
-
-  if (isEmptyMonth) {
-    return null;
-  }
 
   return (
     <View style={[styles.categoriesMonth, style]}>

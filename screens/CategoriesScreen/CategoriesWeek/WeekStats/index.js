@@ -1,139 +1,59 @@
-import { useMemo } from 'react';
 import {
   StyleSheet,
   View,
-  Text,
 } from 'react-native';
 import { useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
-import TitleLink from '../../../../components/TitleLink';
-import FoldedContainer from '../../../../components/FoldedContainer';
-import ItemGroup from '../../../../components/ItemGroup';
-import CompareStats from '../../../../components/CompareStats';
-import { formatAmount, getListTotal } from '../../../../services/amount';
-import { COLOR } from '../../../../styles/colors';
-import { FONT } from '../../../../styles/fonts';
-import { MEDIA } from '../../../../styles/media';
+import CategoryCompareStats from '../../CategoryCompareStats/CategoryCompareStats';
 
 WeekStats.propTypes = {
   style: PropTypes.any,
-  monthNumber: PropTypes.number,
-  weekExpenses: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string,
-    name: PropTypes.string,
-    categoryId: PropTypes.string,
-    dateString: PropTypes.string,
-    amount: PropTypes.number,
+  categories: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
   })).isRequired,
-  totalExpenses: PropTypes.number.isRequired,
   monthIncome: PropTypes.number.isRequired,
-  previousWeekTotalExpenses: PropTypes.number.isRequired,
-  previousMonthName: PropTypes.string.isRequired,
-  allTimeWeekAverage: PropTypes.number,
-  showSecondaryComparisons: PropTypes.bool.isRequired,
+  expensesTotalsGroupedByCategoryId: PropTypes.object.isRequired,
+  previousWeekExpensesTotalsGroupedByCategoryId: PropTypes.object.isRequired,
+  previousMonthName: PropTypes.string,
+  selectedCategoryId: PropTypes.string,
+  onSelectCategoryId: PropTypes.func,
 };
 
 export default function WeekStats (props) {
   const {
     style,
-    monthNumber,
-    weekExpenses,
-    totalExpenses,
+    categories,
+    expensesTotalsGroupedByCategoryId,
+    previousWeekExpensesTotalsGroupedByCategoryId,
     monthIncome,
-    previousWeekTotalExpenses,
     previousMonthName,
-    allTimeWeekAverage,
-    showSecondaryComparisons,
+    selectedCategoryId,
+    onSelectCategoryId,
   } = props;
 
-  const navigation = useNavigation();
-
-  const windowWidth = useSelector(state => state.ui.windowWidth);
-  const currencySymbol = useSelector(state => state.account.currencySymbol);
-
-  const expensesGroupedByName = useMemo(() =>
-    weekExpenses.reduce((groupedByName, expense) => {
-      const name = expense.name;
-
-      groupedByName[name] = Array.isArray(groupedByName[name])
-        ? [...groupedByName[name], expense]
-        : [expense];
-
-      return groupedByName;
-    }, {}), [weekExpenses]);
+  const allTimeWeekAverage = useSelector(state => state.expenses.weekAverage);
 
   return (
     <View style={[styles.weekStats, style]}>
-      <FoldedContainer
-        title={windowWidth < MEDIA.DESKTOP ? 'View expenses' : 'Expenses'}
-        disable={windowWidth >= MEDIA.DESKTOP}
-        initiallyFolded={windowWidth < MEDIA.DESKTOP}
-      >
-        <View
-          style={[styles.stats, {
-            marginTop: windowWidth < MEDIA.DESKTOP ? 16 : 40,
-            paddingLeft: windowWidth < MEDIA.DESKTOP ? 16 : 24,
-          }]}
-        >
-          {Object
-            .entries(expensesGroupedByName)
-            .map(([groupName, expenses], index) => (
-              <View
-                key={groupName}
-                style={[styles.statRow, index === 0 && { marginTop: 0 }]}
-              >
-                <View style={styles.statNameWrapper}>
-                  {expenses.length === 1 && (
-                    <TitleLink
-                      textStyle={[
-                        styles.statName,
-                        windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
-                      ]}
-                      alwaysHighlighted
-                      onPress={() => navigation.navigate('Expense', { expense: expenses[0] })}
-                    >
-                      {groupName}
-                    </TitleLink>
-                  )}
+      {categories.map((category, index) => {
+        const totalExpenses = expensesTotalsGroupedByCategoryId[category.id] || 0;
+        const previousWeekTotalExpenses = previousWeekExpensesTotalsGroupedByCategoryId[category.id] || 0;
 
-                  {expenses.length > 1 && (
-                    <ItemGroup
-                      titleStyle={[
-                        styles.statName,
-                        windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
-                      ]}
-                      title={groupName}
-                      items={expenses}
-                      monthNumber={monthNumber}
-                      onPressItem={expense => navigation.navigate('Expense', { expense })}
-                    />
-                  )}
-                </View>
-
-                <Text style={[
-                  styles.statValue,
-                  windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
-                ]}>
-                  {formatAmount(-getListTotal(expenses), currencySymbol)}
-                </Text>
-              </View>
-            ))
-          }
-        </View>
-      </FoldedContainer>
-
-      {windowWidth < MEDIA.DESKTOP && (
-        <CompareStats
-          style={styles.compareStats}
-          compareWhat={-totalExpenses}
-          compareTo={monthIncome}
-          previousResult={-previousWeekTotalExpenses}
-          previousResultName={previousMonthName}
-          allTimeAverage={-allTimeWeekAverage}
-          showSecondaryComparisons={showSecondaryComparisons}
-        />
-      )}
+        return (
+          <CategoryCompareStats
+            key={category.id}
+            style={[styles.compareStats, index === 0 && { marginTop: 0 }]}
+            category={category}
+            compareWhat={-totalExpenses}
+            compareTo={monthIncome}
+            previousResult={-previousWeekTotalExpenses}
+            previousResultName={previousMonthName}
+            allTimeAverage={-allTimeWeekAverage}
+            selected={selectedCategoryId === category.id}
+            onPress={() => onSelectCategoryId(category.id)}
+          />
+        );
+      })}
     </View>
   );
 }
@@ -141,50 +61,7 @@ export default function WeekStats (props) {
 const styles = StyleSheet.create({
   weekStats: {
     width: '100%',
-  },
-
-  stats: {
-    width: '100%',
-  },
-
-  statRow: {
-    marginTop: 16,
-    flexDirection: 'row',
-  },
-
-  statNameWrapper: {
-    flexGrow: 1,
-    alignItems: 'flex-start',
-  },
-
-  statName: {
-    fontFamily: FONT.NOTO_SERIF.REGULAR,
-    fontSize: 20,
-    lineHeight: 24,
-    color: COLOR.DARK_GRAY,
-  },
-  statNameBold: {
-    fontFamily: FONT.NOTO_SERIF.BOLD,
-  },
-  statNameSmaller: {
-    fontSize: 18,
-    lineHeight: 23,
-  },
-
-  statValue: {
-    marginLeft: 'auto',
-    fontFamily: FONT.NOTO_SERIF.REGULAR,
-    fontSize: 20,
-    lineHeight: 24,
-    color: COLOR.DARK_GRAY,
-    userSelect: 'text',
-  },
-  statValueBold: {
-    fontFamily: FONT.NOTO_SERIF.BOLD,
-  },
-  statValueSmaller: {
-    fontSize: 18,
-    lineHeight: 23,
+    paddingLeft: 40,
   },
 
   compareStats: {

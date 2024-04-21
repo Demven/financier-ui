@@ -68,7 +68,7 @@ export default function RadialChart (props) {
             const isSelected = id === selectedSegmentId;
             const isHighlighted = highlightedId === id && !isSelected;
 
-            if (isSelected) {
+            if (isSelected || !value) {
               return null;
             }
 
@@ -103,7 +103,7 @@ export default function RadialChart (props) {
             const isSelected = id === selectedSegmentId;
             const isHighlighted = highlightedId === id && !isSelected;
 
-            if (!isSelected) {
+            if (!isSelected || !value) {
               return null;
             }
 
@@ -135,6 +135,10 @@ export default function RadialChart (props) {
             const [middleX, middleY] = getCoordinatesForPercent(middlePercent);
 
             const isSelected = id === selectedSegmentId;
+
+            if (!value) {
+              return null;
+            }
 
             return (
               <Text

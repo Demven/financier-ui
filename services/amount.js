@@ -20,7 +20,7 @@ export function getMonthTotalAmount (items) {
 }
 
 export function formatAmount (number, currencySymbol = '') {
-  return `${Math.sign(number) === -1 ? '- ' : '+'}${currencySymbol}${parseFloat(Math.abs(number).toFixed(2)).toLocaleString()}`;
+  return `${number !== 0 ? (Math.sign(number) === -1 ? '- ' : '+') : ''}${currencySymbol}${parseFloat(Math.abs(number).toFixed(2)).toLocaleString()}`;
 }
 
 export function getAmountColor (amount) {

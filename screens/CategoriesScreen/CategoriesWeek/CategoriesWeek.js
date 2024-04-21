@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useLayoutEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -12,12 +12,9 @@ import {
   getDaysInWeek,
   MONTH_NAME,
 } from '../../../services/date';
-import {
-  getWeekChartPointsByDay,
-  groupWeekByDay,
-} from '../../../services/dataItems';
 import { FONT } from '../../../styles/fonts';
 import { MEDIA } from '../../../styles/media';
+import { groupExpensesTotalsByCategoryId, groupWeekByDay } from "../../../services/dataItems";
 
 CategoriesWeek.propTypes = {
   style: PropTypes.any,
@@ -28,7 +25,7 @@ CategoriesWeek.propTypes = {
   onScrollTo: PropTypes.func,
   weekExpenses: PropTypes.arrayOf(PropTypes.object), // []
   weekExpensesTotal: PropTypes.number.isRequired,
-  previousWeekTotalExpenses: PropTypes.number.isRequired,
+  previousWeekExpenses: PropTypes.arrayOf(PropTypes.object), // []
   previousMonthName: PropTypes.string,
 };
 
@@ -42,22 +39,27 @@ export default function CategoriesWeek (props) {
     onScrollTo,
     weekExpenses = [],
     weekExpensesTotal = 0,
-    previousWeekTotalExpenses = 0,
+    previousWeekExpenses = [],
     previousMonthName = ''
   } = props;
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
-  const allTimeWeekAverage = useSelector(state => state.expenses.weekAverage);
+  const categories = useSelector(state => state.categories);
 
-  const [selectedDayIndex, setSelectedDayIndex] = useState();
+  const [selectedCategoryId, setSelectedCategoryId] = useState();
 
   const daysInMonth = getDaysInMonth(year, monthNumber);
   const daysInWeek = getDaysInWeek(weekNumber, daysInMonth);
 
-  const expensesGroupedByDays = groupWeekByDay(weekExpenses, daysInWeek);
-  const expensesByDays = getWeekChartPointsByDay(expensesGroupedByDays);
-
   const totalExpenses = weekExpensesTotal;
+
+  useLayoutEffect(() => {
+    if (!selectedCategoryId && categories?.[0]?.id) {
+      setTimeout(() => {
+        setSelectedCategoryId(categories[0].id);
+      }, 1000);
+    }
+  }, [categories]);
 
   function onLayout (event) {
     if (typeof onScrollTo === 'function') {
@@ -89,6 +91,22 @@ export default function CategoriesWeek (props) {
     return null;
   }
 
+  const weekExpensesGroupedByDay = useMemo(() => groupWeekByDay(weekExpenses, daysInWeek), [weekExpenses]);
+
+  const dayExpensesTotalsGroupedByCategoryId = useMemo(() => {
+    return weekExpensesGroupedByDay
+      .map(dayExpenses => groupExpensesTotalsByCategoryId(dayExpenses || []));
+  }, [weekExpensesGroupedByDay]);
+
+  const expensesTotalsGroupedByCategoryId = useMemo(
+  () => groupExpensesTotalsByCategoryId(weekExpenses),
+  [weekExpenses],
+  );
+  const previousWeekExpensesTotalsGroupedByCategoryId = useMemo(
+    () => groupExpensesTotalsByCategoryId(previousWeekExpenses),
+    [previousWeekExpenses],
+  );
+
   return (
     <View
       style={[styles.categoriesWeek, style]}
@@ -108,8 +126,9 @@ export default function CategoriesWeek (props) {
             </TitleLink>
 
             <Text style={[styles.weekRangeText, {
-              marginLeft: windowWidth < MEDIA.WIDE_MOBILE ? 16 : 32,
-              paddingBottom: windowWidth >= MEDIA.DESKTOP ? 10 : 8,
+              marginLeft: windowWidth < MEDIA.WIDE_MOBILE ? 16 : 24,
+              marginRight: windowWidth < MEDIA.WIDE_MOBILE ? 4 : 8,
+              paddingBottom: windowWidth >= MEDIA.DESKTOP ? 15 : 8,
               fontSize: windowWidth < MEDIA.WIDE_MOBILE ? 18 : 21,
               lineHeight: windowWidth < MEDIA.WIDE_MOBILE ? 18 : 21,
             }]}>
@@ -125,35 +144,31 @@ export default function CategoriesWeek (props) {
           }]}
         >
           <WeekStats
-            style={{
+            style={[styles.weekStats, {
               width: columnWidth,
-              marginTop: 40,
-            }}
-            monthNumber={monthNumber}
-            weekExpenses={weekExpenses}
-            totalExpenses={totalExpenses}
+            }]}
+            categories={categories}
             monthIncome={monthIncome}
-            previousWeekTotalExpenses={previousWeekTotalExpenses}
+            expensesTotalsGroupedByCategoryId={expensesTotalsGroupedByCategoryId}
+            previousWeekExpensesTotalsGroupedByCategoryId={previousWeekExpensesTotalsGroupedByCategoryId}
             previousMonthName={previousMonthName}
-            allTimeWeekAverage={allTimeWeekAverage}
-            showSecondaryComparisons
+            selectedCategoryId={selectedCategoryId}
+            onSelectCategoryId={setSelectedCategoryId}
           />
 
           <WeekChart
-            style={{
+            style={[styles.weekChart, {
               width: chartWidth,
-              marginLeft: windowWidth < MEDIA.DESKTOP ? 0 : 40,
-            }}
+              maxWidth: windowWidth < MEDIA.DESKTOP ? 600 : '100%',
+              paddingLeft: windowWidth < MEDIA.DESKTOP ? 0 : 80,
+            }]}
+            categories={categories}
             daysInWeek={daysInWeek}
-            expensesByDays={expensesByDays}
-            selectedDayIndex={selectedDayIndex}
-            onDaySelected={setSelectedDayIndex}
-            totalExpenses={totalExpenses}
-            monthIncome={monthIncome}
-            previousWeekTotalExpenses={previousWeekTotalExpenses}
-            previousMonthName={previousMonthName}
-            allTimeWeekAverage={allTimeWeekAverage}
-            showSecondaryComparisons
+            dayExpensesTotalsGroupedByCategoryId={dayExpensesTotalsGroupedByCategoryId}
+            expensesTotalsGroupedByCategoryId={expensesTotalsGroupedByCategoryId}
+            weekTotal={totalExpenses}
+            selectedCategoryId={selectedCategoryId}
+            onSelectCategoryId={setSelectedCategoryId}
           />
         </View>
       </FoldedContainer>
@@ -162,9 +177,7 @@ export default function CategoriesWeek (props) {
 }
 
 const styles = StyleSheet.create({
-  categoriesWeek: {
-    flexGrow: 1,
-  },
+  categoriesWeek: {},
 
   titleContainer: {
     flexDirection: 'row',
@@ -182,6 +195,14 @@ const styles = StyleSheet.create({
 
   weekRangeText: {
     fontFamily: FONT.NOTO_SERIF.REGULAR,
+  },
+
+  weekStats: {
+    marginTop: 40,
+  },
+
+  weekChart: {
+    marginTop: 24,
   },
 
   content: {

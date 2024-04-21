@@ -49,6 +49,12 @@ export default function CategoriesYear (props) {
 
   const totalExpenses = yearTotalExpenses?.total || 0;
 
+  const isEmptyYear = !totalExpenses;
+
+  if (isEmptyYear) {
+    return null;
+  }
+
   function getAllMonthExpenses (expenses, monthNumber) {
     return [
       ...(expenses?.[monthNumber]?.[1] || []),
@@ -135,12 +141,6 @@ export default function CategoriesYear (props) {
       ? 32 // mobile
       : 40 // tablet
     : 44; // desktop
-
-  const isEmptyYear = !totalExpenses;
-
-  if (isEmptyYear) {
-    return null;
-  }
 
   return (
     <View style={[styles.categoriesYear, style]}>
