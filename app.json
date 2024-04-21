@@ -2,6 +2,9 @@
   "expo": {
     "name": "financier-ui",
     "slug": "financier-ui",
-    "userInterfaceStyle": "automatic"
+    "userInterfaceStyle": "automatic",
+    "web": {
+      "bundler": "metro"
+    }
   }
 }
