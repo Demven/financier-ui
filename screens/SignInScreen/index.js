@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   StyleSheet,
   Image,
@@ -7,6 +8,8 @@ import {
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import AppleButton from '../../components/AppleButton';
+import Input, { INPUT_TYPE } from '../../components/Input';
+import Button, { BUTTON_LOOK } from '../../components/Button';
 import { STORAGE_KEY, saveToStorage } from '../../services/storage';
 import { FONT } from '../../styles/fonts';
 import { MEDIA } from '../../styles/media';
@@ -17,11 +20,59 @@ export default function SignInScreen () {
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
+  const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
+
+  const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
+  function validateEmail () {
+    let valid = true;
+
+    if (!email.trim().length) {
+      setEmailError('Email can\'t be empty');
+      valid = false;
+    } else if (!email.includes('@')) {
+      setEmailError('Doesn\'t look like an email address');
+      valid = false;
+    } else {
+      setEmailError('');
+    }
+
+    return valid;
+  }
+
+  function validatePassword () {
+    let valid = true;
+
+    if (!password.trim().length) {
+      setPasswordError('Password can\'t be empty');
+      valid = false;
+    } else if (password.length < 6) {
+      setPasswordError('The password is too short');
+      valid = false;
+    } else {
+      setPasswordError('');
+    }
+
+    return valid;
+  }
+
   async function onSignIn () {
+    const isValid = validateEmail() && validatePassword();
+
+    if (isValid) {
+      await onSuccess();
+    }
+  }
+
+  async function onSuccess () {
     await saveToStorage(STORAGE_KEY.TOKEN, '1234');
 
-    navigation.navigate('Overview');
+    return navigation.navigate('Overview', { screen: 'OverviewMonths' });
   }
+
+  const disableSignIn = !!emailError || !!passwordError;
 
   return (
     <View
@@ -45,8 +96,41 @@ export default function SignInScreen () {
         Financier
       </Text>
 
-      <View style={styles.appleButtonContainer}>
-        <AppleButton onSignIn={onSignIn} />
+      <View style={styles.form}>
+        <Input
+          style={styles.formElement}
+          label='Email'
+          inputType={INPUT_TYPE.EMAIL}
+          value={email}
+          errorText={emailError}
+          onChange={setEmail}
+          onBlur={validateEmail}
+          autoFocus
+        />
+
+        <Input
+          style={styles.formElement}
+          label='Password'
+          inputType={INPUT_TYPE.DEFAULT}
+          value={password}
+          errorText={passwordError}
+          onChange={setPassword}
+          onBlur={validatePassword}
+          secure
+        />
+
+        <Button
+          style={styles.signInButton}
+          buttonContainerStyle={styles.signInButtonContainer}
+          look={BUTTON_LOOK.PRIMARY}
+          text='Sign In'
+          disabled={disableSignIn}
+          onPress={onSignIn}
+        />
+
+        <View style={styles.appleButtonContainer}>
+          <AppleButton onSignIn={onSuccess} />
+        </View>
       </View>
     </View>
   );
@@ -68,8 +152,28 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  appleButtonContainer: {
+  form: {
+    width: '100%',
+    maxWidth: 286,
     position: 'absolute',
     bottom: '14%',
+  },
+
+  formElement: {
+    marginTop: 24,
+    paddingTop: 4,
+    paddingHorizontal: 4,
+    backgroundColor: COLOR.WHITE,
+  },
+
+  signInButton: {
+    marginTop: 40,
+  },
+  signInButtonContainer: {
+    height: 46,
+  },
+
+  appleButtonContainer: {
+    marginTop: 24,
   },
 });

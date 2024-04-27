@@ -18,6 +18,7 @@ export const BUTTON_LOOK = {
 
 Button.propTypes = {
   style: PropTypes.object,
+  buttonContainerStyle: PropTypes.object,
   look: PropTypes.oneOf(Object.values(BUTTON_LOOK)),
   onPress: PropTypes.func,
   text: PropTypes.string.isRequired,
@@ -27,6 +28,7 @@ Button.propTypes = {
 export default function Button (props) {
   const {
     style,
+    buttonContainerStyle,
     look = BUTTON_LOOK.PRIMARY,
     onPress,
     text,
@@ -59,6 +61,7 @@ export default function Button (props) {
         styles[`buttonContainer--${look}`],
         ((hover || focused) && !disabled) && styles.buttonContainerActive,
         disabled && styles.buttonContainerDisabled,
+        buttonContainerStyle,
       ]}>
         <Text style={[
           styles.text,

@@ -9,10 +9,10 @@ import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawe
 import { useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import Logo from './Logo';
-import { saveToStorage, STORAGE_KEY } from '../services/storage';
+import { removeFromStorage, STORAGE_KEY } from '../services/storage';
 import { COLOR } from '../styles/colors';
 import { FONT } from '../styles/fonts';
-import { MEDIA } from "../styles/media";
+import { MEDIA } from '../styles/media';
 
 // props are passed by react-navigation
 // Read more here https://reactnavigation.org/docs/drawer-navigator/#drawercontent
@@ -24,7 +24,7 @@ export default function DrawerContent (props) {
   const lastName = useSelector(state => state.account.lastName) || '';
 
   async function onLogOut () {
-    await saveToStorage(STORAGE_KEY.TOKEN, undefined);
+    await removeFromStorage(STORAGE_KEY.TOKEN);
 
     navigation.navigate('SignIn');
   }

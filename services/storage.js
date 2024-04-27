@@ -31,3 +31,7 @@ export async function retrieveFromStorage (key) {
 
   return valueToReturn;
 }
+
+export function removeFromStorage (key) {
+  return AsyncStorage.removeItem(key);
+}

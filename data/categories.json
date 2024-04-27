@@ -2,7 +2,7 @@
   {
     "id": "1234",
     "name": "Primary Expenses",
-    "description": "Food, clothes, transport, medicine, taxes, mobile, internet, etc.",
+    "description": "Food, clothes, transport, medicine, bills, gym, etc.",
     "colorId": "1234"
   },
   {
@@ -14,7 +14,7 @@
   {
     "id": "3456",
     "name": "Housing",
-    "description": "Mortgage, rent, insurance",
+    "description": "Mortgage, rent, insurance, etc.",
     "colorId": "3456"
   },
   {

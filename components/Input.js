@@ -16,6 +16,7 @@ export const INPUT_TYPE = {
   NUMBER: 'number',
   QUANTITY: 'quantity',
   CURRENCY: 'currency',
+  EMAIL: 'email',
 };
 
 const KEYBOARD_TYPE = {
@@ -23,6 +24,7 @@ const KEYBOARD_TYPE = {
   [INPUT_TYPE.NUMBER]: 'numeric',
   [INPUT_TYPE.QUANTITY]: 'numeric',
   [INPUT_TYPE.CURRENCY]: 'numeric',
+  [INPUT_TYPE.EMAIL]: 'email-address',
 };
 
 Input.propTypes = {
