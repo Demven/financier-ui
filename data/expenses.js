@@ -1460,7 +1460,7 @@ const expenses = {
         },
         {
           id: '1234845',
-          name: 'Youtube',
+          name: 'Youtube Movie',
           categoryId: CATEGORY.ENTERTAINMENT,
           dateString: '2023-09-09',
           amount: 5.43,
@@ -2079,13 +2079,6 @@ const expenses = {
           amount: 42,
         },
         {
-          id: '1234933',
-          name: 'Barber',
-          categoryId: CATEGORY.PRIMARY,
-          dateString: '2023-09-24',
-          amount: 42,
-        },
-        {
           id: '1234934',
           name: 'Lunch',
           categoryId: CATEGORY.PRIMARY,
@@ -2144,7 +2137,7 @@ const expenses = {
         {
           id: '1234942',
           name: 'Jeans, belt',
-          categoryId: CATEGORY.ENTERTAINMENT,
+          categoryId: CATEGORY.SECONDARY,
           dateString: '2023-09-27',
           amount: 79.9,
         },

@@ -11,7 +11,7 @@ const savings = {
       ],
     },
     9: {
-      2: [
+      1: [
         {
           id: '1234568',
           name: 'Amex',
@@ -61,7 +61,7 @@ const savings = {
         {
           id: '1234573',
           name: 'Amex',
-          dateString: '2023-05-26',
+          dateString: '2023-04-26',
           amount: 1000,
         },
       ],
