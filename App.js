@@ -36,6 +36,7 @@ import HeaderRight from './components/HeaderRight';
 import { TAB, TABS, TAB_NAME } from './components/HeaderTabs';
 import DrawerContent from './components/DrawerContent';
 import { STORAGE_KEY, retrieveFromStorage } from './services/storage';
+import { validateToken } from './services/api';
 import { setSettingsAction } from './redux/reducers/account';
 import { setCategoriesAction } from './redux/reducers/categories';
 import { setExpensesAction } from './redux/reducers/expenses';
@@ -596,10 +597,18 @@ function Navigator () {
   }
 
   async function checkIfLoggedIn () {
+    const navigateToSignInPage = () => navigation.navigate('SignIn');
+
     const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
     if (!token) {
-      navigation.navigate('SignIn');
+      navigateToSignInPage();
+    }
+
+    const tokenValidationResult = await validateToken(token);
+
+    if (!tokenValidationResult) {
+      navigateToSignInPage();
     }
   }
 
