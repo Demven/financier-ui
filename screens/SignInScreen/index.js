@@ -11,6 +11,7 @@ import AppleButton from '../../components/AppleButton';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import Button, { BUTTON_LOOK } from '../../components/Button';
 import { STORAGE_KEY, saveToStorage } from '../../services/storage';
+import { signIn } from '../../services/api';
 import { FONT } from '../../styles/fonts';
 import { MEDIA } from '../../styles/media';
 import { COLOR } from '../../styles/colors';
@@ -62,12 +63,14 @@ export default function SignInScreen () {
     const isValid = validateEmail() && validatePassword();
 
     if (isValid) {
-      await onSuccess();
+      const token = await signIn(email, password);
+
+      await onSuccess(token);
     }
   }
 
-  async function onSuccess () {
-    await saveToStorage(STORAGE_KEY.TOKEN, '1234');
+  async function onSuccess (token) {
+    await saveToStorage(STORAGE_KEY.TOKEN, token);
 
     return navigation.navigate('Overview', { screen: 'OverviewMonths' });
   }
@@ -129,7 +132,7 @@ export default function SignInScreen () {
         />
 
         <View style={styles.appleButtonContainer}>
-          <AppleButton onSignIn={onSuccess} />
+          <AppleButton onSignIn={() => onSuccess('apple-id-token')} />
         </View>
       </View>
     </View>
