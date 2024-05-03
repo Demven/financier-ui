@@ -12,7 +12,7 @@ YearStats.propTypes = {
   previousYearExpensesTotalsGroupedByCategoryId: PropTypes.object.isRequired,
   previousYear: PropTypes.number,
   yearIncome: PropTypes.number.isRequired,
-  selectedCategoryId: PropTypes.string,
+  selectedCategoryId: PropTypes.number,
   onSelectCategoryId: PropTypes.func,
 };
 

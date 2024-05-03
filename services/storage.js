@@ -4,7 +4,6 @@ export const STORAGE_KEY = {
   TOKEN: 'token',
   SELECTED_TAB: 'selectedTab',
   SELECTED_YEAR: 'selectedYear',
-  SETTINGS: 'settings',
 };
 
 export function saveToStorage (key, value) {

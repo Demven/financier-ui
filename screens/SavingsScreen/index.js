@@ -40,8 +40,14 @@ export default function SavingsScreen () {
   const investments = useSelector(state => state.savings.investments) || {};
   const investmentsTotal = useSelector(state => state.savings.investmentsTotal) || {};
 
-  const savingsYears = Object.keys(savings);
-  const investmentsYears = Object.keys(investments);
+  const savingsYears = Object
+    .keys(savingsTotal)
+    .map(Number)
+    .filter(Boolean);
+  const investmentsYears = Object
+    .keys(investmentsTotal)
+    .map(Number)
+    .filter(Boolean);
 
   const [yearDropdownWidth, setYearDropdownWidth] = useState(0);
 

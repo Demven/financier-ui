@@ -17,7 +17,7 @@ RadialChart.propTypes = {
     textColor: PropTypes.string.isRequired,
     getColor: PropTypes.func.isRequired,
   })).isRequired,
-  selectedSegmentId: PropTypes.string,
+  selectedSegmentId: PropTypes.number,
   onSelectSegment: PropTypes.func,
 };
 

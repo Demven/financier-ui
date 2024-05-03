@@ -19,7 +19,7 @@ YearChart.propTypes = {
   monthExpensesTotalsGroupedByCategoryId: PropTypes.object.isRequired, // { [1]: { id1: 100, id2: 200 }, [2]: {} ...}
   expensesTotalsGroupedByCategoryId: PropTypes.object.isRequired, // { id1: 100, id2: 200 }
   yearTotal: PropTypes.number.isRequired,
-  selectedCategoryId: PropTypes.string,
+  selectedCategoryId: PropTypes.number,
   onSelectCategoryId: PropTypes.func,
 };
 

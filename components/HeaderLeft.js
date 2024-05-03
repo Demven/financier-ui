@@ -33,10 +33,18 @@ export default function HeaderLeft (props) {
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const hideYearSelector = selectedTab === TAB.YEARS;
 
-  const expensesYears = useSelector(state => Object.keys(state.expenses.expenses));
-  const incomesYears = useSelector(state => Object.keys(state.incomes.incomes));
-  const savingsYears = useSelector(state => Object.keys(state.savings.savings));
-  const investmentsYears = useSelector(state => Object.keys(state.savings.investments));
+  const expensesYears = useSelector(state => Object.keys(state.expenses.expensesTotal))
+    .map(Number)
+    .filter(Boolean);
+  const incomesYears = useSelector(state => Object.keys(state.incomes.incomesTotal))
+    .map(Number)
+    .filter(Boolean);
+  const savingsYears = useSelector(state => Object.keys(state.savings.savingsTotal))
+    .map(Number)
+    .filter(Boolean);
+  const investmentsYears = useSelector(state => Object.keys(state.savings.investmentsTotal))
+    .map(Number)
+    .filter(Boolean);
 
   const yearsToSelect = useMemo(() => {
     return Array.from(new Set([

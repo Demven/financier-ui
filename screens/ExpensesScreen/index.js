@@ -40,7 +40,10 @@ export default function ExpensesScreen () {
   const expensesTotal = useSelector(state => state.expenses.expensesTotal) || {};
   const incomesTotal = useSelector(state => state.incomes.incomesTotal) || {};
 
-  const expensesYears = Object.keys(expenses);
+  const expensesYears = Object
+    .keys(expensesTotal)
+    .map(Number)
+    .filter(Boolean);
 
   const [yearDropdownWidth, setYearDropdownWidth] = useState(0);
 

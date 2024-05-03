@@ -26,14 +26,30 @@ export default function OverviewScreen () {
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const selectedYear = useSelector(state => state.ui.selectedYear);
   const expenses = useSelector(state => state.expenses.expenses) || {};
+  const expensesTotal = useSelector(state => state.expenses.expensesTotal) || {};
   const incomes = useSelector(state => state.incomes.incomes) || {};
+  const incomesTotal = useSelector(state => state.incomes.incomesTotal) || {};
   const savings = useSelector(state => state.savings.savings) || {};
+  const savingsTotal = useSelector(state => state.savings.savingsTotal) || {};
   const investments = useSelector(state => state.savings.investments) || {};
+  const investmentsTotal = useSelector(state => state.savings.investmentsTotal) || {};
 
-  const expensesYears = Object.keys(expenses);
-  const incomesYears = Object.keys(incomes);
-  const savingsYears = Object.keys(savings);
-  const investmentsYears = Object.keys(investments);
+  const expensesYears = Object
+    .keys(expensesTotal)
+    .map(Number)
+    .filter(Boolean);
+  const incomesYears = Object
+    .keys(incomesTotal)
+    .map(Number)
+    .filter(Boolean);
+  const savingsYears = Object
+    .keys(savingsTotal)
+    .map(Number)
+    .filter(Boolean);
+  const investmentsYears = Object
+    .keys(investmentsTotal)
+    .map(Number)
+    .filter(Boolean);
 
   const [yearDropdownWidth, setYearDropdownWidth] = useState(0);
 

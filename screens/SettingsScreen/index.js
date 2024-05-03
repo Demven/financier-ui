@@ -4,8 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import Dropdown from '../../components/Dropdown';
 import Button, { BUTTON_LOOK } from '../../components/Button';
-import { setSettingsAction } from '../../redux/reducers/account';
-import { saveToStorage, STORAGE_KEY } from '../../services/storage';
+import { setAccountAction } from '../../redux/reducers/account';
 import { MEDIA } from '../../styles/media';
 
 const LANGUAGE = {
@@ -103,7 +102,7 @@ export default function SettingsScreen () {
   function onSave () {
     const isValid = validate();
 
-    const settingsToSave = {
+    const accountToSave = {
       firstName,
       lastName,
       email,
@@ -113,9 +112,10 @@ export default function SettingsScreen () {
     };
 
     if (isValid) {
-      dispatch(setSettingsAction(settingsToSave));
+      dispatch(setAccountAction(accountToSave));
 
-      saveToStorage(STORAGE_KEY.SETTINGS, settingsToSave);
+      // TODO: post to API
+      // saveToStorage(STORAGE_KEY.SETTINGS, settingsToSave);
     }
   }
 

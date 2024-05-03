@@ -20,7 +20,7 @@ WeekChart.propTypes = {
   expensesTotalsGroupedByCategoryId: PropTypes.object.isRequired, // { id1: 100, id2: 200 }
   daysInWeek: PropTypes.number.isRequired,
   weekTotal: PropTypes.number.isRequired,
-  selectedCategoryId: PropTypes.string,
+  selectedCategoryId: PropTypes.number,
   onSelectCategoryId: PropTypes.func,
 };
 

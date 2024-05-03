@@ -21,7 +21,7 @@ MonthChart.propTypes = {
   expensesTotalsGroupedByCategoryId: PropTypes.object.isRequired, // { id1: 100, id2: 200 }
   daysNumber: PropTypes.number.isRequired,
   monthTotal: PropTypes.number.isRequired,
-  selectedCategoryId: PropTypes.string,
+  selectedCategoryId: PropTypes.number,
   onSelectCategoryId: PropTypes.func,
 };
 

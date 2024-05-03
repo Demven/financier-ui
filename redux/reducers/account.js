@@ -14,7 +14,7 @@ const accountSlice = createSlice({
   },
 
   reducers: {
-    setSettings: (state, action) => ({
+    setAccount: (state, action) => ({
       ...state,
       ...action.payload,
     }),
@@ -45,7 +45,7 @@ const accountSlice = createSlice({
   },
 });
 
-export const setSettingsAction = accountSlice.actions.setSettings;
+export const setAccountAction = accountSlice.actions.setAccount;
 export const setFirstNameAction = accountSlice.actions.setFirstName;
 export const setLastNameAction = accountSlice.actions.setLastName;
 export const setEmailAction = accountSlice.actions.setEmail;

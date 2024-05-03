@@ -15,7 +15,7 @@ WeekStats.propTypes = {
   expensesTotalsGroupedByCategoryId: PropTypes.object.isRequired,
   previousWeekExpensesTotalsGroupedByCategoryId: PropTypes.object.isRequired,
   previousMonthName: PropTypes.string,
-  selectedCategoryId: PropTypes.string,
+  selectedCategoryId: PropTypes.number,
   onSelectCategoryId: PropTypes.func,
 };
 

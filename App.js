@@ -10,7 +10,11 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { useSelector, Provider, useDispatch } from 'react-redux';
+import {
+  useSelector,
+  Provider,
+  useDispatch,
+} from 'react-redux';
 import 'react-native-gesture-handler';
 import {
   FontAwesome5,
@@ -37,12 +41,20 @@ import HeaderRight from './components/HeaderRight';
 import { TAB, TABS, TAB_NAME } from './components/HeaderTabs';
 import DrawerContent from './components/DrawerContent';
 import { STORAGE_KEY, retrieveFromStorage } from './services/storage';
-import { validateToken, fetchOverviewForYear } from './services/api';
-import { setSettingsAction } from './redux/reducers/account';
+import {
+  validateToken,
+  fetchBasics,
+  fetchOverviewForYear,
+} from './services/api';
+import { setAccountAction } from './redux/reducers/account';
 import { setCategoriesAction } from './redux/reducers/categories';
 import { setExpensesAction } from './redux/reducers/expenses';
 import { setInvestmentsAction, setSavingsAction } from './redux/reducers/savings';
-import { setWindowWidthAction, setSelectedTabAction, setSelectedYearAction } from './redux/reducers/ui';
+import {
+  setWindowWidthAction,
+  setSelectedTabAction,
+  setSelectedYearAction,
+} from './redux/reducers/ui';
 import { setIncomesAction } from './redux/reducers/incomes';
 import { setColorsAction } from './redux/reducers/colors';
 import { store } from './redux/store';
@@ -591,61 +603,19 @@ function Navigator () {
   const selectedYear = useSelector(state => state.ui.selectedYear);
 
   const [reduxInitialized, setReduxInitialized] = useState(false);
+  const [basicDataFetched, setBasicDataFetched] = useState(false);
 
   useEffect(() => {
     checkIfLoggedIn();
     initializeRedux();
+    fetchBasicsData();
   }, [navigation]);
 
   useEffect(() => {
-    if (reduxInitialized && selectedYear) {
+    if (reduxInitialized && basicDataFetched && selectedYear) {
       fetchOverviewData(selectedYear);
     }
-  }, [selectedYear, reduxInitialized]);
-
-  async function fetchOverviewData (year) {
-    const {
-      colors,
-      categories,
-      expenses,
-      incomes,
-      investments,
-      savings,
-    } = await fetchOverviewForYear(year);
-
-    console.info('overviewData', year, {
-      colors,
-      categories,
-      expenses,
-      incomes,
-      investments,
-      savings,
-    });
-
-    if (categories) {
-      dispatch(setCategoriesAction(categories));
-    }
-
-    if (expenses) {
-      dispatch(setExpensesAction(expenses));
-    }
-
-    if (savings) {
-      dispatch(setSavingsAction(savings));
-    }
-
-    if (investments) {
-      dispatch(setInvestmentsAction(investments));
-    }
-
-    if (incomes) {
-      dispatch(setIncomesAction(incomes));
-    }
-
-    if (colors) {
-      dispatch(setColorsAction(colors));
-    }
-  }
+  }, [reduxInitialized, basicDataFetched, selectedYear]);
 
   function onLayout () {
     dispatch(setWindowWidthAction(Dimensions.get('window').width));
@@ -678,12 +648,54 @@ function Navigator () {
       dispatch(setSelectedYearAction(selectedYear));
     }
 
-    const settings = await retrieveFromStorage(STORAGE_KEY.SETTINGS);
-    if (settings) {
-      dispatch(setSettingsAction(settings));
+    setReduxInitialized(true);
+  }
+
+  async function fetchBasicsData () {
+    const {
+      account,
+      colors,
+      categories,
+    } = await fetchBasics();
+
+    if (account) {
+      dispatch(setAccountAction(account));
     }
 
-    setReduxInitialized(true);
+    if (colors) {
+      dispatch(setColorsAction(colors));
+    }
+
+    if (categories) {
+      dispatch(setCategoriesAction(categories));
+    }
+
+    setBasicDataFetched(true);
+  }
+
+  async function fetchOverviewData (year) {
+    const {
+      expenses,
+      incomes,
+      investments,
+      savings,
+    } = await fetchOverviewForYear(year);
+
+    if (expenses) {
+      dispatch(setExpensesAction(expenses));
+    }
+
+    if (savings) {
+      dispatch(setSavingsAction(savings));
+    }
+
+    if (investments) {
+      dispatch(setInvestmentsAction(investments));
+    }
+
+    if (incomes) {
+      dispatch(setIncomesAction(incomes));
+    }
   }
 
   const modalScreenOptions = {

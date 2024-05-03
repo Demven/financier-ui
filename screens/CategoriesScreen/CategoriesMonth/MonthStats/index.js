@@ -12,7 +12,7 @@ MonthStats.propTypes = {
   previousMonthExpensesTotalsGroupedByCategoryId: PropTypes.object.isRequired,
   monthIncome: PropTypes.number.isRequired,
   previousMonthName: PropTypes.string,
-  selectedCategoryId: PropTypes.string,
+  selectedCategoryId: PropTypes.number,
   onSelectCategoryId: PropTypes.func,
 };
 
