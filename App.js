@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Platform,
   StyleSheet,
@@ -36,7 +37,7 @@ import HeaderRight from './components/HeaderRight';
 import { TAB, TABS, TAB_NAME } from './components/HeaderTabs';
 import DrawerContent from './components/DrawerContent';
 import { STORAGE_KEY, retrieveFromStorage } from './services/storage';
-import { validateToken } from './services/api';
+import { validateToken, fetchOverviewForYear } from './services/api';
 import { setSettingsAction } from './redux/reducers/account';
 import { setCategoriesAction } from './redux/reducers/categories';
 import { setExpensesAction } from './redux/reducers/expenses';
@@ -587,10 +588,64 @@ function Navigator () {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
+  const selectedYear = useSelector(state => state.ui.selectedYear);
+
+  const [reduxInitialized, setReduxInitialized] = useState(false);
+
   useEffect(() => {
     checkIfLoggedIn();
     initializeRedux();
   }, [navigation]);
+
+  useEffect(() => {
+    if (reduxInitialized && selectedYear) {
+      fetchOverviewData(selectedYear);
+    }
+  }, [selectedYear, reduxInitialized]);
+
+  async function fetchOverviewData (year) {
+    const {
+      colors,
+      categories,
+      expenses,
+      incomes,
+      investments,
+      savings,
+    } = await fetchOverviewForYear(year);
+
+    console.info('overviewData', year, {
+      colors,
+      categories,
+      expenses,
+      incomes,
+      investments,
+      savings,
+    });
+
+    if (categories) {
+      dispatch(setCategoriesAction(categories));
+    }
+
+    if (expenses) {
+      dispatch(setExpensesAction(expenses));
+    }
+
+    if (savings) {
+      dispatch(setSavingsAction(savings));
+    }
+
+    if (investments) {
+      dispatch(setInvestmentsAction(investments));
+    }
+
+    if (incomes) {
+      dispatch(setIncomesAction(incomes));
+    }
+
+    if (colors) {
+      dispatch(setColorsAction(colors));
+    }
+  }
 
   function onLayout () {
     dispatch(setWindowWidthAction(Dimensions.get('window').width));
@@ -628,35 +683,7 @@ function Navigator () {
       dispatch(setSettingsAction(settings));
     }
 
-    const categories = await retrieveFromStorage(STORAGE_KEY.CATEGORIES);
-    if (categories) {
-      dispatch(setCategoriesAction(categories));
-    }
-
-    const expenses = await retrieveFromStorage(STORAGE_KEY.EXPENSES);
-    if (expenses) {
-      dispatch(setExpensesAction(expenses));
-    }
-
-    const savings = await retrieveFromStorage(STORAGE_KEY.SAVINGS);
-    if (savings) {
-      dispatch(setSavingsAction(savings));
-    }
-
-    const investments = await retrieveFromStorage(STORAGE_KEY.INVESTMENTS);
-    if (investments) {
-      dispatch(setInvestmentsAction(investments));
-    }
-
-    const incomes = await retrieveFromStorage(STORAGE_KEY.INCOMES);
-    if (incomes) {
-      dispatch(setIncomesAction(incomes));
-    }
-
-    const colors = await retrieveFromStorage(STORAGE_KEY.COLORS);
-    if (colors) {
-      dispatch(setColorsAction(colors));
-    }
+    setReduxInitialized(true);
   }
 
   const modalScreenOptions = {

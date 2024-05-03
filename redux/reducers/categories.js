@@ -1,16 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { saveToStorage, STORAGE_KEY } from '../../services/storage';
-import categoriesData from '../../data/categories.json';
 
 const categoriesSlice = createSlice({
   name: 'categories',
 
-  initialState: categoriesData,
+  initialState: [],
 
   reducers: {
     setCategories: (state, action) => {
-      saveToStorage(STORAGE_KEY.CATEGORIES, action.payload);
-
       return [
         ...action.payload,
       ];
@@ -21,7 +17,8 @@ const categoriesSlice = createSlice({
         action.payload,
       ];
 
-      saveToStorage(STORAGE_KEY.CATEGORIES, updatedCategories);
+      // TODO: POST to API
+      // saveToStorage(STORAGE_KEY.CATEGORIES, updatedCategories);
 
       return updatedCategories;
     },
@@ -33,7 +30,8 @@ const categoriesSlice = createSlice({
           : category;
       });
 
-      saveToStorage(STORAGE_KEY.CATEGORIES, updatedCategories);
+      // TODO: POST to API
+      // saveToStorage(STORAGE_KEY.CATEGORIES, updatedCategories);
 
       return updatedCategories;
     },

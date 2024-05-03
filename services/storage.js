@@ -5,12 +5,6 @@ export const STORAGE_KEY = {
   SELECTED_TAB: 'selectedTab',
   SELECTED_YEAR: 'selectedYear',
   SETTINGS: 'settings',
-  CATEGORIES: 'categories',
-  COLORS: 'colors',
-  EXPENSES: 'expenses',
-  SAVINGS: 'savings',
-  INVESTMENTS: 'investments',
-  INCOMES: 'incomes',
 };
 
 export function saveToStorage (key, value) {

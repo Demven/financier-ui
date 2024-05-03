@@ -1,14 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { saveToStorage, STORAGE_KEY } from '../../services/storage';
 import { getWeekNumberByDayNumber } from '../../services/date';
-import incomesData from '../../data/incomes';
 import incomesTotalData from '../../data/incomesTotal';
 
 const incomesSlice = createSlice({
   name: 'incomes',
 
   initialState: {
-    incomes: incomesData,
+    incomes: {},
     incomesTotal: incomesTotalData,
     yearAverage: incomesTotalData.yearAverage,
     monthAverage: incomesTotalData.monthAverage,
@@ -17,8 +15,6 @@ const incomesSlice = createSlice({
 
   reducers: {
     setIncomes: (state, action) => {
-      saveToStorage(STORAGE_KEY.INCOMES, action.payload);
-
       return {
         ...state,
         incomes: action.payload,
@@ -41,7 +37,8 @@ const incomesSlice = createSlice({
         },
       };
 
-      saveToStorage(STORAGE_KEY.INCOMES, updatedIncomes);
+      // TODO POST to API
+      // saveToStorage(STORAGE_KEY.INCOMES, updatedIncomes);
 
       return {
         ...state,
@@ -86,7 +83,8 @@ const incomesSlice = createSlice({
         },
       };
 
-      saveToStorage(STORAGE_KEY.INCOMES, updatedIncomes);
+      // TODO POST to API
+      // saveToStorage(STORAGE_KEY.INCOMES, updatedIncomes);
 
       return {
         ...state,

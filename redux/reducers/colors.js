@@ -1,16 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { saveToStorage, STORAGE_KEY } from '../../services/storage';
-import colorsData from '../../data/colors.json';
 
 const categoriesSlice = createSlice({
   name: 'colors',
 
-  initialState: colorsData,
+  initialState: [],
 
   reducers: {
     setColors: (state, action) => {
-      saveToStorage(STORAGE_KEY.COLORS, action.payload);
-
       return [
         ...action.payload,
       ];
@@ -21,7 +17,8 @@ const categoriesSlice = createSlice({
         action.payload,
       ];
 
-      saveToStorage(STORAGE_KEY.COLORS, updatedColors);
+      // TODO: POST to API
+      // saveToStorage(STORAGE_KEY.COLORS, updatedColors);
 
       return updatedColors;
     },
@@ -30,7 +27,8 @@ const categoriesSlice = createSlice({
 
       const updatedColors = state.filter(color => color.id !== colorId);
 
-      saveToStorage(STORAGE_KEY.COLORS, updatedColors);
+      // TODO: POST to API
+      // saveToStorage(STORAGE_KEY.COLORS, updatedColors);
 
       return updatedColors;
     },
