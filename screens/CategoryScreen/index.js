@@ -12,7 +12,7 @@ import Input, { INPUT_TYPE } from '../../components/Input';
 import ColorPicker from '../../components/ColorPicker';
 import { addCategoryAction, updateCategoryAction } from '../../redux/reducers/categories';
 import { MEDIA } from '../../styles/media';
-import { deleteColorAction } from "../../redux/reducers/colors";
+import { deleteColorAction } from '../../redux/reducers/colors';
 
 export default function CategoryScreen () {
   const route = useRoute();

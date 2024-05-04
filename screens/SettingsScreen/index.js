@@ -4,7 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import Dropdown from '../../components/Dropdown';
 import Button, { BUTTON_LOOK } from '../../components/Button';
+import { TOAST_TYPE } from '../../components/Toast';
 import { setAccountAction } from '../../redux/reducers/account';
+import { showToastAction } from '../../redux/reducers/ui';
 import { updateAccount } from '../../services/api/account';
 import { MEDIA } from '../../styles/media';
 
@@ -118,9 +120,15 @@ export default function SettingsScreen () {
 
       if (success) {
         dispatch(setAccountAction(accountToSave));
-        // TODO: show success toast
+        dispatch(showToastAction({
+          message: 'Saved',
+          type: TOAST_TYPE.INFO,
+        }));
       } else {
-        // TODO: show error toast
+        dispatch(showToastAction({
+          message: 'Failed to save',
+          type: TOAST_TYPE.ERROR,
+        }));
       }
     }
   }

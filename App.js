@@ -40,6 +40,7 @@ import HeaderLeft from './components/HeaderLeft';
 import HeaderRight from './components/HeaderRight';
 import { TAB, TABS, TAB_NAME } from './components/HeaderTabs';
 import DrawerContent from './components/DrawerContent';
+import Toast from './components/Toast';
 import { STORAGE_KEY, retrieveFromStorage } from './services/storage';
 import { validateToken } from './services/api/auth';
 import { fetchBasics } from './services/api/basics';
@@ -599,6 +600,7 @@ function Navigator () {
   const dispatch = useDispatch();
 
   const selectedYear = useSelector(state => state.ui.selectedYear);
+  const toast = useSelector(state => state.ui.toast);
 
   const [reduxInitialized, setReduxInitialized] = useState(false);
   const [basicDataFetched, setBasicDataFetched] = useState(false);
@@ -783,6 +785,8 @@ function Navigator () {
           }}
         />
       </Stack.Navigator>
+
+      <Toast {...toast} />
     </View>
   );
 }
