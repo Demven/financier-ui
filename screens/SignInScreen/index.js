@@ -11,7 +11,7 @@ import AppleButton from '../../components/AppleButton';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import Button, { BUTTON_LOOK } from '../../components/Button';
 import { STORAGE_KEY, saveToStorage } from '../../services/storage';
-import { signIn } from '../../services/api';
+import { signIn } from '../../services/api/auth';
 import { FONT } from '../../styles/fonts';
 import { MEDIA } from '../../styles/media';
 import { COLOR } from '../../styles/colors';

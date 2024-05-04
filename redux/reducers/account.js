@@ -1,16 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
-import settingsData from '../../data/settings.json';
 
 const accountSlice = createSlice({
   name: 'account',
 
   initialState: {
-    firstName: settingsData.firstName,
-    lastName: settingsData.lastName,
-    email: settingsData.email,
-    language: settingsData.language,
-    currencyType: settingsData.currencyType,
-    currencySymbol: settingsData.currencySymbol,
+    id: 0,
+    firstName: '',
+    lastName: '',
+    email: '',
+    language: 'en',
+    currencyType: 'USD',
+    currencySymbol: '$',
   },
 
   reducers: {

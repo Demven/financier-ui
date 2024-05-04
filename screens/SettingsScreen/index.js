@@ -5,6 +5,7 @@ import Input, { INPUT_TYPE } from '../../components/Input';
 import Dropdown from '../../components/Dropdown';
 import Button, { BUTTON_LOOK } from '../../components/Button';
 import { setAccountAction } from '../../redux/reducers/account';
+import { updateAccount } from '../../services/api/account';
 import { MEDIA } from '../../styles/media';
 
 const LANGUAGE = {
@@ -47,6 +48,7 @@ export default function SettingsScreen () {
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
+  const account = useSelector(state => state.account);
   const initialFirstName = useSelector(state => state.account.firstName);
   const initialLastName = useSelector(state => state.account.lastName);
   const initialEmail = useSelector(state => state.account.email);
@@ -99,23 +101,27 @@ export default function SettingsScreen () {
     return !hasError;
   }
 
-  function onSave () {
+  async function onSave () {
     const isValid = validate();
 
     const accountToSave = {
+      ...account,
       firstName,
       lastName,
-      email,
       language: languageId,
       currencyType: currencyId,
       currencySymbol: CURRENCY_SYMBOL[currencyId],
     };
 
     if (isValid) {
-      dispatch(setAccountAction(accountToSave));
+      const success = await updateAccount(accountToSave);
 
-      // TODO: post to API
-      // saveToStorage(STORAGE_KEY.SETTINGS, settingsToSave);
+      if (success) {
+        dispatch(setAccountAction(accountToSave));
+        // TODO: show success toast
+      } else {
+        // TODO: show error toast
+      }
     }
   }
 

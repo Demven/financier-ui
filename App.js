@@ -41,11 +41,9 @@ import HeaderRight from './components/HeaderRight';
 import { TAB, TABS, TAB_NAME } from './components/HeaderTabs';
 import DrawerContent from './components/DrawerContent';
 import { STORAGE_KEY, retrieveFromStorage } from './services/storage';
-import {
-  validateToken,
-  fetchBasics,
-  fetchOverviewForYear,
-} from './services/api';
+import { validateToken } from './services/api/auth';
+import { fetchBasics } from './services/api/basics';
+import { fetchOverviewForYear } from './services/api/overview';
 import { setAccountAction } from './redux/reducers/account';
 import { setCategoriesAction } from './redux/reducers/categories';
 import { setExpensesAction } from './redux/reducers/expenses';
