@@ -1,5 +1,3 @@
-import { retrieveFromStorage, STORAGE_KEY } from '../storage';
-
 const apiUrl = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 export function signIn (email, password) {

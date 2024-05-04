@@ -5,12 +5,14 @@ import {
   Text,
   View,
 } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import AppleButton from '../../components/AppleButton';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import Button, { BUTTON_LOOK } from '../../components/Button';
+import { TOAST_TYPE } from '../../components/Toast';
 import { STORAGE_KEY, saveToStorage } from '../../services/storage';
+import { showToastAction } from '../../redux/reducers/ui';
 import { signIn } from '../../services/api/auth';
 import { FONT } from '../../styles/fonts';
 import { MEDIA } from '../../styles/media';
@@ -18,6 +20,7 @@ import { COLOR } from '../../styles/colors';
 
 export default function SignInScreen () {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
@@ -65,7 +68,20 @@ export default function SignInScreen () {
     if (isValid) {
       const token = await signIn(email, password);
 
-      await onSuccess(token);
+      if (token) {
+        dispatch(showToastAction({
+          message: 'Success',
+          type: TOAST_TYPE.INFO,
+        }));
+        setTimeout(() => {
+          onSuccess(token);
+        }, 1000);
+      } else {
+        dispatch(showToastAction({
+          message: 'Failed to sign in. Please try again.',
+          type: TOAST_TYPE.ERROR,
+        }));
+      }
     }
   }
 
