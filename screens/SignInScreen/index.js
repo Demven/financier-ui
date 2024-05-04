@@ -69,13 +69,7 @@ export default function SignInScreen () {
       const token = await signIn(email, password);
 
       if (token) {
-        dispatch(showToastAction({
-          message: 'Success',
-          type: TOAST_TYPE.INFO,
-        }));
-        setTimeout(() => {
-          onSuccess(token);
-        }, 1000);
+        await onSuccess(token);
       } else {
         dispatch(showToastAction({
           message: 'Failed to sign in. Please try again.',
