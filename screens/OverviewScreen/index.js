@@ -26,28 +26,28 @@ export default function OverviewScreen () {
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const selectedYear = useSelector(state => state.ui.selectedYear);
   const expenses = useSelector(state => state.expenses.expenses) || {};
-  const expensesTotal = useSelector(state => state.expenses.expensesTotal) || {};
+  const expensesTotals = useSelector(state => state.expenses.expensesTotals) || {};
   const incomes = useSelector(state => state.incomes.incomes) || {};
-  const incomesTotal = useSelector(state => state.incomes.incomesTotal) || {};
+  const incomesTotals = useSelector(state => state.incomes.incomesTotals) || {};
   const savings = useSelector(state => state.savings.savings) || {};
-  const savingsTotal = useSelector(state => state.savings.savingsTotal) || {};
+  const savingsTotals = useSelector(state => state.savings.savingsTotals) || {};
   const investments = useSelector(state => state.savings.investments) || {};
-  const investmentsTotal = useSelector(state => state.savings.investmentsTotal) || {};
+  const investmentsTotals = useSelector(state => state.savings.investmentsTotals) || {};
 
   const expensesYears = Object
-    .keys(expensesTotal)
+    .keys(expensesTotals)
     .map(Number)
     .filter(Boolean);
   const incomesYears = Object
-    .keys(incomesTotal)
+    .keys(incomesTotals)
     .map(Number)
     .filter(Boolean);
   const savingsYears = Object
-    .keys(savingsTotal)
+    .keys(savingsTotals)
     .map(Number)
     .filter(Boolean);
   const investmentsYears = Object
-    .keys(investmentsTotal)
+    .keys(investmentsTotals)
     .map(Number)
     .filter(Boolean);
 

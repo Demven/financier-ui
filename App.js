@@ -47,14 +47,19 @@ import { fetchBasics } from './services/api/basics';
 import { fetchOverviewForYear } from './services/api/overview';
 import { setAccountAction } from './redux/reducers/account';
 import { setCategoriesAction } from './redux/reducers/categories';
-import { setExpensesAction } from './redux/reducers/expenses';
-import { setInvestmentsAction, setSavingsAction } from './redux/reducers/savings';
+import { setExpensesAction, setExpensesTotalsAction } from './redux/reducers/expenses';
+import {
+  setSavingsAction,
+  setSavingsTotalsAction,
+  setInvestmentsAction,
+  setInvestmentsTotalsAction,
+} from './redux/reducers/savings';
 import {
   setWindowWidthAction,
   setSelectedTabAction,
   setSelectedYearAction,
 } from './redux/reducers/ui';
-import { setIncomesAction } from './redux/reducers/incomes';
+import { setIncomesAction, setIncomesTotalsAction } from './redux/reducers/incomes';
 import { setColorsAction } from './redux/reducers/colors';
 import { store } from './redux/store';
 import { MEDIA } from './styles/media';
@@ -676,25 +681,41 @@ function Navigator () {
   async function fetchOverviewData (year) {
     const {
       expenses,
+      expensesTotals,
       incomes,
-      investments,
+      incomesTotals,
       savings,
+      savingsTotals,
+      investments,
+      investmentsTotals,
     } = await fetchOverviewForYear(year);
 
     if (expenses) {
       dispatch(setExpensesAction(expenses));
     }
+    if (expensesTotals) {
+      dispatch(setExpensesTotalsAction(expensesTotals));
+    }
 
     if (savings) {
       dispatch(setSavingsAction(savings));
+    }
+    if (savingsTotals) {
+      dispatch(setSavingsTotalsAction(savingsTotals));
     }
 
     if (investments) {
       dispatch(setInvestmentsAction(investments));
     }
+    if (investmentsTotals) {
+      dispatch(setInvestmentsTotalsAction(investmentsTotals));
+    }
 
     if (incomes) {
       dispatch(setIncomesAction(incomes));
+    }
+    if (incomesTotals) {
+      dispatch(setIncomesTotalsAction(incomesTotals));
     }
   }
 

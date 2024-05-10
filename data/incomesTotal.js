@@ -1,4 +1,4 @@
-const incomesTotal = {
+const incomesTotals = {
   total: 101150.72,
   yearAverage: 101150.72,
   monthAverage: 10115.07,
@@ -69,4 +69,4 @@ const incomesTotal = {
   },
 }
 
-export default incomesTotal;
+export default incomesTotals;

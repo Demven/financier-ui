@@ -17,7 +17,7 @@ CategoriesYear.propTypes = {
   previousYear: PropTypes.number.isRequired,
   yearIncome: PropTypes.number.isRequired,
   yearExpenses: PropTypes.object.isRequired, // weeks -> expenses { [1]: [], [2]: [] }
-  yearTotalExpenses: PropTypes.object.isRequired, // weeks -> expensesTotal { total: ?, [1]: ?, [2]: ? }
+  yearExpensesTotal: PropTypes.number.isRequired,
   previousYearExpenses: PropTypes.object.isRequired,
 };
 
@@ -28,7 +28,7 @@ export default function CategoriesYear (props) {
     previousYear,
     yearIncome,
     yearExpenses = {},
-    yearTotalExpenses = {},
+    yearExpensesTotal = 0,
     previousYearExpenses = {},
   } = props;
 
@@ -47,9 +47,7 @@ export default function CategoriesYear (props) {
     }
   }, [categories]);
 
-  const totalExpenses = yearTotalExpenses?.total || 0;
-
-  const isEmptyYear = !totalExpenses;
+  const isEmptyYear = !yearExpensesTotal;
 
   if (isEmptyYear) {
     return null;
@@ -187,7 +185,7 @@ export default function CategoriesYear (props) {
             categories={categories}
             monthExpensesTotalsGroupedByCategoryId={monthExpensesTotalsGroupedByCategoryId}
             expensesTotalsGroupedByCategoryId={expensesTotalsGroupedByCategoryId}
-            yearTotal={totalExpenses}
+            yearTotal={yearExpensesTotal}
             selectedCategoryId={selectedCategoryId}
             onSelectCategoryId={setSelectedCategoryId}
           />

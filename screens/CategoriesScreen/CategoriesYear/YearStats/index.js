@@ -28,7 +28,7 @@ export default function YearStats (props) {
     onSelectCategoryId,
   } = props;
 
-  const allTimeYearAverage = useSelector(state => state.expenses.yearAverage);
+  const allTimeYearAverage = useSelector(state => state.expenses.expensesTotals.yearAverage);
 
   return (
     <View style={[styles.yearStats, style]}>

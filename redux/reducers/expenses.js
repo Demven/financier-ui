@@ -1,16 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { getWeekNumberByDayNumber } from '../../services/date';
-import expensesTotalData from '../../data/expensesTotal';
 
 const expensesSlice = createSlice({
   name: 'expenses',
 
   initialState: {
     expenses: {},
-    expensesTotal: expensesTotalData,
-    yearAverage: expensesTotalData.yearAverage,
-    monthAverage: expensesTotalData.monthAverage,
-    weekAverage: expensesTotalData.weekAverage,
+    expensesTotals: {
+      total: 0,
+      yearAverage: 0,
+      monthAverage: 0,
+      weekAverage: 0,
+    },
   },
 
   reducers: {
@@ -90,11 +91,18 @@ const expensesSlice = createSlice({
         expenses: updatedExpenses,
       };
     },
+    setExpensesTotals: (state, action) => {
+      return {
+        ...state,
+        expensesTotals: action.payload,
+      };
+    },
   },
 });
 
 export const setExpensesAction = expensesSlice.actions.setExpenses;
 export const addExpenseAction = expensesSlice.actions.addExpense;
 export const updateExpenseAction = expensesSlice.actions.updateExpense;
+export const setExpensesTotalsAction = expensesSlice.actions.setExpensesTotals;
 
 export default expensesSlice.reducer;

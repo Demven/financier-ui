@@ -37,7 +37,7 @@ export default function IncomesYear (props) {
   const [selectedMonthIndex, setSelectedMonthIndex] = useState();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
-  const allTimeYearAverage = useSelector(state => state.incomes.yearAverage);
+  const allTimeYearAverage = useSelector(state => state.incomes.incomesTotals.yearAverage);
 
   function groupByMonth (yearItems) {
     const groupedByMonth = new Array(MONTHS_IN_YEAR).fill([]);

@@ -18,7 +18,7 @@ CategoriesMonth.propTypes = {
   monthNumber: PropTypes.number.isRequired,
   monthIncome: PropTypes.number,
   monthExpenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
-  monthExpensesTotal: PropTypes.object, // weeks -> expensesTotal { total: ?, [1]: ?, [2]: ? }
+  monthExpensesTotal: PropTypes.number,
   previousMonthExpenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
   previousMonthName: PropTypes.string,
 };
@@ -30,7 +30,7 @@ export default function CategoriesMonth (props) {
     monthNumber,
     monthIncome = 0,
     monthExpenses = {},
-    monthExpensesTotal = {},
+    monthExpensesTotal = 0,
     previousMonthExpenses = {},
     previousMonthName = '',
   } = props;
@@ -50,9 +50,7 @@ export default function CategoriesMonth (props) {
     }
   }, [categories]);
 
-  const totalExpenses = monthExpensesTotal?.total || 0;
-
-  const isEmptyMonth = !totalExpenses;
+  const isEmptyMonth = !monthExpensesTotal;
 
   if (isEmptyMonth) {
     return null;
@@ -141,7 +139,7 @@ export default function CategoriesMonth (props) {
             }]}
             categories={categories}
             daysNumber={daysNumber}
-            monthTotal={totalExpenses}
+            monthTotal={monthExpensesTotal}
             weekExpensesTotalsGroupedByCategoryId={weekExpensesTotalsGroupedByCategoryId}
             expensesTotalsGroupedByCategoryId={expensesTotalsGroupedByCategoryId}
             selectedCategoryId={selectedCategoryId}

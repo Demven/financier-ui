@@ -46,7 +46,7 @@ export default function IncomesWeek (props) {
   } = props;
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
-  const allTimeWeekAverage = useSelector(state => state.expenses.weekAverage);
+  const allTimeWeekAverage = useSelector(state => state.expenses.expensesTotals.weekAverage);
 
   const [selectedDayIndex, setSelectedDayIndex] = useState();
 

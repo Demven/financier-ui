@@ -2,7 +2,7 @@ import { retrieveFromStorage, STORAGE_KEY } from '../storage';
 
 const apiUrl = process.env.EXPO_PUBLIC_API_BASE_URL;
 
-// { expenses, incomes, savings, investments }
+// { expenses, expensesTotals, incomes, incomesTotals, savings, savingsTotals, investments, investmentsTotals }
 export async function fetchOverviewForYear (year) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 

@@ -37,10 +37,10 @@ export default function IncomesScreen () {
   const selectedYear = useSelector(state => state.ui.selectedYear);
 
   const incomes = useSelector(state => state.incomes.incomes) || {};
-  const incomesTotal = useSelector(state => state.incomes.incomesTotal) || {};
+  const incomesTotals = useSelector(state => state.incomes.incomesTotals) || {};
 
   const incomesYears = Object
-    .keys(incomesTotal)
+    .keys(incomesTotals)
     .map(Number)
     .filter(Boolean);
 
@@ -99,7 +99,7 @@ export default function IncomesScreen () {
     return [1, 2, 3, 4].map((weekNumber, index) => {
       const previousMonthNumber = monthNumber > 1
         ? monthNumber - 1
-        : getLastMonthNumberInYear(incomesTotal?.[selectedYear - 1]); // the last month of the previous year
+        : getLastMonthNumberInYear(incomesTotals?.[selectedYear - 1]); // the last month of the previous year
 
       return (
         <IncomesWeek
@@ -111,15 +111,15 @@ export default function IncomesScreen () {
           year={selectedYear}
           monthNumber={monthNumber}
           weekNumber={weekNumber}
-          monthIncome={incomesTotal?.[selectedYear]?.[monthNumber]?.total || 0}
+          monthIncome={incomesTotals?.[selectedYear]?.[monthNumber]?.total || 0}
           onScrollTo={weekNumber === routeWeekNumber
             ? (scrollY) => scrollViewY.value = scrollY
             : undefined}
           weekIncomes={incomes?.[selectedYear]?.[monthNumber]?.[weekNumber]}
-          weekIncomesTotal={incomesTotal?.[selectedYear]?.[monthNumber]?.[weekNumber]}
+          weekIncomesTotal={incomesTotals?.[selectedYear]?.[monthNumber]?.[weekNumber]}
           previousMonthTotalIncomes={monthNumber > 1
-            ? incomesTotal?.[selectedYear]?.[previousMonthNumber]?.[weekNumber] || 0
-            : incomesTotal?.[selectedYear - 1]?.[previousMonthNumber]?.[weekNumber] || 0
+            ? incomesTotals?.[selectedYear]?.[previousMonthNumber]?.[weekNumber] || 0
+            : incomesTotals?.[selectedYear - 1]?.[previousMonthNumber]?.[weekNumber] || 0
           }
           previousMonthName={MONTH_NAME[previousMonthNumber]}
         />
@@ -131,7 +131,7 @@ export default function IncomesScreen () {
     return incomesMonths.map((monthNumber, index) => {
       const previousMonthNumber = monthNumber > 1
        ? incomesMonths[index + 1] // + 1 because month numbers are sorted in ASC order
-       : getLastMonthNumberInYear(incomesTotal?.[selectedYear - 1]); // the last month of the previous year
+       : getLastMonthNumberInYear(incomesTotals?.[selectedYear - 1]); // the last month of the previous year
 
       return (
         <IncomesMonth
@@ -142,12 +142,12 @@ export default function IncomesScreen () {
           ]}
           year={selectedYear}
           monthNumber={monthNumber}
-          yearIncome={incomesTotal?.[selectedYear]?.total || 0}
+          yearIncome={incomesTotals?.[selectedYear]?.total || 0}
           monthIncomes={incomes?.[selectedYear]?.[monthNumber]}
-          monthIncomesTotal={incomesTotal?.[selectedYear]?.[monthNumber]?.total || 0}
+          monthIncomesTotal={incomesTotals?.[selectedYear]?.[monthNumber]?.total || 0}
           previousMonthTotalIncomes={monthNumber > 1
-            ? incomesTotal?.[selectedYear]?.[previousMonthNumber]?.total || 0
-            : incomesTotal?.[selectedYear - 1]?.[previousMonthNumber]?.total || 0 // compare to the last month of the previous year
+            ? incomesTotals?.[selectedYear]?.[previousMonthNumber]?.total || 0
+            : incomesTotals?.[selectedYear - 1]?.[previousMonthNumber]?.total || 0 // compare to the last month of the previous year
           }
           previousMonthName={MONTH_NAME[previousMonthNumber]}
         />
@@ -166,10 +166,10 @@ export default function IncomesScreen () {
             windowWidth < MEDIA.WIDE_MOBILE && styles.incomesMobile,
           ]}
           year={yearNumber}
-          allTimeTotalIncome={incomesTotal?.total || 0}
+          allTimeTotalIncome={incomesTotals?.total || 0}
           yearIncomes={incomes[yearNumber]}
-          yearIncomesTotal={incomesTotal[yearNumber]?.total || 0}
-          previousYearTotalIncomes={incomesTotal?.[yearNumber - 1]?.total || 0}
+          yearIncomesTotal={incomesTotals[yearNumber]?.total || 0}
+          previousYearTotalIncomes={incomesTotals?.[yearNumber - 1]?.total || 0}
           previousYear={yearNumber - 1}
         />
       ));

@@ -17,7 +17,7 @@ ExpensesYear.propTypes = {
   style: PropTypes.any,
   year: PropTypes.number.isRequired,
   yearExpenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
-  yearTotalExpenses: PropTypes.object, // weeks -> expensesTotal { total: ?, [1]: ?, [2]: ? }
+  yearTotalExpenses: PropTypes.object, // weeks -> expensesTotals { total: ?, [1]: ?, [2]: ? }
   yearIncome: PropTypes.number.isRequired,
   previousYear: PropTypes.number.isRequired,
   previousYearTotalExpenses: PropTypes.number.isRequired,
@@ -41,7 +41,7 @@ export default function ExpensesYear (props) {
   const [categoryId, setCategoryId] = useState(SHOW_ALL_CATEGORY_ID);
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
-  const allTimeYearAverage = useSelector(state => state.expenses.yearAverage);
+  const allTimeYearAverage = useSelector(state => state.expenses.expensesTotals.yearAverage);
 
   function groupByMonth (yearItems) {
     const groupedByMonth = new Array(MONTHS_IN_YEAR).fill([]);

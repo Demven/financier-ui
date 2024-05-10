@@ -31,7 +31,7 @@ export default function WeekStats (props) {
     onSelectCategoryId,
   } = props;
 
-  const allTimeWeekAverage = useSelector(state => state.expenses.weekAverage);
+  const allTimeWeekAverage = useSelector(state => state.expenses.expensesTotals.weekAverage);
 
   return (
     <View style={[styles.weekStats, style]}>

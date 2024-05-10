@@ -1,22 +1,24 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { getWeekNumberByDayNumber } from '../../services/date';
-import savingsTotalData from '../../data/savingsTotal';
-import investmentsTotalData from '../../data/investmentsTotal';
 
 const savingsSlice = createSlice({
   name: 'savings',
 
   initialState: {
     savings: {},
-    savingsTotal: savingsTotalData,
-    savingsYearAverage: savingsTotalData.yearAverage,
-    savingsMonthAverage: savingsTotalData.monthAverage,
-    savingsWeekAverage: savingsTotalData.weekAverage,
+    savingsTotals: {
+      total: 0,
+      yearAverage: 0,
+      monthAverage: 0,
+      weekAverage: 0,
+    },
     investments: {},
-    investmentsTotal: investmentsTotalData,
-    investmentsYearAverage: investmentsTotalData.yearAverage,
-    investmentsMonthAverage: investmentsTotalData.monthAverage,
-    investmentsWeekAverage: investmentsTotalData.weekAverage,
+    investmentsTotals: {
+      total: 0,
+      yearAverage: 0,
+      monthAverage: 0,
+      weekAverage: 0,
+    },
   },
 
   reducers: {
@@ -97,6 +99,13 @@ const savingsSlice = createSlice({
       };
     },
 
+    setSavingsTotals: (state, action) => {
+      return {
+        ...state,
+        savingsTotals: action.payload,
+      };
+    },
+
     setInvestments: (state, action) => {
       return {
         ...state,
@@ -173,14 +182,26 @@ const savingsSlice = createSlice({
         investments: updatedInvestments,
       };
     },
+
+    setInvestmentsTotals: (state, action) => {
+      return {
+        ...state,
+        investmentsTotals: action.payload,
+      };
+    },
   },
 });
 
 export const setSavingsAction = savingsSlice.actions.setSavings;
 export const addSavingAction = savingsSlice.actions.addSaving;
 export const updateSavingAction = savingsSlice.actions.updateSaving;
+
+export const setSavingsTotalsAction = savingsSlice.actions.setSavingsTotals;
+
 export const setInvestmentsAction = savingsSlice.actions.setInvestments;
 export const addInvestmentAction = savingsSlice.actions.addInvestment;
 export const updateInvestmentAction = savingsSlice.actions.updateInvestment;
+
+export const setInvestmentsTotalsAction = savingsSlice.actions.setInvestmentsTotals;
 
 export default savingsSlice.reducer;

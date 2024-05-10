@@ -37,11 +37,11 @@ export default function CategoriesScreen () {
   const selectedYear = useSelector(state => state.ui.selectedYear);
 
   const expenses = useSelector(state => state.expenses.expenses) || {};
-  const expensesTotal = useSelector(state => state.expenses.expensesTotal) || {};
-  const incomesTotal = useSelector(state => state.incomes.incomesTotal) || {};
+  const expensesTotals = useSelector(state => state.expenses.expensesTotals) || {};
+  const incomesTotals = useSelector(state => state.incomes.incomesTotals) || {};
 
   const expensesYears = Object
-    .keys(expensesTotal)
+    .keys(expensesTotals)
     .map(Number)
     .filter(Boolean);
 
@@ -100,7 +100,7 @@ export default function CategoriesScreen () {
     return [1, 2, 3, 4].map((weekNumber, index) => {
       const previousMonthNumber = monthNumber > 1
         ? monthNumber - 1
-        : getLastMonthNumberInYear(expensesTotal?.[selectedYear - 1]); // the last month of the previous year
+        : getLastMonthNumberInYear(expensesTotals?.[selectedYear - 1]); // the last month of the previous year
 
       return (
         <CategoriesWeek
@@ -112,12 +112,12 @@ export default function CategoriesScreen () {
           year={selectedYear}
           monthNumber={monthNumber}
           weekNumber={weekNumber}
-          monthIncome={incomesTotal?.[selectedYear]?.[monthNumber]?.total || 0}
+          monthIncome={incomesTotals?.[selectedYear]?.[monthNumber]?.total || 0}
           onScrollTo={weekNumber === routeWeekNumber
             ? (scrollY) => scrollViewY.value = scrollY
             : undefined}
           weekExpenses={expenses?.[selectedYear]?.[monthNumber]?.[weekNumber]}
-          weekExpensesTotal={expensesTotal?.[selectedYear]?.[monthNumber]?.[weekNumber]}
+          weekExpensesTotal={expensesTotals?.[selectedYear]?.[monthNumber]?.[weekNumber]}
           previousWeekExpenses={monthNumber > 1
             ? expenses?.[selectedYear]?.[previousMonthNumber]?.[weekNumber] || 0
             : expenses?.[selectedYear - 1]?.[previousMonthNumber]?.[weekNumber] || 0
@@ -132,7 +132,7 @@ export default function CategoriesScreen () {
     return expensesMonths.map((monthNumber, index) => {
       const previousMonthNumber = monthNumber > 1
        ? expensesMonths[index + 1] // + 1 because month numbers are sorted in ASC order
-       : getLastMonthNumberInYear(expensesTotal?.[selectedYear - 1]); // the last month of the previous year
+       : getLastMonthNumberInYear(expensesTotals?.[selectedYear - 1]); // the last month of the previous year
 
       const daysNumber = getDaysInMonth(selectedYear, monthNumber);
 
@@ -145,9 +145,9 @@ export default function CategoriesScreen () {
           ]}
           daysNumber={daysNumber}
           monthNumber={monthNumber}
-          monthIncome={incomesTotal?.[selectedYear]?.[monthNumber]?.total || 0}
+          monthIncome={incomesTotals?.[selectedYear]?.[monthNumber]?.total || 0}
           monthExpenses={expenses?.[selectedYear]?.[monthNumber]}
-          monthExpensesTotal={expensesTotal?.[selectedYear]?.[monthNumber]}
+          monthExpensesTotal={expensesTotals?.[selectedYear]?.[monthNumber]?.total || 0}
           previousMonthExpenses={monthNumber > 1
             ? expenses?.[selectedYear]?.[previousMonthNumber] || {}
             : expenses?.[selectedYear - 1]?.[previousMonthNumber] || {} // compare to the last month of the previous year
@@ -170,9 +170,9 @@ export default function CategoriesScreen () {
           ]}
           year={yearNumber}
           previousYear={yearNumber - 1}
-          yearIncome={incomesTotal?.[yearNumber]?.total || 0}
+          yearIncome={incomesTotals?.[yearNumber]?.total || 0}
           yearExpenses={expenses[yearNumber]}
-          yearTotalExpenses={expensesTotal[yearNumber]}
+          yearExpensesTotal={expensesTotals[yearNumber]?.total || 0}
           previousYearExpenses={expenses?.[yearNumber - 1]}
         />
       ));

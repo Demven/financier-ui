@@ -21,7 +21,7 @@ ExpensesMonth.propTypes = {
   monthNumber: PropTypes.number.isRequired,
   monthIncome: PropTypes.number,
   monthExpenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
-  monthExpensesTotal: PropTypes.object, // weeks -> expensesTotal { total: ?, [1]: ?, [2]: ? }
+  monthExpensesTotal: PropTypes.number,
   previousMonthTotalExpenses: PropTypes.number,
   previousMonthName: PropTypes.string,
 };
@@ -33,7 +33,7 @@ export default function ExpensesMonth (props) {
     monthNumber,
     monthIncome = 0,
     monthExpenses = {},
-    monthExpensesTotal = {},
+    monthExpensesTotal = 0,
     previousMonthTotalExpenses = 0,
     previousMonthName = '',
   } = props;
@@ -50,7 +50,7 @@ export default function ExpensesMonth (props) {
   const expensesByWeeks = getMonthChartPointsByWeek(filteredExpenses);
 
   const totalExpenses = categoryId === SHOW_ALL_CATEGORY_ID
-    ? monthExpensesTotal?.total || 0
+    ? monthExpensesTotal
     : expensesByWeeks.reduce((total, weekTotal) => total + weekTotal, 0);
 
   const categoryIds = Array.from(

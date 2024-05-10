@@ -36,16 +36,16 @@ export default function SavingsScreen () {
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const selectedYear = useSelector(state => state.ui.selectedYear);
   const savings = useSelector(state => state.savings.savings) || {};
-  const savingsTotal = useSelector(state => state.savings.savingsTotal) || {};
+  const savingsTotals = useSelector(state => state.savings.savingsTotals) || {};
   const investments = useSelector(state => state.savings.investments) || {};
-  const investmentsTotal = useSelector(state => state.savings.investmentsTotal) || {};
+  const investmentsTotals = useSelector(state => state.savings.investmentsTotals) || {};
 
   const savingsYears = Object
-    .keys(savingsTotal)
+    .keys(savingsTotals)
     .map(Number)
     .filter(Boolean);
   const investmentsYears = Object
-    .keys(investmentsTotal)
+    .keys(investmentsTotals)
     .map(Number)
     .filter(Boolean);
 
@@ -111,7 +111,7 @@ export default function SavingsScreen () {
       const previousMonthNumber = monthNumber > 1
         ? monthNumber - 1
           // the last month of the previous year
-        : getLastMonthNumberInYear(savingsTotal?.[selectedYear - 1] || investmentsTotal?.[selectedYear - 1]);
+        : getLastMonthNumberInYear(savingsTotals?.[selectedYear - 1] || investmentsTotals?.[selectedYear - 1]);
 
       return (
         <SavingsWeek
@@ -128,10 +128,10 @@ export default function SavingsScreen () {
             : undefined}
           savings={savings?.[selectedYear]?.[monthNumber]}
           investments={investments?.[selectedYear]?.[monthNumber]}
-          monthTotalSavingsAndInvestments={(savingsTotal?.[selectedYear]?.[monthNumber]?.total || 0) + (investmentsTotal?.[selectedYear]?.[monthNumber]?.total || 0)}
+          monthTotalSavingsAndInvestments={(savingsTotals?.[selectedYear]?.[monthNumber]?.total || 0) + (investmentsTotals?.[selectedYear]?.[monthNumber]?.total || 0)}
           previousWeekTotalSavingsAndInvestments={monthNumber > 1
-            ? (savingsTotal?.[selectedYear]?.[previousMonthNumber]?.[weekNumber] || 0)
-            : investmentsTotal?.[selectedYear - 1]?.[previousMonthNumber]?.[weekNumber] || 0
+            ? (savingsTotals?.[selectedYear]?.[previousMonthNumber]?.[weekNumber] || 0)
+            : investmentsTotals?.[selectedYear - 1]?.[previousMonthNumber]?.[weekNumber] || 0
           }
           previousMonthName={MONTH_NAME[previousMonthNumber]}
         />
@@ -144,7 +144,7 @@ export default function SavingsScreen () {
       const previousMonthNumber = monthNumber > 1
         ? months[index + 1] // + 1 because month numbers are sorted in ASC order
           // the last month of the previous year
-        : getLastMonthNumberInYear(savingsTotal?.[selectedYear - 1] || investmentsTotal?.[selectedYear - 1]);
+        : getLastMonthNumberInYear(savingsTotals?.[selectedYear - 1] || investmentsTotals?.[selectedYear - 1]);
 
       return (
         <SavingsMonth
@@ -156,13 +156,13 @@ export default function SavingsScreen () {
           year={selectedYear}
           monthNumber={monthNumber}
           savings={savings?.[selectedYear]?.[monthNumber]}
-          yearSavingsTotal={savingsTotal?.[selectedYear]?.total}
+          yearSavingsTotal={savingsTotals?.[selectedYear]?.total}
           investments={investments?.[selectedYear]?.[monthNumber]}
-          yearInvestmentsTotal={investmentsTotal?.[selectedYear]?.total}
+          yearInvestmentsTotal={investmentsTotals?.[selectedYear]?.total}
           previousMonthTotalSavingsAndInvestments={monthNumber > 1
-            ? (savingsTotal?.[selectedYear]?.[previousMonthNumber]?.total || 0) + (investmentsTotal?.[selectedYear]?.[previousMonthNumber]?.total || 0)
+            ? (savingsTotals?.[selectedYear]?.[previousMonthNumber]?.total || 0) + (investmentsTotals?.[selectedYear]?.[previousMonthNumber]?.total || 0)
               // compare to the last month of the previous year
-            : (savingsTotal?.[selectedYear - 1]?.[previousMonthNumber]?.total || 0) + (investmentsTotal?.[selectedYear - 1]?.[previousMonthNumber]?.total || 0)
+            : (savingsTotals?.[selectedYear - 1]?.[previousMonthNumber]?.total || 0) + (investmentsTotals?.[selectedYear - 1]?.[previousMonthNumber]?.total || 0)
           }
           previousMonthName={MONTH_NAME[previousMonthNumber]}
         />
@@ -183,8 +183,8 @@ export default function SavingsScreen () {
           year={yearNumber}
           savings={savings[yearNumber]}
           investments={investments[yearNumber]}
-          allTimeTotalSavingsAndInvestments={(savingsTotal?.total || 0) + (investmentsTotal?.total || 0)}
-          previousYearTotalSavingsAndInvestments={(savingsTotal?.[yearNumber - 1]?.total || 0) + (investmentsTotal?.[yearNumber - 1]?.total || 0)}
+          allTimeTotalSavingsAndInvestments={(savingsTotals?.total || 0) + (investmentsTotals?.total || 0)}
+          previousYearTotalSavingsAndInvestments={(savingsTotals?.[yearNumber - 1]?.total || 0) + (investmentsTotals?.[yearNumber - 1]?.total || 0)}
           previousYear={yearNumber - 1}
         />
       ));

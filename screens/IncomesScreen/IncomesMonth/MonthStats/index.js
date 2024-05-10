@@ -36,7 +36,7 @@ export default function MonthStats (props) {
   const navigation = useNavigation();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
-  const allTimeMonthAverage = useSelector(state => state.incomes.monthAverage);
+  const allTimeMonthAverage = useSelector(state => state.incomes.incomesTotals.monthAverage);
   const currencySymbol = useSelector(state => state.account.currencySymbol);
 
   return (

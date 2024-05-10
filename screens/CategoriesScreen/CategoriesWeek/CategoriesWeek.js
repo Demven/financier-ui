@@ -51,8 +51,6 @@ export default function CategoriesWeek (props) {
   const daysInMonth = getDaysInMonth(year, monthNumber);
   const daysInWeek = getDaysInWeek(weekNumber, daysInMonth);
 
-  const totalExpenses = weekExpensesTotal;
-
   useLayoutEffect(() => {
     if (!selectedCategoryId && categories?.[0]?.id) {
       setTimeout(() => {
@@ -85,7 +83,7 @@ export default function CategoriesWeek (props) {
       : 40 // tablet
     : 44; // desktop
 
-  const isEmptyWeek = !totalExpenses;
+  const isEmptyWeek = !weekExpensesTotal;
 
   if (isEmptyWeek) {
     return null;
@@ -166,7 +164,7 @@ export default function CategoriesWeek (props) {
             daysInWeek={daysInWeek}
             dayExpensesTotalsGroupedByCategoryId={dayExpensesTotalsGroupedByCategoryId}
             expensesTotalsGroupedByCategoryId={expensesTotalsGroupedByCategoryId}
-            weekTotal={totalExpenses}
+            weekTotal={weekExpensesTotal}
             selectedCategoryId={selectedCategoryId}
             onSelectCategoryId={setSelectedCategoryId}
           />
