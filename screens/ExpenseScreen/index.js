@@ -9,8 +9,16 @@ import { ICON_COLLECTION } from '../../components/Icon';
 import IconButton from '../../components/IconButton';
 import DatePicker from '../../components/DatePicker';
 import CategoryDropdown from '../../components/CategoryDropdown';
-import { addExpenseAction, updateExpenseAction } from '../../redux/reducers/expenses';
+import { TOAST_TYPE } from '../../components/Toast';
+import {
+  addExpenseAction,
+  updateExpenseAction,
+  setExpensesTotalsAction,
+  deleteExpenseAction,
+} from '../../redux/reducers/expenses';
+import { showToastAction } from '../../redux/reducers/ui';
 import { dateToDateString, getWeekNumberByDayNumber } from '../../services/date';
+import { addExpense, updateExpense, deleteExpense } from '../../services/api/expense';
 import { COLOR } from '../../styles/colors';
 
 const DATE_OPTION = {
@@ -110,39 +118,126 @@ export default function ExpenseScreen () {
     if (isValid()) {
       if (expenseToEdit) {
         // update
-        const [year, month, day] = expenseToEdit.dateString.split('-').map(string => Number(string));
+        const [oldYear, oldMonth, oldDay] = expenseToEdit.dateString.split('-').map(string => Number(string));
+        const oldWeek = getWeekNumberByDayNumber(oldDay);
+
+        const [year, month, day] = dateString.split('-').map(string => Number(string));
         const week = getWeekNumberByDayNumber(day);
 
-        dispatch(updateExpenseAction({
-          year, // old year
-          month, // old month
-          week, // old week
-          expense: {
-            id: expenseToEdit.id,
-            name,
-            categoryId,
-            dateString, // new date
-            amount: parseFloat(amount),
-          },
-        }));
+        const expenseToUpdate = {
+          id: expenseToEdit.id,
+          name,
+          categoryId,
+          dateString, // new date
+          year,
+          month,
+          week,
+          amount: parseFloat(amount),
+        };
+
+        onUpdate(oldYear, oldMonth, oldWeek, expenseToUpdate);
       } else {
         // create
         const [year, month, day] = dateString.split('-').map(string => Number(string));
         const week = getWeekNumberByDayNumber(day);
 
-        dispatch(addExpenseAction({
+        const expenseToSave = {
+          name,
+          categoryId,
+          dateString,
           year,
           month,
           week,
-          expense: {
-            id: `${Math.floor(Math.random() * 100000)}`,
-            name,
-            categoryId,
-            dateString,
-            amount: parseFloat(amount),
-          },
-        }));
+          amount: parseFloat(amount),
+        };
+
+        onCreate(expenseToSave);
       }
+    }
+  }
+
+  async function onCreate (expense) {
+    const {
+      success,
+      expense: savedExpense,
+      totals,
+    } = await addExpense(expense);
+
+    if (success && savedExpense && totals) {
+      dispatch(addExpenseAction({
+        year: savedExpense.year,
+        month: savedExpense.month,
+        week: savedExpense.week,
+        expense: savedExpense,
+      }));
+
+      dispatch(setExpensesTotalsAction(totals));
+
+      dispatch(showToastAction({
+        message: 'Saved',
+        type: TOAST_TYPE.INFO,
+      }));
+    } else {
+      dispatch(showToastAction({
+        message: 'Failed to add an expense. Please try again.',
+        type: TOAST_TYPE.ERROR,
+      }));
+    }
+  }
+
+  async function onUpdate (oldYear, oldMonth, oldWeek, expense) {
+    const {
+      success,
+      totals,
+    } = await updateExpense(expense);
+
+    if (success && totals) {
+      dispatch(updateExpenseAction({
+        year: oldYear,
+        month: oldMonth,
+        week: oldWeek,
+        expense,
+      }));
+
+      dispatch(setExpensesTotalsAction(totals));
+
+      dispatch(showToastAction({
+        message: 'Updated',
+        type: TOAST_TYPE.INFO,
+      }));
+    } else {
+      dispatch(showToastAction({
+        message: 'Failed to update the expense. Please try again.',
+        type: TOAST_TYPE.ERROR,
+      }));
+    }
+  }
+
+  async function onDelete () {
+    const {
+      success,
+      totals,
+    } = await deleteExpense(expenseToEdit);
+
+    if (success && totals) {
+      dispatch(deleteExpenseAction({
+        year: expenseToEdit.year,
+        month: expenseToEdit.month,
+        week: expenseToEdit.week,
+        expense: expenseToEdit,
+      }));
+
+      dispatch(setExpensesTotalsAction(totals));
+
+      dispatch(showToastAction({
+        message: 'Deleted',
+        type: TOAST_TYPE.INFO,
+      }));
+    } else {
+      dispatch(showToastAction({
+        message: 'Failed to delete the expense. Please try again.',
+        type: TOAST_TYPE.ERROR,
+      }));
     }
   }
 
@@ -154,6 +249,7 @@ export default function ExpenseScreen () {
       title={expenseToEdit ? 'Edit an expense' : 'Add an expense' }
       disableSave={formIsInvalid}
       onSave={onSave}
+      onDelete={expenseToEdit ? onDelete : undefined}
     >
       <Input
         style={styles.formElement}

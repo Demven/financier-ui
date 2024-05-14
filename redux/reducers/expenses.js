@@ -38,9 +38,6 @@ const expensesSlice = createSlice({
         },
       };
 
-      // TODO: POST to API
-      // saveToStorage(STORAGE_KEY.EXPENSES, updatedExpenses);
-
       return {
         ...state,
         expenses: updatedExpenses,
@@ -83,14 +80,34 @@ const expensesSlice = createSlice({
         },
       };
 
-      // TODO: POST to API
-      // saveToStorage(STORAGE_KEY.EXPENSES, updatedExpenses);
+      return {
+        ...state,
+        expenses: updatedExpenses,
+      };
+    },
+    deleteExpense: (state, action) => {
+      const { year, month, week, expense } = action.payload;
+
+      const updatedExpenses = {
+        ...state.expenses,
+        [year]: {
+          ...(state.expenses?.[year] || {}),
+          [month]: {
+            ...(state.expenses?.[year]?.[month] || {}),
+            [week]: [
+              ...(state.expenses?.[year]?.[month]?.[week] || [])
+                .filter(weekExpense => weekExpense.id !== expense.id),
+            ],
+          },
+        },
+      };
 
       return {
         ...state,
         expenses: updatedExpenses,
       };
     },
+
     setExpensesTotals: (state, action) => {
       return {
         ...state,
@@ -103,6 +120,7 @@ const expensesSlice = createSlice({
 export const setExpensesAction = expensesSlice.actions.setExpenses;
 export const addExpenseAction = expensesSlice.actions.addExpense;
 export const updateExpenseAction = expensesSlice.actions.updateExpense;
+export const deleteExpenseAction = expensesSlice.actions.deleteExpense;
 export const setExpensesTotalsAction = expensesSlice.actions.setExpensesTotals;
 
 export default expensesSlice.reducer;

@@ -21,6 +21,7 @@ Modal.propTypes = {
   children: PropTypes.any.isRequired,
   maxWidth: PropTypes.number,
   onSave: PropTypes.func,
+  onDelete: PropTypes.func,
   onCloseRequest: PropTypes.func,
   disableSave: PropTypes.bool,
 };
@@ -33,6 +34,7 @@ export default function Modal (props) {
     children,
     maxWidth = 680,
     onSave = () => {},
+    onDelete,
     onCloseRequest = undefined,
     disableSave,
   } = props;
@@ -94,6 +96,21 @@ export default function Modal (props) {
         <View
           style={[styles.footer, { justifyContent: windowWidth < MEDIA.TABLET ? 'center' : 'flex-end' }]}
         >
+          {typeof onDelete === 'function' && (
+            <Button
+              style={[styles.deleteButton, {
+                width: windowWidth < MEDIA.MOBILE ? 120 : 150,
+              }]}
+              look={BUTTON_LOOK.TERTIARY}
+              text='Delete'
+              destructive
+              onPress={() => {
+                onDelete();
+                onPressClose();
+              }}
+            />
+          )}
+
           <Button
             style={[styles.cancelButton, {
               width: windowWidth < MEDIA.MOBILE ? 120 : 150,
@@ -178,6 +195,9 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR.WHITE,
   },
 
+  deleteButton: {
+    marginRight: 'auto',
+  },
   cancelButton: {
     marginRight: 24,
   },

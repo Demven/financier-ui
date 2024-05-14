@@ -19,9 +19,11 @@ export const BUTTON_LOOK = {
 Button.propTypes = {
   style: PropTypes.object,
   buttonContainerStyle: PropTypes.object,
+  textStyle: PropTypes.object,
   look: PropTypes.oneOf(Object.values(BUTTON_LOOK)),
   onPress: PropTypes.func,
   text: PropTypes.string.isRequired,
+  destructive: PropTypes.bool,
   disabled: PropTypes.bool,
 };
 
@@ -29,9 +31,11 @@ export default function Button (props) {
   const {
     style,
     buttonContainerStyle,
+    textStyle,
     look = BUTTON_LOOK.PRIMARY,
     onPress,
     text,
+    destructive,
     disabled,
   } = props;
 
@@ -45,6 +49,7 @@ export default function Button (props) {
         styles.button,
         pressed && styles.buttonPressed,
         disabled && styles.buttonDisabled,
+        destructive && styles.buttonDestructive,
         style,
       ]}
       disabled={disabled}
@@ -66,7 +71,10 @@ export default function Button (props) {
         <Text style={[
           styles.text,
           styles[`text--${look}`],
-          ((pressed || focused) && !disabled) && styles.textActive,
+          destructive && styles.textDestructive,
+          textStyle,
+          ((pressed || focused) && !disabled && !destructive) && styles.textActive,
+          ((hover || focused) && destructive) && styles.textDestructiveActive,
         ]}>
           {text}
         </Text>
@@ -86,6 +94,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
     cursor: 'not-allowed',
   },
+  buttonDestructive: {},
 
   buttonContainer: {
     position: 'relative',
@@ -132,5 +141,12 @@ const styles = StyleSheet.create({
   },
   textActive: {
     color: COLOR.BLACK,
+  },
+  textDestructive: {
+    color: COLOR.RED,
+  },
+  textDestructiveActive: {
+    textDecorationLine: 'underline',
+    textDecorationStyle: 'solid',
   },
 });
