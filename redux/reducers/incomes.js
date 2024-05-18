@@ -21,6 +21,7 @@ const incomesSlice = createSlice({
         incomes: action.payload,
       };
     },
+
     addIncome: (state, action) => {
       const { year, month, week, income } = action.payload;
 
@@ -38,14 +39,12 @@ const incomesSlice = createSlice({
         },
       };
 
-      // TODO POST to API
-      // saveToStorage(STORAGE_KEY.INCOMES, updatedIncomes);
-
       return {
         ...state,
         incomes: updatedIncomes,
       };
     },
+
     updateIncome: (state, action) => {
       const {
         year: oldYear,
@@ -84,14 +83,51 @@ const incomesSlice = createSlice({
         },
       };
 
-      // TODO POST to API
-      // saveToStorage(STORAGE_KEY.INCOMES, updatedIncomes);
+      return {
+        ...state,
+        incomes: updatedIncomes,
+      };
+    },
+
+    deleteIncome: (state, action) => {
+      const { year, month, week, income } = action.payload;
+
+      const updatedIncomes = {
+        ...state.incomes,
+        [year]: {
+          ...(state.incomes?.[year] || {}),
+          [month]: {
+            ...(state.incomes?.[year]?.[month] || {}),
+            [week]: [
+              ...(state.incomes?.[year]?.[month]?.[week] || [])
+                .filter(weekIncome => weekIncome.id !== income.id),
+            ],
+          },
+        },
+      };
+
+      // after deletion, a week/month/year nodes can remain empty, so we need to clean up
+      // delete empty week
+      if (!updatedIncomes[year][month][week].length) {
+        delete updatedIncomes[year][month][week];
+      }
+
+      // delete empty month
+      if (!Object.keys(updatedIncomes[year][month]).length) {
+        delete updatedIncomes[year][month];
+      }
+
+      // delete empty year
+      if (!Object.keys(updatedIncomes[year]).length) {
+        delete updatedIncomes[year];
+      }
 
       return {
         ...state,
         incomes: updatedIncomes,
       };
     },
+
     setIncomesTotals: (state, action) => {
       return {
         ...state,
@@ -104,6 +140,7 @@ const incomesSlice = createSlice({
 export const setIncomesAction = incomesSlice.actions.setIncomes;
 export const addIncomeAction = incomesSlice.actions.addIncome;
 export const updateIncomeAction = incomesSlice.actions.updateIncome;
+export const deleteIncomeAction = incomesSlice.actions.deleteIncome;
 export const setIncomesTotalsAction = incomesSlice.actions.setIncomesTotals;
 
 export default incomesSlice.reducer;

@@ -6,13 +6,21 @@ import Modal from '../../components/Modal';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import Dropdown from '../../components/Dropdown';
 import DatePicker from '../../components/DatePicker';
+import { TOAST_TYPE } from '../../components/Toast';
 import {
   addSavingAction,
   updateSavingAction,
+  deleteSavingAction,
   addInvestmentAction,
   updateInvestmentAction,
+  deleteInvestmentAction,
+  setSavingsTotalsAction,
+  setInvestmentsTotalsAction,
 } from '../../redux/reducers/savings';
+import { showToastAction } from '../../redux/reducers/ui';
 import { dateToDateString, getWeekNumberByDayNumber } from '../../services/date';
+import { addSaving, updateSaving, deleteSaving } from '../../services/api/saving';
+import { addInvestment, updateInvestment, deleteInvestment } from '../../services/api/investment';
 
 const TYPE = {
   SAVING: 'saving',
@@ -164,79 +172,273 @@ export default function SavingScreen () {
 
   function onSave () {
     if (isValid()) {
+      const [year, month, day] = dateString.split('-').map(string => Number(string));
+      const week = getWeekNumberByDayNumber(day);
+
       if (typeId === TYPE.SAVING) {
         if (savingToEdit) {
-          const [year, month, day] = savingToEdit.dateString.split('-').map(string => Number(string));
-          const week = getWeekNumberByDayNumber(day);
+          const [oldYear, oldMonth, oldDay] = savingToEdit.dateString.split('-').map(string => Number(string));
+          const oldWeek = getWeekNumberByDayNumber(oldDay);
 
-          // update
-          dispatch(updateSavingAction({
-            year, // old year
-            month, // old month
-            week, // old week
-            saving: {
-              id: savingToEdit.id,
-              name,
-              dateString, // new date
-              amount: parseFloat(amount),
-            },
-          }));
-        } else {
-          const [year, month, day] = dateString.split('-').map(string => Number(string));
-          const week = getWeekNumberByDayNumber(day);
-
-          // create
-          dispatch(addSavingAction({
+          const savingToUpdate = {
+            id: savingToEdit.id,
+            name,
+            dateString, // new date
             year,
             month,
             week,
-            saving: {
-              id: `${Math.floor(Math.random() * 100000)}`,
-              name,
-              dateString,
-              amount: parseFloat(amount),
-            },
-          }));
+            amount: parseFloat(amount),
+          };
+
+          onUpdateSaving(oldYear, oldMonth, oldWeek, savingToUpdate);
+        } else {
+          const savingToSave = {
+            name,
+            dateString,
+            year,
+            month,
+            week,
+            amount: parseFloat(amount),
+          };
+
+          onCreateSaving(savingToSave);
         }
       } else if (typeId === TYPE.INVESTMENT) {
         if (investmentToEdit) {
           // update
-          const [year, month, day] = investmentToEdit.dateString.split('-').map(string => Number(string));
-          const week = getWeekNumberByDayNumber(day);
+          const [oldYear, oldMonth, oldDay] = investmentToEdit.dateString.split('-').map(string => Number(string));
+          const oldWeek = getWeekNumberByDayNumber(oldDay);
 
-          dispatch(updateInvestmentAction({
-            year, // old year
-            month, // old month
-            week, // old week
-            investment: {
-              id: investmentToEdit.id,
-              name,
-              dateString, // new date
-              ticker,
-              shares: parseFloat(shares),
-              pricePerShare: parseFloat(pricePerShare),
-            },
-          }));
-        } else {
-          // create
-          const [year, month, day] = dateString.split('-').map(string => Number(string));
-          const week = getWeekNumberByDayNumber(day);
-
-          dispatch(addInvestmentAction({
+          const investmentToUpdate = {
+            id: investmentToEdit.id,
+            name,
+            dateString, // new date
             year,
             month,
             week,
-            investment: {
-              id: `${Math.floor(Math.random() * 100000)}`,
-              name,
-              dateString,
-              ticker,
-              shares: parseFloat(shares),
-              pricePerShare: parseFloat(pricePerShare),
-            },
-          }));
+            ticker,
+            shares: parseFloat(shares),
+            pricePerShare: parseFloat(pricePerShare),
+          };
+
+          onUpdateInvestment(oldYear, oldMonth, oldWeek, investmentToUpdate);
+        } else {
+          const investmentToSave = {
+            name,
+            dateString,
+            year,
+            month,
+            week,
+            ticker,
+            shares: parseFloat(shares),
+            pricePerShare: parseFloat(pricePerShare),
+          };
+
+          onCreateInvestment(investmentToSave);
         }
       }
+    }
+  }
+
+  async function onUpdateSaving (oldYear, oldMonth, oldWeek, saving) {
+    const {
+      success,
+      totals,
+    } = await updateSaving(saving);
+
+    if (success && totals) {
+      dispatch(updateSavingAction({
+        year: oldYear,
+        month: oldMonth,
+        week: oldWeek,
+        saving,
+      }));
+
+      const needToDeleteOldSaving = (
+        oldYear !== saving.year
+        || oldMonth !== saving.month
+        || oldWeek !== saving.week
+      );
+
+      if (needToDeleteOldSaving) {
+        // the saving has been moved to a new date, so we should delete the old object
+        dispatch(deleteSavingAction({
+          year: oldYear,
+          month: oldMonth,
+          week: oldWeek,
+          saving,
+        }));
+      }
+
+      dispatch(setSavingsTotalsAction(totals));
+
+      dispatch(showToastAction({
+        message: 'Updated',
+        type: TOAST_TYPE.INFO,
+      }));
+    } else {
+      dispatch(showToastAction({
+        message: 'Failed to update the saving. Please try again.',
+        type: TOAST_TYPE.ERROR,
+      }));
+    }
+  }
+
+  async function onCreateSaving (saving) {
+    const {
+      success,
+      saving: savedSaving,
+      totals,
+    } = await addSaving(saving);
+
+    if (success && savedSaving && totals) {
+      dispatch(addSavingAction({
+        year: savedSaving.year,
+        month: savedSaving.month,
+        week: savedSaving.week,
+        saving: savedSaving,
+      }));
+
+      dispatch(setSavingsTotalsAction(totals));
+
+      dispatch(showToastAction({
+        message: 'Saved',
+        type: TOAST_TYPE.INFO,
+      }));
+    } else {
+      dispatch(showToastAction({
+        message: 'Failed to add a saving. Please try again.',
+        type: TOAST_TYPE.ERROR,
+      }));
+    }
+  }
+
+  async function onUpdateInvestment (oldYear, oldMonth, oldWeek, investment) {
+    const {
+      success,
+      totals,
+    } = await updateInvestment(investment);
+
+    if (success && totals) {
+      dispatch(updateInvestmentAction({
+        year: oldYear,
+        month: oldMonth,
+        week: oldWeek,
+        investment,
+      }));
+
+      const needToDeleteOldInvestment = (
+        oldYear !== investment.year
+        || oldMonth !== investment.month
+        || oldWeek !== investment.week
+      );
+
+      if (needToDeleteOldInvestment) {
+        // the investment has been moved to a new date, so we should delete the old object
+        dispatch(deleteInvestmentAction({
+          year: oldYear,
+          month: oldMonth,
+          week: oldWeek,
+          investment,
+        }));
+      }
+
+      dispatch(setInvestmentsTotalsAction(totals));
+
+      dispatch(showToastAction({
+        message: 'Updated',
+        type: TOAST_TYPE.INFO,
+      }));
+    } else {
+      dispatch(showToastAction({
+        message: 'Failed to update the investment. Please try again.',
+        type: TOAST_TYPE.ERROR,
+      }));
+    }
+  }
+
+  async function onCreateInvestment (investment) {
+    const {
+      success,
+      investment: savedInvestment,
+      totals,
+    } = await addInvestment(investment);
+
+    if (success && savedInvestment && totals) {
+      dispatch(addInvestmentAction({
+        year: savedInvestment.year,
+        month: savedInvestment.month,
+        week: savedInvestment.week,
+        investment: savedInvestment,
+      }));
+
+      dispatch(setInvestmentsTotalsAction(totals));
+
+      dispatch(showToastAction({
+        message: 'Saved',
+        type: TOAST_TYPE.INFO,
+      }));
+    } else {
+      dispatch(showToastAction({
+        message: 'Failed to add an investment. Please try again.',
+        type: TOAST_TYPE.ERROR,
+      }));
+    }
+  }
+
+  async function onDeleteSaving () {
+    const {
+      success,
+      totals,
+    } = await deleteSaving(savingToEdit);
+
+    if (success && totals) {
+      dispatch(deleteSavingAction({
+        year: savingToEdit.year,
+        month: savingToEdit.month,
+        week: savingToEdit.week,
+        saving: savingToEdit,
+      }));
+
+      dispatch(setSavingsTotalsAction(totals));
+
+      dispatch(showToastAction({
+        message: 'Deleted',
+        type: TOAST_TYPE.INFO,
+      }));
+    } else {
+      dispatch(showToastAction({
+        message: 'Failed to delete the saving. Please try again.',
+        type: TOAST_TYPE.ERROR,
+      }));
+    }
+  }
+
+  async function onDeleteInvestment () {
+    const {
+      success,
+      totals,
+    } = await deleteInvestment(investmentToEdit);
+
+    if (success && totals) {
+      dispatch(deleteInvestmentAction({
+        year: investmentToEdit.year,
+        month: investmentToEdit.month,
+        week: investmentToEdit.week,
+        investment: investmentToEdit,
+      }));
+
+      dispatch(setInvestmentsTotalsAction(totals));
+
+      dispatch(showToastAction({
+        message: 'Deleted',
+        type: TOAST_TYPE.INFO,
+      }));
+    } else {
+      dispatch(showToastAction({
+        message: 'Failed to delete the investment. Please try again.',
+        type: TOAST_TYPE.ERROR,
+      }));
     }
   }
 
@@ -254,19 +456,25 @@ export default function SavingScreen () {
       title={modalTitle}
       disableSave={formIsInvalid}
       onSave={onSave}
+      onDelete={typeId === TYPE.SAVING
+        ? savingToEdit ? onDeleteSaving : undefined
+        : investmentToEdit ? onDeleteInvestment : undefined
+      }
     >
-      <View style={{ zIndex: 20 }}>
-        <Dropdown
-          style={styles.formElement}
-          label='Type'
-          open={typeSelectOpen}
-          setOpen={setTypeSelectOpen}
-          value={typeId}
-          setValue={setTypeId}
-          items={types}
-          setItems={setTypes}
-        />
-      </View>
+      {!savingToEdit && !investmentToEdit && (
+        <View style={{ zIndex: 20 }}>
+          <Dropdown
+            style={styles.formElement}
+            label='Type'
+            open={typeSelectOpen}
+            setOpen={setTypeSelectOpen}
+            value={typeId}
+            setValue={setTypeId}
+            items={types}
+            setItems={setTypes}
+          />
+        </View>
+      )}
 
       <View style={styles.formRow}>
         <Input

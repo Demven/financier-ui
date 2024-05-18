@@ -6,8 +6,16 @@ import Modal from '../../components/Modal';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import Dropdown from '../../components/Dropdown';
 import DatePicker from '../../components/DatePicker';
-import { addIncomeAction, updateIncomeAction } from '../../redux/reducers/incomes';
+import { TOAST_TYPE } from '../../components/Toast';
+import {
+  addIncomeAction,
+  deleteIncomeAction,
+  setIncomesTotalsAction,
+  updateIncomeAction,
+} from '../../redux/reducers/incomes';
+import { showToastAction } from '../../redux/reducers/ui';
 import { dateToDateString, getWeekNumberByDayNumber } from '../../services/date';
+import { addIncome, updateIncome, deleteIncome } from '../../services/api/income';
 
 const DATE_OPTION = {
   TODAY: 'today',
@@ -98,37 +106,140 @@ export default function IncomeScreen () {
     if (isValid()) {
       if (incomeToEdit) {
         // update
-        const [year, month, day] = incomeToEdit.dateString.split('-').map(string => Number(string));
+        const [oldYear, oldMonth, oldDay] = incomeToEdit.dateString.split('-').map(string => Number(string));
+        const oldWeek = getWeekNumberByDayNumber(oldDay);
+
+        const [year, month, day] = dateString.split('-').map(string => Number(string));
         const week = getWeekNumberByDayNumber(day);
 
-        dispatch(updateIncomeAction({
-          year, // old year
-          month, // old month
-          week, // old week
-          income: {
-            id: incomeToEdit.id,
-            name,
-            dateString, // new date
-            amount: parseFloat(amount),
-          },
-        }));
+        const incomeToUpdate = {
+          id: incomeToEdit.id,
+          name,
+          dateString, // new date
+          year,
+          month,
+          week,
+          amount: parseFloat(amount),
+        };
+
+        onUpdate(oldYear, oldMonth, oldWeek, incomeToUpdate);
       } else {
         // create
         const [year, month, day] = dateString.split('-').map(string => Number(string));
         const week = getWeekNumberByDayNumber(day);
 
-        dispatch(addIncomeAction({
+        const incomeToSave = {
+          name,
+          dateString,
           year,
           month,
           week,
-          income: {
-            id: `${Math.floor(Math.random() * 100000)}`,
-            name,
-            dateString,
-            amount: parseFloat(amount),
-          },
+          amount: parseFloat(amount),
+        };
+
+        onCreate(incomeToSave);
+      }
+    }
+  }
+
+  async function onCreate (income) {
+    const {
+      success,
+      income: savedIncome,
+      totals,
+    } = await addIncome(income);
+
+    if (success && savedIncome && totals) {
+      dispatch(addIncomeAction({
+        year: savedIncome.year,
+        month: savedIncome.month,
+        week: savedIncome.week,
+        income: savedIncome,
+      }));
+
+      dispatch(setIncomesTotalsAction(totals));
+
+      dispatch(showToastAction({
+        message: 'Saved',
+        type: TOAST_TYPE.INFO,
+      }));
+    } else {
+      dispatch(showToastAction({
+        message: 'Failed to add an income. Please try again.',
+        type: TOAST_TYPE.ERROR,
+      }));
+    }
+  }
+
+  async function onUpdate (oldYear, oldMonth, oldWeek, income) {
+    const {
+      success,
+      totals,
+    } = await updateIncome(income);
+
+    if (success && totals) {
+      dispatch(updateIncomeAction({
+        year: oldYear,
+        month: oldMonth,
+        week: oldWeek,
+        income,
+      }));
+
+      const needToDeleteOldIncome = (
+        oldYear !== income.year
+        || oldMonth !== income.month
+        || oldWeek !== income.week
+      );
+
+      if (needToDeleteOldIncome) {
+        // the income has been moved to a new date, so we should delete the old object
+        dispatch(deleteIncomeAction({
+          year: oldYear,
+          month: oldMonth,
+          week: oldWeek,
+          income,
         }));
       }
+
+      dispatch(setIncomesTotalsAction(totals));
+
+      dispatch(showToastAction({
+        message: 'Updated',
+        type: TOAST_TYPE.INFO,
+      }));
+    } else {
+      dispatch(showToastAction({
+        message: 'Failed to update the income. Please try again.',
+        type: TOAST_TYPE.ERROR,
+      }));
+    }
+  }
+
+  async function onDelete () {
+    const {
+      success,
+      totals,
+    } = await deleteIncome(incomeToEdit);
+
+    if (success && totals) {
+      dispatch(deleteIncomeAction({
+        year: incomeToEdit.year,
+        month: incomeToEdit.month,
+        week: incomeToEdit.week,
+        income: incomeToEdit,
+      }));
+
+      dispatch(setIncomesTotalsAction(totals));
+
+      dispatch(showToastAction({
+        message: 'Deleted',
+        type: TOAST_TYPE.INFO,
+      }));
+    } else {
+      dispatch(showToastAction({
+        message: 'Failed to delete the income. Please try again.',
+        type: TOAST_TYPE.ERROR,
+      }));
     }
   }
 
@@ -140,6 +251,7 @@ export default function IncomeScreen () {
       title={incomeToEdit ? 'Edit an income' : 'Add an income' }
       disableSave={formIsInvalid}
       onSave={onSave}
+      onDelete={incomeToEdit ? onDelete : undefined}
     >
       <Input
         style={styles.formElement}

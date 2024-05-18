@@ -28,6 +28,7 @@ const savingsSlice = createSlice({
         savings: action.payload,
       };
     },
+
     addSaving: (state, action) => {
       const { year, month, week, saving } = action.payload;
 
@@ -45,14 +46,12 @@ const savingsSlice = createSlice({
         },
       };
 
-      // TODO: POST to API
-      // saveToStorage(STORAGE_KEY.SAVINGS, updatedSavings);
-
       return {
         ...state,
         savings: updatedSavings,
       };
     },
+
     updateSaving: (state, action) => {
       const {
         year: oldYear,
@@ -90,8 +89,44 @@ const savingsSlice = createSlice({
         },
       };
 
-      // TODO: POST to API
-      // saveToStorage(STORAGE_KEY.SAVINGS, updatedSavings);
+      return {
+        ...state,
+        savings: updatedSavings,
+      };
+    },
+
+    deleteSaving: (state, action) => {
+      const { year, month, week, saving } = action.payload;
+
+      const updatedSavings = {
+        ...state.savings,
+        [year]: {
+          ...(state.savings?.[year] || {}),
+          [month]: {
+            ...(state.savings?.[year]?.[month] || {}),
+            [week]: [
+              ...(state.savings?.[year]?.[month]?.[week] || [])
+                .filter(weekSaving => weekSaving.id !== saving.id),
+            ],
+          },
+        },
+      };
+
+      // after deletion, a week/month/year nodes can remain empty, so we need to clean up
+      // delete empty week
+      if (!updatedSavings[year][month][week].length) {
+        delete updatedSavings[year][month][week];
+      }
+
+      // delete empty month
+      if (!Object.keys(updatedSavings[year][month]).length) {
+        delete updatedSavings[year][month];
+      }
+
+      // delete empty year
+      if (!Object.keys(updatedSavings[year]).length) {
+        delete updatedSavings[year];
+      }
 
       return {
         ...state,
@@ -112,6 +147,7 @@ const savingsSlice = createSlice({
         investments: action.payload,
       };
     },
+
     addInvestment: (state, action) => {
       const { year, month, week, investment } = action.payload;
 
@@ -129,14 +165,12 @@ const savingsSlice = createSlice({
         },
       };
 
-      // TODO: POST to API
-      // saveToStorage(STORAGE_KEY.INVESTMENTS, updatedInvestments);
-
       return {
         ...state,
         investments: updatedInvestments,
       };
     },
+
     updateInvestment: (state, action) => {
       const {
         year: oldYear,
@@ -174,8 +208,44 @@ const savingsSlice = createSlice({
         },
       };
 
-      // TODO: POST to API
-      // saveToStorage(STORAGE_KEY.INVESTMENTS, updatedInvestments);
+      return {
+        ...state,
+        investments: updatedInvestments,
+      };
+    },
+
+    deleteInvestment: (state, action) => {
+      const { year, month, week, investment } = action.payload;
+
+      const updatedInvestments = {
+        ...state.investments,
+        [year]: {
+          ...(state.investments?.[year] || {}),
+          [month]: {
+            ...(state.investments?.[year]?.[month] || {}),
+            [week]: [
+              ...(state.investments?.[year]?.[month]?.[week] || [])
+                .filter(weekInvestment => weekInvestment.id !== investment.id),
+            ],
+          },
+        },
+      };
+
+      // after deletion, a week/month/year nodes can remain empty, so we need to clean up
+      // delete empty week
+      if (!updatedInvestments[year][month][week].length) {
+        delete updatedInvestments[year][month][week];
+      }
+
+      // delete empty month
+      if (!Object.keys(updatedInvestments[year][month]).length) {
+        delete updatedInvestments[year][month];
+      }
+
+      // delete empty year
+      if (!Object.keys(updatedInvestments[year]).length) {
+        delete updatedInvestments[year];
+      }
 
       return {
         ...state,
@@ -195,12 +265,14 @@ const savingsSlice = createSlice({
 export const setSavingsAction = savingsSlice.actions.setSavings;
 export const addSavingAction = savingsSlice.actions.addSaving;
 export const updateSavingAction = savingsSlice.actions.updateSaving;
+export const deleteSavingAction = savingsSlice.actions.deleteSaving;
 
 export const setSavingsTotalsAction = savingsSlice.actions.setSavingsTotals;
 
 export const setInvestmentsAction = savingsSlice.actions.setInvestments;
 export const addInvestmentAction = savingsSlice.actions.addInvestment;
 export const updateInvestmentAction = savingsSlice.actions.updateInvestment;
+export const deleteInvestmentAction = savingsSlice.actions.deleteInvestment;
 
 export const setInvestmentsTotalsAction = savingsSlice.actions.setInvestmentsTotals;
 

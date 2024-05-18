@@ -64,6 +64,7 @@ const expensesSlice = createSlice({
           },
         },
       };
+
       updatedExpenses[newYear] = {
         ...(updatedExpenses?.[newYear] || {}),
         [newMonth]: {
@@ -101,6 +102,22 @@ const expensesSlice = createSlice({
           },
         },
       };
+
+      // after deletion, a week/month/year nodes can remain empty, so we need to clean up
+      // delete empty week
+      if (!updatedExpenses[year][month][week].length) {
+        delete updatedExpenses[year][month][week];
+      }
+
+      // delete empty month
+      if (!Object.keys(updatedExpenses[year][month]).length) {
+        delete updatedExpenses[year][month];
+      }
+
+      // delete empty year
+      if (!Object.keys(updatedExpenses[year]).length) {
+        delete updatedExpenses[year];
+      }
 
       return {
         ...state,

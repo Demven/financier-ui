@@ -199,6 +199,22 @@ export default function ExpenseScreen () {
         expense,
       }));
 
+      const needToDeleteOldExpense = (
+        oldYear !== expense.year
+        || oldMonth !== expense.month
+        || oldWeek !== expense.week
+      );
+
+      if (needToDeleteOldExpense) {
+        // the expense has been moved to a new date, so we should delete the old object
+        dispatch(deleteExpenseAction({
+          year: oldYear,
+          month: oldMonth,
+          week: oldWeek,
+          expense,
+        }));
+      }
+
       dispatch(setExpensesTotalsAction(totals));
 
       dispatch(showToastAction({
