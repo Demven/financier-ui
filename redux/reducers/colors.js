@@ -12,25 +12,15 @@ const categoriesSlice = createSlice({
       ];
     },
     addColor: (state, action) => {
-      const updatedColors = [
+      return [
         ...state,
         action.payload,
       ];
-
-      // TODO: POST to API
-      // saveToStorage(STORAGE_KEY.COLORS, updatedColors);
-
-      return updatedColors;
     },
     deleteColor: (state, action) => {
-      const colorId = action.payload;
+      const { id: colorId } = action.payload;
 
-      const updatedColors = state.filter(color => color.id !== colorId);
-
-      // TODO: POST to API
-      // saveToStorage(STORAGE_KEY.COLORS, updatedColors);
-
-      return updatedColors;
+      return state.filter(color => color.id !== colorId);
     },
   },
 });

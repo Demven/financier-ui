@@ -5,12 +5,11 @@ import {
   StyleSheet,
   Platform,
 } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import ReanimatedColorPicker, { Panel5 } from 'reanimated-color-picker';
 import ColorTile from './ColorTile';
 import AddColorButton from './AddColorButton';
-import { addColorAction, deleteColorAction } from '../../redux/reducers/colors';
 import { getColorIntensityName } from '../../services/colors';
 import { COLOR } from '../../styles/colors';
 import { FONT } from '../../styles/fonts';
@@ -25,7 +24,8 @@ ColorPicker.propTypes = {
   }),
   errorText: PropTypes.string,
   onChange: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
+  onAddCustomColor: PropTypes.func.isRequired,
+  onDeleteCustomColor: PropTypes.func.isRequired,
 };
 
 export default function ColorPicker (props) {
@@ -35,10 +35,9 @@ export default function ColorPicker (props) {
     color,
     errorText,
     onChange,
-    onDelete,
+    onAddCustomColor,
+    onDeleteCustomColor,
   } = props;
-
-  const dispatch = useDispatch();
 
   const [focused, setFocused] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
@@ -72,23 +71,24 @@ export default function ColorPicker (props) {
   };
 
   function saveColor (hex, red, green, blue) {
-    dispatch(addColorAction({
-      id: `${Math.floor(Math.random() * 100000)}`,
+    const colorToSave = {
       name: hex,
       hex,
       red,
       green,
       blue,
       intensity: getColorIntensityName([red, green, blue]),
-    }));
+    };
+
+    onAddCustomColor(colorToSave);
   }
 
-  function onDeleteColor (id) {
-    if (id === color.id) {
+  function onDeleteColor (colorToDelete) {
+    if (colorToDelete.id === color.id) {
       onChooseColor(colors[0]);
     }
 
-    onDelete(id);
+    onDeleteCustomColor(colorToDelete);
   }
 
   const colorsPerRow = windowWidth < MEDIA.MOBILE
@@ -141,7 +141,7 @@ export default function ColorPicker (props) {
                 color={currentColor}
                 selected={color?.id === currentColor.id}
                 onPress={() => onChooseColor(currentColor)}
-                onDelete={() => onDeleteColor(currentColor.id)}
+                onDelete={() => onDeleteColor(currentColor)}
               />
             ))}
 

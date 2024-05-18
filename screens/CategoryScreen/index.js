@@ -10,9 +10,12 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import Modal from '../../components/Modal';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import ColorPicker from '../../components/ColorPicker';
+import { TOAST_TYPE } from '../../components/Toast';
 import { addCategoryAction, updateCategoryAction } from '../../redux/reducers/categories';
+import { addColorAction, deleteColorAction } from '../../redux/reducers/colors';
+import { showToastAction } from '../../redux/reducers/ui';
+import { addColor, deleteColor } from '../../services/api/color';
 import { MEDIA } from '../../styles/media';
-import { deleteColorAction } from '../../redux/reducers/colors';
 
 export default function CategoryScreen () {
   const route = useRoute();
@@ -75,8 +78,21 @@ export default function CategoryScreen () {
     }
   }
 
-  function onDeleteColor (colorIdToDelete) {
-    // can delete the color only after updating the color to teh default one for the current category
+  async function onAddCustomColor (colorToSave) {
+    const { success, color } = await addColor(colorToSave);
+
+    if (success) {
+      dispatch(addColorAction(color));
+    } else {
+      dispatch(showToastAction({
+        message: 'Failed to save the new color. Please try again.',
+        type: TOAST_TYPE.ERROR,
+      }));
+    }
+  }
+
+  async function onDeleteCustomColor (colorToDelete) {
+    // can delete the color only after updating the color to the default one for the current category
     if (categoryToEdit) {
       dispatch(updateCategoryAction({
         id: categoryToEdit.id,
@@ -86,7 +102,16 @@ export default function CategoryScreen () {
       }));
     }
 
-    dispatch(deleteColorAction(colorIdToDelete));
+    const { success } = await deleteColor(colorToDelete);
+
+    if (success) {
+      dispatch(deleteColorAction(colorToDelete));
+    } else {
+      dispatch(showToastAction({
+        message: 'Failed to delete the color. Please try again.',
+        type: TOAST_TYPE.ERROR,
+      }));
+    }
   }
 
   function onClose () {
@@ -144,7 +169,8 @@ export default function CategoryScreen () {
               color={color}
               errorText={colorError}
               onChange={setColor}
-              onDelete={onDeleteColor}
+              onAddCustomColor={onAddCustomColor}
+              onDeleteCustomColor={onDeleteCustomColor}
             />
           </View>
         </View>

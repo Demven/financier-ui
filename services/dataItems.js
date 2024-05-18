@@ -35,7 +35,7 @@ export function groupMonthByDay (groupedByWeeks, daysInMonth) {
 }
 
 export function groupExpensesTotalsByCategoryId (expenses) {
-  return expenses.reduce((groupedTotalsByCategoryId, expense) => {
+  return (expenses || []).reduce((groupedTotalsByCategoryId, expense) => {
       const categoryId = expense.categoryId;
 
     groupedTotalsByCategoryId[categoryId] = !!groupedTotalsByCategoryId[categoryId]
