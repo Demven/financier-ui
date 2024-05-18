@@ -15,6 +15,7 @@ import { addCategoryAction, updateCategoryAction } from '../../redux/reducers/ca
 import { addColorAction, deleteColorAction } from '../../redux/reducers/colors';
 import { showToastAction } from '../../redux/reducers/ui';
 import { addColor, deleteColor } from '../../services/api/color';
+import { addCategory, updateCategory } from '../../services/api/category';
 import { MEDIA } from '../../styles/media';
 
 export default function CategoryScreen () {
@@ -56,24 +57,45 @@ export default function CategoryScreen () {
     return valid;
   }
 
-  function onSave () {
+  async function onSave () {
     const isValid = validate();
 
     if (isValid) {
       if (categoryToEdit) {
-        dispatch(updateCategoryAction({
-          id: categoryToEdit.id,
+        const categoryToUpdate = {
+          ...categoryToEdit,
           name,
           description,
           colorId: color.id,
-        }));
+        };
+
+        const { success } = await updateCategory(categoryToUpdate);
+
+        if (success) {
+          dispatch(updateCategoryAction(categoryToUpdate));
+        } else {
+          dispatch(showToastAction({
+            message: 'Failed to update the category. Please try again.',
+            type: TOAST_TYPE.ERROR,
+          }));
+        }
       } else {
-        dispatch(addCategoryAction({
-          id: `${Math.floor(Math.random() * 100000)}`,
+        const categoryToSave = {
           name,
           description,
           colorId: color.id,
-        }));
+        };
+
+        const { success, category: savedCategory } = await addCategory(categoryToSave);
+
+        if (success) {
+          dispatch(addCategoryAction(savedCategory));
+        } else {
+          dispatch(showToastAction({
+            message: 'Failed to save the category. Please try again.',
+            type: TOAST_TYPE.ERROR,
+          }));
+        }
       }
     }
   }

@@ -68,7 +68,7 @@ export default function Dropdown (props) {
         textStyle={[styles.pickerText, placeholderStyle]}
         dropDownContainerStyle={[styles.pickerList, {
           height: Math.ceil(ITEM_HEIGHT * items.length),
-          maxHeight: Math.ceil(ITEM_HEIGHT * 6),
+          maxHeight: Math.ceil(ITEM_HEIGHT * 5),
         }]}
         listItemContainerStyle={styles.pickerListItem}
         listItemLabelStyle={styles.pickerListItemText}

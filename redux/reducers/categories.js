@@ -11,29 +11,22 @@ const categoriesSlice = createSlice({
         ...action.payload,
       ];
     },
+
     addCategory: (state, action) => {
-      const updatedCategories = [
+      return [
         ...state,
         action.payload,
       ];
-
-      // TODO: POST to API
-      // saveToStorage(STORAGE_KEY.CATEGORIES, updatedCategories);
-
-      return updatedCategories;
     },
+
     updateCategory: (state, action) => {
       const updatedCategory = action.payload;
-      const updatedCategories = state.map(category => {
+
+      return state.map(category => {
         return category.id === updatedCategory.id
           ? updatedCategory
           : category;
       });
-
-      // TODO: POST to API
-      // saveToStorage(STORAGE_KEY.CATEGORIES, updatedCategories);
-
-      return updatedCategories;
     },
   },
 });
