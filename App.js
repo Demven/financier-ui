@@ -38,10 +38,14 @@ import IncomeScreen from './screens/IncomeScreen';
 import CategoryScreen from './screens/CategoryScreen';
 import HeaderLeft from './components/HeaderLeft';
 import HeaderRight from './components/HeaderRight';
-import { TAB, TABS, TAB_NAME } from './components/HeaderTabs';
 import DrawerContent from './components/DrawerContent';
 import Toast from './components/Toast';
-import { STORAGE_KEY, retrieveFromStorage } from './services/storage';
+import { TAB, TABS, TAB_NAME } from './components/HeaderTabs';
+import {
+  STORAGE_KEY,
+  saveToStorage,
+  retrieveFromStorage,
+} from './services/storage';
 import { validateToken } from './services/api/auth';
 import { fetchBasics } from './services/api/basics';
 import { fetchOverviewForYear } from './services/api/overview';
@@ -825,13 +829,32 @@ export default function App () {
     MaterialCommunityIcons: require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf'),
   });
 
+  const [isNavigationReady, setIsNavigationReady] = useState(false);
+  const [navigationInitialState, setNavigationInitialState] = useState();
+
+  useEffect(() => {
+    if (!isNavigationReady) {
+      restoreNavigationState();
+    }
+  }, [isNavigationReady]);
+
   const checkIfNeedToHideSplashScreen = useCallback(async () => {
     if (fontsLoaded) {
       await SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
 
-  if (!fontsLoaded) {
+  async function restoreNavigationState () {
+    const savedNavigationState = await retrieveFromStorage(STORAGE_KEY.NAVIGATION_STATE);
+
+    if (savedNavigationState) {
+      setNavigationInitialState(savedNavigationState);
+    }
+
+    setIsNavigationReady(true);
+  }
+
+  if (!fontsLoaded || !isNavigationReady) {
     return null;
   }
 
@@ -844,6 +867,8 @@ export default function App () {
 
       <Provider store={store}>
         <NavigationContainer
+          initialState={navigationInitialState}
+          onStateChange={state => saveToStorage(STORAGE_KEY.NAVIGATION_STATE, state)}
           linking={{
             config: {
               screens: {
