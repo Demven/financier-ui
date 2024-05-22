@@ -7,8 +7,7 @@ import {
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
-import { Formik } from 'formik';
-// import AppleButton from '../../components/AppleButton';
+import AppleButton from '../../components/AppleButton';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import Button, { BUTTON_LOOK } from '../../components/Button';
 import { TOAST_TYPE } from '../../components/Toast';
@@ -25,10 +24,13 @@ export default function SignInScreen () {
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
+  const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
+
+  const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
 
-  function validateEmail (email) {
+  function validateEmail () {
     let valid = true;
 
     if (!email.trim().length) {
@@ -44,7 +46,7 @@ export default function SignInScreen () {
     return valid;
   }
 
-  function validatePassword (password) {
+  function validatePassword () {
     let valid = true;
 
     if (!password.trim().length) {
@@ -66,7 +68,7 @@ export default function SignInScreen () {
     return navigation.navigate('Overview', { screen: 'OverviewMonths' });
   }
 
-  async function onSubmit ({ email, password }) {
+  async function onSignIn () {
     const isValid = validateEmail(email) && validatePassword(password);
 
     if (isValid) {
@@ -83,11 +85,13 @@ export default function SignInScreen () {
     }
   }
 
-  function onKeyPress ({ email, password }) {
-    return (event) => {
-      if (event.nativeEvent.key === 'Enter'){
-        onSubmit({ email, password })
-      }
+  function onCreateAccount () {
+    console.info('onCreateAccount', email, password);
+  }
+
+  function onKeyPress (event) {
+    if (event.nativeEvent.key === 'Enter'){
+      onSignIn()
     }
   }
 
@@ -115,60 +119,55 @@ export default function SignInScreen () {
         Financier
       </Text>
 
-      <Formik
-        initialValues={{
-          email: '',
-          password: '',
-        }}
-        onSubmit={onSubmit}
-      >
-        {({ handleChange, handleBlur, handleSubmit, values, values: { email, password } }) => (
-          <View style={styles.form}>
-            <Input
-              style={styles.formElement}
-              label='Email'
-              inputType={INPUT_TYPE.EMAIL}
-              value={email}
-              errorText={emailError}
-              onChange={handleChange('email')}
-              onBlur={() => {
-                validateEmail(email);
-                handleBlur('email');
-              }}
-              onKeyPress={onKeyPress(values)}
-              autoFocus
-            />
+      <View style={styles.form}>
+        <Input
+          style={styles.formElement}
+          label='Email'
+          inputType={INPUT_TYPE.EMAIL}
+          value={email}
+          errorText={emailError}
+          onChange={setEmail}
+          onBlur={() => validateEmail(email)}
+          onKeyPress={onKeyPress}
+          autoFocus
+        />
 
-            <Input
-              style={styles.formElement}
-              label='Password'
-              inputType={INPUT_TYPE.DEFAULT}
-              value={password}
-              errorText={passwordError}
-              onChange={handleChange('password')}
-              onBlur={() => {
-                validatePassword(password);
-                handleBlur('password');
-              }}
-              onKeyPress={onKeyPress(values)}
-              secure
-            />
+        <Input
+          style={styles.formElement}
+          label='Password'
+          inputType={INPUT_TYPE.DEFAULT}
+          value={password}
+          errorText={passwordError}
+          onChange={setPassword}
+          onBlur={() => validatePassword(password)}
+          onKeyPress={onKeyPress}
+          secure
+        />
 
-            <Button
-              style={styles.signInButton}
-              buttonContainerStyle={styles.signInButtonContainer}
-              look={BUTTON_LOOK.PRIMARY}
-              text='Sign In'
-              disabled={disableSignIn}
-              onPress={handleSubmit}
-            />
+        <Button
+          style={styles.signInButton}
+          buttonContainerStyle={styles.signInButtonContainer}
+          look={BUTTON_LOOK.PRIMARY}
+          text='Sign In'
+          disabled={disableSignIn}
+          onPress={onSignIn}
+        />
 
-            {/*<View style={styles.appleButtonContainer}>*/}
-            {/*  <AppleButton onSignIn={() => onSuccess('apple-id-token')} />*/}
-            {/*</View>*/}
-          </View>
-        )}
-      </Formik>
+        <Button
+          style={styles.createAccountButton}
+          buttonContainerStyle={styles.createAccountButtonContainer}
+          look={BUTTON_LOOK.PRIMARY}
+          text='Create Account'
+          disabled={disableSignIn}
+          onPress={onCreateAccount}
+        />
+
+        <View style={styles.appleButtonContainer}>
+          <AppleButton
+            onSignIn={() => onSuccess('apple-id-token')}
+          />
+        </View>
+      </View>
     </View>
   );
 }
@@ -204,13 +203,20 @@ const styles = StyleSheet.create({
   },
 
   signInButton: {
-    marginTop: 40,
+    marginTop: 52,
   },
   signInButtonContainer: {
     height: 46,
   },
 
+  createAccountButton: {
+    marginTop: 20,
+  },
+  createAccountButtonContainer: {
+    height: 46,
+  },
+
   appleButtonContainer: {
-    marginTop: 24,
+    marginTop: 52,
   },
 });

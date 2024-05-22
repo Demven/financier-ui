@@ -615,9 +615,11 @@ function Navigator () {
   const [basicDataFetched, setBasicDataFetched] = useState(false);
 
   useEffect(() => {
-    checkIfLoggedIn();
-    initializeRedux();
-    fetchBasicsData();
+    checkIfLoggedIn()
+      .then(() => {
+        initializeRedux();
+        fetchBasicsData();
+      });
   }, [navigation]);
 
   useEffect(() => {
