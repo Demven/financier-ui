@@ -18,7 +18,10 @@ export function signIn (email, password) {
       throw new Error('Failed to get response');
     })
     .then(data => data.token)
-    .catch(console.error);
+    .catch((error) => {
+      console.error(error);
+      return '';
+    });
 }
 
 export function validateToken (token) {

@@ -41,6 +41,7 @@ Input.propTypes = {
   ]),
   onChange: PropTypes.func.isRequired,
   onBlur: PropTypes.func,
+  onKeyPress: PropTypes.func,
   errorText: PropTypes.string,
   disabled: PropTypes.bool,
   autoFocus: PropTypes.bool,
@@ -58,7 +59,8 @@ export default function Input (props) {
     value,
     errorText,
     onChange,
-    onBlur = () => {},
+    onBlur,
+    onKeyPress,
     disabled,
     autoFocus,
   } = props;
@@ -115,6 +117,7 @@ export default function Input (props) {
             setFocused(false);
             onBlur();
           }}
+          onKeyPress={onKeyPress}
           autoFocus={autoFocus}
         />
       </View>
