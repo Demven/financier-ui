@@ -47,3 +47,30 @@ export function validateToken (token) {
     )
     .catch(console.error);
 }
+
+export function register (account) {
+  return fetch(`${apiUrl}/v1/auth/register`, {
+    method: 'PUT',
+    mode: 'cors',
+    cache: 'no-cache',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(account),
+  })
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+
+      throw new Error('Failed to get response');
+    })
+    .catch((error) => {
+      console.error(error);
+
+      return {
+        success: false,
+        error: error.message,
+      };
+    });
+}

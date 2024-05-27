@@ -16,6 +16,7 @@ const uiSlice = createSlice({
       type: TOAST_TYPE.INFO,
       visible: false,
     },
+    reinitialize: false,
   },
 
   reducers: {
@@ -55,6 +56,12 @@ const uiSlice = createSlice({
         },
       };
     },
+    reinitialize: (state, action) => {
+      return {
+        ...state,
+        reinitialize: action.payload === true,
+      };
+    },
   },
 });
 
@@ -63,5 +70,6 @@ export const setSelectedTabAction = uiSlice.actions.setSelectedTab;
 export const setSelectedYearAction = uiSlice.actions.setSelectedYear;
 export const showToastAction = uiSlice.actions.showToast;
 export const hideToastAction = uiSlice.actions.hideToast;
+export const reinitializeAction = uiSlice.actions.reinitialize;
 
 export default uiSlice.reducer;

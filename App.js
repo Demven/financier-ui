@@ -62,6 +62,7 @@ import {
   setWindowWidthAction,
   setSelectedTabAction,
   setSelectedYearAction,
+  reinitializeAction,
 } from './redux/reducers/ui';
 import { setIncomesAction, setIncomesTotalsAction } from './redux/reducers/incomes';
 import { setColorsAction } from './redux/reducers/colors';
@@ -610,17 +611,23 @@ function Navigator () {
 
   const selectedYear = useSelector(state => state.ui.selectedYear);
   const toast = useSelector(state => state.ui.toast);
+  const needToReinitialize = useSelector(state => state.ui.reinitialize);
 
   const [reduxInitialized, setReduxInitialized] = useState(false);
   const [basicDataFetched, setBasicDataFetched] = useState(false);
 
   useEffect(() => {
     checkIfLoggedIn()
-      .then(() => {
-        initializeRedux();
-        fetchBasicsData();
+      .then((isLoggedIn) => {
+        if (isLoggedIn) {
+          initializeRedux();
+          fetchBasicsData();
+        }
+      })
+      .finally(() => {
+        dispatch(reinitializeAction(false));
       });
-  }, [navigation]);
+  }, [needToReinitialize]);
 
   useEffect(() => {
     if (reduxInitialized && basicDataFetched && selectedYear) {
@@ -639,13 +646,19 @@ function Navigator () {
 
     if (!token) {
       navigateToSignInPage();
+
+      return false;
     }
 
     const tokenValidationResult = await validateToken(token);
 
     if (!tokenValidationResult) {
       navigateToSignInPage();
+
+      return false;
     }
+
+    return true;
   }
 
   async function initializeRedux () {

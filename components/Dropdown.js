@@ -18,6 +18,7 @@ Dropdown.propTypes = {
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
   value: PropTypes.string,
+  maxVisibleItems: PropTypes.number,
   setValue: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.shape({
     label: PropTypes.string.isRequired,
@@ -36,6 +37,7 @@ export default function Dropdown (props) {
     placeholder = '',
     placeholderStyle,
     open = false,
+    maxVisibleItems = 5,
     setOpen = () => {},
     value = '',
     setValue = () => {},
@@ -68,7 +70,7 @@ export default function Dropdown (props) {
         textStyle={[styles.pickerText, placeholderStyle]}
         dropDownContainerStyle={[styles.pickerList, {
           height: Math.ceil(ITEM_HEIGHT * items.length),
-          maxHeight: Math.ceil(ITEM_HEIGHT * 5),
+          maxHeight: Math.ceil(ITEM_HEIGHT * maxVisibleItems),
         }]}
         listItemContainerStyle={styles.pickerListItem}
         listItemLabelStyle={styles.pickerListItemText}

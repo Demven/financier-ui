@@ -74,7 +74,7 @@ export default function Button (props) {
           destructive && styles.textDestructive,
           textStyle,
           ((pressed || focused) && !disabled && !destructive) && styles.textActive,
-          ((hover || focused) && destructive) && styles.textDestructiveActive,
+          ((hover || focused) && look === BUTTON_LOOK.TERTIARY) && styles.textTertiaryActive,
         ]}>
           {text}
         </Text>
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
   textDestructive: {
     color: COLOR.RED,
   },
-  textDestructiveActive: {
+  textTertiaryActive: {
     textDecorationLine: 'underline',
     textDecorationStyle: 'solid',
   },
