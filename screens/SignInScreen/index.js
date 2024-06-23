@@ -12,13 +12,14 @@ import Input, { INPUT_TYPE } from '../../components/Input';
 import Button, { BUTTON_LOOK } from '../../components/Button';
 import { TOAST_TYPE } from '../../components/Toast';
 import Dropdown from '../../components/Dropdown';
-import { STORAGE_KEY, saveToStorage } from '../../services/storage';
+import { STORAGE_KEY, saveToStorage, clearStorage } from '../../services/storage';
 import { CURRENCIES, CURRENCY } from '../../services/currency';
 import { reinitializeAction, showToastAction } from '../../redux/reducers/ui';
 import { signIn, register } from '../../services/api/auth';
 import { FONT } from '../../styles/fonts';
 import { MEDIA } from '../../styles/media';
 import { COLOR } from '../../styles/colors';
+import { resetStore } from '../../redux/store';
 
 export default function SignInScreen () {
   const navigation = useNavigation();
@@ -106,12 +107,11 @@ export default function SignInScreen () {
   async function onSuccess (token) {
     await saveToStorage(STORAGE_KEY.TOKEN, token);
 
+    onBackToSignIn();
+
     dispatch(reinitializeAction(true));
 
-    return navigation.navigate('Overview', {
-      screen: 'OverviewMonths',
-      redirectedFromSignInPage: true,
-    });
+    return navigation.navigate('Drawer');
   }
 
   async function onSignIn () {
@@ -121,6 +121,8 @@ export default function SignInScreen () {
       const token = await signIn(email, password);
 
       if (token) {
+        resetStore(dispatch);
+        await clearStorage();
         await onSuccess(token);
       } else {
         dispatch(showToastAction({
@@ -128,6 +130,11 @@ export default function SignInScreen () {
           type: TOAST_TYPE.ERROR,
         }));
       }
+    } else {
+      dispatch(showToastAction({
+        message: 'Invalid email or password',
+        type: TOAST_TYPE.ERROR,
+      }));
     }
   }
 

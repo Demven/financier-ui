@@ -1,19 +1,23 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+const INITIAL_STATE = {
+  id: 0,
+  firstName: '',
+  lastName: '',
+  email: '',
+  language: 'en',
+  currencyType: 'USD',
+  currencySymbol: '$',
+};
+
 const accountSlice = createSlice({
   name: 'account',
 
-  initialState: {
-    id: 0,
-    firstName: '',
-    lastName: '',
-    email: '',
-    language: 'en',
-    currencyType: 'USD',
-    currencySymbol: '$',
-  },
+  initialState: INITIAL_STATE,
 
   reducers: {
+    resetAccount: () => INITIAL_STATE,
+
     setAccount: (state, action) => ({
       ...state,
       ...action.payload,
@@ -44,6 +48,8 @@ const accountSlice = createSlice({
     }),
   },
 });
+
+export const resetAccountAction = accountSlice.actions.resetAccount;
 
 export const setAccountAction = accountSlice.actions.setAccount;
 export const setFirstNameAction = accountSlice.actions.setFirstName;

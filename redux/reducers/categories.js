@@ -1,11 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+const INITIAL_STATE = [];
+
 const categoriesSlice = createSlice({
   name: 'categories',
 
-  initialState: [],
+  initialState: INITIAL_STATE,
 
   reducers: {
+    resetCategories: () => INITIAL_STATE,
     setCategories: (state, action) => {
       return [
         ...action.payload,
@@ -31,6 +34,7 @@ const categoriesSlice = createSlice({
   },
 });
 
+export const resetCategoriesAction = categoriesSlice.actions.resetCategories;
 export const setCategoriesAction = categoriesSlice.actions.setCategories;
 export const addCategoryAction = categoriesSlice.actions.addCategory;
 export const updateCategoryAction = categoriesSlice.actions.updateCategory;

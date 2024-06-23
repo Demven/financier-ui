@@ -1,20 +1,24 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { getWeekNumberByDayNumber } from '../../services/date';
 
+const INITIAL_STATE = {
+  incomes: {},
+  incomesTotals: {
+    total: 0,
+    yearAverage: 0,
+    monthAverage: 0,
+    weekAverage: 0,
+  },
+};
+
 const incomesSlice = createSlice({
   name: 'incomes',
 
-  initialState: {
-    incomes: {},
-    incomesTotals: {
-      total: 0,
-      yearAverage: 0,
-      monthAverage: 0,
-      weekAverage: 0,
-    },
-  },
+  initialState: INITIAL_STATE,
 
   reducers: {
+    resetIncomesAndIncomesTotals: () => INITIAL_STATE,
+
     setIncomes: (state, action) => {
       return {
         ...state,
@@ -137,6 +141,7 @@ const incomesSlice = createSlice({
   },
 });
 
+export const resetIncomesAndIncomesTotalsAction = incomesSlice.actions.resetIncomesAndIncomesTotals;
 export const setIncomesAction = incomesSlice.actions.setIncomes;
 export const addIncomeAction = incomesSlice.actions.addIncome;
 export const updateIncomeAction = incomesSlice.actions.updateIncome;

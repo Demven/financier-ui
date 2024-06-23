@@ -1,11 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+const INITIAL_STATE = [];
+
 const categoriesSlice = createSlice({
   name: 'colors',
 
-  initialState: [],
+  initialState: INITIAL_STATE,
 
   reducers: {
+    resetColors: () => INITIAL_STATE,
+
     setColors: (state, action) => {
       return [
         ...action.payload,
@@ -25,6 +29,7 @@ const categoriesSlice = createSlice({
   },
 });
 
+export const resetColorsAction = categoriesSlice.actions.resetColors;
 export const setColorsAction = categoriesSlice.actions.setColors;
 export const addColorAction = categoriesSlice.actions.addColor;
 export const deleteColorAction = categoriesSlice.actions.deleteColor;

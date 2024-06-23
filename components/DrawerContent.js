@@ -9,7 +9,7 @@ import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawe
 import { useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import Logo from './Logo';
-import { removeFromStorage, STORAGE_KEY } from '../services/storage';
+import { clearStorage } from '../services/storage';
 import { COLOR } from '../styles/colors';
 import { FONT } from '../styles/fonts';
 import { MEDIA } from '../styles/media';
@@ -24,7 +24,7 @@ export default function DrawerContent (props) {
   const lastName = useSelector(state => state.account.lastName) || '';
 
   async function onLogOut () {
-    await removeFromStorage(STORAGE_KEY.TOKEN);
+    await clearStorage();
 
     navigation.navigate('SignIn');
   }

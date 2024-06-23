@@ -74,3 +74,30 @@ export function register (account) {
       };
     });
 }
+
+export function confirmEmail (token) {
+  return fetch(`${apiUrl}/v1/auth/confirm-email`, {
+    method: 'POST',
+    mode: 'cors',
+    cache: 'no-cache',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ token }),
+  })
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+
+      throw new Error('Failed to get response');
+    })
+    .catch((error) => {
+      console.error(error);
+
+      return {
+        success: false,
+        error: error.message,
+      };
+    });
+}

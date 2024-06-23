@@ -1,27 +1,31 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { getWeekNumberByDayNumber } from '../../services/date';
 
+const INITIAL_STATE = {
+  savings: {},
+  savingsTotals: {
+    total: 0,
+    yearAverage: 0,
+    monthAverage: 0,
+    weekAverage: 0,
+  },
+  investments: {},
+  investmentsTotals: {
+    total: 0,
+    yearAverage: 0,
+    monthAverage: 0,
+    weekAverage: 0,
+  },
+};
+
 const savingsSlice = createSlice({
   name: 'savings',
 
-  initialState: {
-    savings: {},
-    savingsTotals: {
-      total: 0,
-      yearAverage: 0,
-      monthAverage: 0,
-      weekAverage: 0,
-    },
-    investments: {},
-    investmentsTotals: {
-      total: 0,
-      yearAverage: 0,
-      monthAverage: 0,
-      weekAverage: 0,
-    },
-  },
+  initialState: INITIAL_STATE,
 
   reducers: {
+    resetSavingsAndInvestments: () => INITIAL_STATE,
+
     setSavings: (state, action) => {
       return {
         ...state,
@@ -261,6 +265,8 @@ const savingsSlice = createSlice({
     },
   },
 });
+
+export const resetSavingsAndInvestmentsAction = savingsSlice.actions.resetSavingsAndInvestments;
 
 export const setSavingsAction = savingsSlice.actions.setSavings;
 export const addSavingAction = savingsSlice.actions.addSaving;

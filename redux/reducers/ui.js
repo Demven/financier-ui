@@ -4,22 +4,26 @@ import { TAB } from '../../components/HeaderTabs';
 import { TOAST_TYPE } from '../../components/Toast';
 import { saveToStorage, STORAGE_KEY } from '../../services/storage';
 
+const getInitialState = () => ({
+  windowWidth: Dimensions.get('window').width,
+  selectedTab: TAB.MONTHS,
+  selectedYear: new Date().getFullYear(),
+  toast: {
+    message: '',
+    type: TOAST_TYPE.INFO,
+    visible: false,
+  },
+  reinitialize: false,
+});
+
 const uiSlice = createSlice({
   name: 'ui',
 
-  initialState: {
-    windowWidth: Dimensions.get('window').width,
-    selectedTab: TAB.MONTHS,
-    selectedYear: new Date().getFullYear(),
-    toast: {
-      message: '',
-      type: TOAST_TYPE.INFO,
-      visible: false,
-    },
-    reinitialize: false,
-  },
+  initialState: getInitialState(),
 
   reducers: {
+    resetUI: () => getInitialState(),
+
     setWindowWidth: (state, action) => ({
       ...state,
       windowWidth: action.payload,
@@ -64,6 +68,8 @@ const uiSlice = createSlice({
     },
   },
 });
+
+export const resetUIAction = uiSlice.actions.resetUI;
 
 export const setWindowWidthAction = uiSlice.actions.setWindowWidth;
 export const setSelectedTabAction = uiSlice.actions.setSelectedTab;
