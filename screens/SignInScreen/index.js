@@ -28,7 +28,10 @@ export default function SignInScreen () {
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
   const [createAccountFlow, setCreateAccountFlow] = useState(false);
-  const [showSuccessView, setShowSuccessView] = useState(false);
+  const [forgotPasswordFlow, setForgotPasswordFlow] = useState(false);
+
+  const [showRegistrationSuccessView, setShowRegistrationSuccessView] = useState(false);
+  const [showPasswordResetSuccessView, setShowPasswordResetSuccessView] = useState(false);
 
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -49,11 +52,15 @@ export default function SignInScreen () {
   function validateEmail () {
     let valid = true;
 
+    const isValid = email?.match(
+      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+
     if (!email.trim().length) {
       setEmailError('Email can\'t be empty');
       valid = false;
-    } else if (!email.includes('@')) {
-      setEmailError('Doesn\'t look like an email address');
+    } else if (!isValid) {
+      setEmailError('Doesn\'t look like an e-mail address');
       valid = false;
     } else {
       setEmailError('');
@@ -160,7 +167,7 @@ export default function SignInScreen () {
       } = await register(accountToRegister);
 
       if (success && !error) {
-        setShowSuccessView(true);
+        setShowRegistrationSuccessView(true);
       } else {
         dispatch(showToastAction({
           message: error,
@@ -170,6 +177,14 @@ export default function SignInScreen () {
     }
   }
 
+  function onForgotPassword () {
+    setForgotPasswordFlow(true);
+  }
+
+  function onResetPassword () {
+    setShowPasswordResetSuccessView(true);
+  }
+
   function onBackToSignIn () {
     setFirstName('');
     setFirstNameError('');
@@ -177,7 +192,9 @@ export default function SignInScreen () {
     setLastNameError('');
     setCurrencyType(CURRENCY.US_DOLLAR);
     setCreateAccountFlow(false);
-    setShowSuccessView(false);
+    setForgotPasswordFlow(false);
+    setShowRegistrationSuccessView(false);
+    setShowPasswordResetSuccessView(false);
   }
 
   function onKeyPress (event) {
@@ -188,6 +205,8 @@ export default function SignInScreen () {
 
   const disableSignIn = !!emailError || !!passwordError;
   const disableCreateAccount = disableSignIn || !!firstNameError || !!lastNameError;
+
+  const messageIsVisible = showRegistrationSuccessView || showPasswordResetSuccessView;
 
   return (
     <View
@@ -212,12 +231,12 @@ export default function SignInScreen () {
       </Text>
 
       <View style={[styles.form, {
-        maxWidth: showSuccessView
+        maxWidth: messageIsVisible
           ? windowWidth < MEDIA.WIDE_MOBILE ? 320 : 400
           : 286,
-        bottom: (createAccountFlow || showSuccessView) ? '25%' : '14%',
+        bottom: (createAccountFlow || messageIsVisible) ? '25%' : '14%',
       }]}>
-        {!createAccountFlow && !showSuccessView && (
+        {!createAccountFlow && !messageIsVisible && (
           <>
             <Input
               style={styles.formElement}
@@ -231,30 +250,34 @@ export default function SignInScreen () {
               autoFocus
             />
 
-            <Input
-              style={styles.formElement}
-              label='Password'
-              inputType={INPUT_TYPE.DEFAULT}
-              value={password}
-              errorText={passwordError}
-              onChange={setPassword}
-              onBlur={() => validatePassword(password)}
-              onKeyPress={onKeyPress}
-              secure
-            />
+            {!forgotPasswordFlow && (
+              <>
+                <Input
+                  style={styles.formElement}
+                  label='Password'
+                  inputType={INPUT_TYPE.DEFAULT}
+                  value={password}
+                  errorText={passwordError}
+                  onChange={setPassword}
+                  onBlur={() => validatePassword(password)}
+                  onKeyPress={onKeyPress}
+                  secure
+                />
 
-            <Button
-              style={styles.signInButton}
-              buttonContainerStyle={styles.signInButtonContainer}
-              look={BUTTON_LOOK.PRIMARY}
-              text='Sign In'
-              disabled={disableSignIn}
-              onPress={onSignIn}
-            />
+                <Button
+                  style={styles.signInButton}
+                  buttonContainerStyle={styles.buttonContainer}
+                  look={BUTTON_LOOK.PRIMARY}
+                  text='Sign In'
+                  disabled={disableSignIn}
+                  onPress={onSignIn}
+                />
+              </>
+            )}
           </>
         )}
 
-        {createAccountFlow && !showSuccessView && (
+        {createAccountFlow && !showRegistrationSuccessView && (
           <>
             <Input
               style={styles.formElement}
@@ -295,16 +318,37 @@ export default function SignInScreen () {
           </>
         )}
 
-        {!showSuccessView && (
+        {(!showRegistrationSuccessView && !forgotPasswordFlow) && (
+          <>
+            <Button
+              style={[styles.createAccountButton, {
+                marginTop: createAccountFlow ? 52 : 20,
+              }]}
+              buttonContainerStyle={styles.buttonContainer}
+              look={createAccountFlow ? BUTTON_LOOK.PRIMARY : BUTTON_LOOK.SECONDARY}
+              text='Create Account'
+              disabled={disableCreateAccount}
+              onPress={onCreateAccount}
+            />
+
+            <Button
+              style={styles.forgotPasswordButton}
+              buttonContainerStyle={styles.buttonContainer}
+              look={BUTTON_LOOK.TERTIARY}
+              text='Forgot password?'
+              onPress={onForgotPassword}
+            />
+          </>
+        )}
+
+        {(forgotPasswordFlow && !showPasswordResetSuccessView) && (
           <Button
-            style={[styles.createAccountButton, {
-              marginTop: createAccountFlow ? 52 : 20,
-            }]}
-            buttonContainerStyle={styles.createAccountButtonContainer}
-            look={createAccountFlow ? BUTTON_LOOK.PRIMARY : BUTTON_LOOK.SECONDARY}
-            text='Create Account'
-            disabled={disableCreateAccount}
-            onPress={onCreateAccount}
+            style={styles.resetPasswordButton}
+            buttonContainerStyle={styles.buttonContainer}
+            look={BUTTON_LOOK.PRIMARY}
+            text='Reset Password'
+            disabled={!!emailError}
+            onPress={onResetPassword}
           />
         )}
 
@@ -314,30 +358,40 @@ export default function SignInScreen () {
         {/*  />*/}
         {/*</View>*/}
 
-        {showSuccessView && (
+        {(showRegistrationSuccessView || showPasswordResetSuccessView) && (
           <View style={styles.successContainer}>
-            <Text style={styles.successMessage}>
-              Dear {firstName},
+            {showRegistrationSuccessView && (
+              <>
+                <Text style={styles.successMessage}>
+                  Dear {firstName},
+                </Text>
+
+                <Text style={[styles.successMessage, { marginTop: 24 }]}>
+                  Please check your email inbox and follow the instructions to confirm your email address <Text style={{ fontWeight: 'bold', color: COLOR.ORANGE }}>{email}</Text>.
+                </Text>
+              </>
+            )}
+
+            {showPasswordResetSuccessView && (
+              <Text style={[styles.successMessage, { marginTop: 24 }]}>
+                We have successfully reset your password. Please check your email, and follow the instructions to set up your new password.
+              </Text>
+            )}
+
+            <Text style={[styles.successMessage, { marginTop: 24 }]}>
+              It should take you just a second to keep tracking all your finances in our beautiful app.
             </Text>
 
             <Text style={[styles.successMessage, { marginTop: 24 }]}>
-              Please check your email inbox and follow the instructions to confirm your email address <Text style={{ fontWeight: 'bold', color: COLOR.ORANGE }}>{email}</Text>.
-            </Text>
-
-            <Text style={[styles.successMessage, { marginTop: 24 }]}>
-              It should take you just a second to start tracking all your finances in our beautiful app.
-            </Text>
-
-            <Text style={[styles.successMessage, { marginTop: 24 }]}>
-              Financier
+              Your Financier
             </Text>
           </View>
         )}
 
-        {createAccountFlow && (
+        {(createAccountFlow || forgotPasswordFlow) && (
           <Button
             style={styles.backToSignInButton}
-            buttonContainerStyle={styles.backToSignInButtonContainer}
+            buttonContainerStyle={styles.buttonContainer}
             look={BUTTON_LOOK.TERTIARY}
             text='Back to Sign-In'
             onPress={onBackToSignIn}
@@ -376,23 +430,26 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR.WHITE,
   },
 
-  signInButton: {
-    marginTop: 52,
-  },
-  signInButtonContainer: {
+  buttonContainer: {
     height: 46,
   },
 
+  signInButton: {
+    marginTop: 52,
+  },
+
   createAccountButton: {},
-  createAccountButtonContainer: {
-    height: 46,
+
+  resetPasswordButton: {
+    marginTop: 24,
+  },
+
+  forgotPasswordButton: {
+    marginTop: 16,
   },
 
   backToSignInButton: {
     marginTop: 24,
-  },
-  backToSignInButtonContainer: {
-    height: 46,
   },
 
   appleButtonContainer: {
