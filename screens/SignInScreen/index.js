@@ -15,7 +15,7 @@ import Dropdown from '../../components/Dropdown';
 import { STORAGE_KEY, saveToStorage, clearStorage } from '../../services/storage';
 import { CURRENCIES, CURRENCY } from '../../services/currency';
 import { reinitializeAction, showToastAction } from '../../redux/reducers/ui';
-import { signIn, register } from '../../services/api/auth';
+import { signIn, register, resetPassword } from '../../services/api/auth';
 import { FONT } from '../../styles/fonts';
 import { MEDIA } from '../../styles/media';
 import { COLOR } from '../../styles/colors';
@@ -122,7 +122,7 @@ export default function SignInScreen () {
   }
 
   async function onSignIn () {
-    const isValid = validateEmail(email) && validatePassword(password);
+    const isValid = validateEmail() && validatePassword();
 
     if (isValid) {
       const token = await signIn(email, password);
@@ -147,7 +147,7 @@ export default function SignInScreen () {
 
   async function onCreateAccount () {
     if (!createAccountFlow) {
-      const isValid = validateEmail(email) && validatePassword(password);
+      const isValid = validateEmail() && validatePassword();
 
       if (isValid) {
         setCreateAccountFlow(true);
@@ -181,8 +181,29 @@ export default function SignInScreen () {
     setForgotPasswordFlow(true);
   }
 
-  function onResetPassword () {
-    setShowPasswordResetSuccessView(true);
+  async function onResetPassword () {
+    const isValid = validateEmail();
+
+    if (!isValid) {
+      return dispatch(showToastAction({
+        message: 'Invalid email',
+        type: TOAST_TYPE.ERROR,
+      }));
+    }
+
+    const {
+      success,
+      error,
+    } = await resetPassword(email);
+
+    if (success && !error) {
+      setShowPasswordResetSuccessView(true);
+    } else {
+      dispatch(showToastAction({
+        message: error,
+        type: TOAST_TYPE.ERROR,
+      }));
+    }
   }
 
   function onBackToSignIn () {
@@ -245,7 +266,7 @@ export default function SignInScreen () {
               value={email}
               errorText={emailError}
               onChange={setEmail}
-              onBlur={() => validateEmail(email)}
+              onBlur={validateEmail}
               onKeyPress={onKeyPress}
               autoFocus
             />
@@ -259,7 +280,7 @@ export default function SignInScreen () {
                   value={password}
                   errorText={passwordError}
                   onChange={setPassword}
-                  onBlur={() => validatePassword(password)}
+                  onBlur={validatePassword}
                   onKeyPress={onKeyPress}
                   secure
                 />

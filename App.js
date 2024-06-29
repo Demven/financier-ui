@@ -33,6 +33,7 @@ import SavingsScreen from './screens/SavingsScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import SignInScreen from './screens/SignInScreen';
 import ConfirmEmailScreen from './screens/ConfirmEmailScreen';
+import ResetPasswordScreen from './screens/ResetPasswordScreen';
 import ExpenseScreen from './screens/ExpenseScreen';
 import SavingScreen from './screens/SavingScreen';
 import IncomeScreen from './screens/IncomeScreen';
@@ -81,6 +82,7 @@ const BottomTabs = createBottomTabNavigator();
 SplashScreen.preventAutoHideAsync();
 
 const CONFIRM_EMAIL_PATH = 'confirm-email';
+const RESET_PASSWORD_PATH = 'reset-password';
 
 function OverviewScreens () {
   const windowWidth = useSelector(state => state.ui.windowWidth);
@@ -621,7 +623,9 @@ function Navigator () {
   const [basicDataFetched, setBasicDataFetched] = useState(false);
 
   useEffect(() => {
-    if (getPathName() !== `/${CONFIRM_EMAIL_PATH}`) {
+    const currentPath = getPathName();
+
+    if (currentPath !== `/${CONFIRM_EMAIL_PATH}`&& currentPath !== `/${RESET_PASSWORD_PATH}`) {
       checkIfLoggedIn()
         .then((isLoggedIn) => {
           if (isLoggedIn) {
@@ -790,6 +794,14 @@ function Navigator () {
         />
 
         <Stack.Screen
+          name='ResetPassword'
+          component={ResetPasswordScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
           name='Expense'
           component={ExpenseScreen}
           initialParams={{
@@ -876,9 +888,10 @@ export default function App () {
   async function restoreNavigationState () {
     const savedNavigationState = await retrieveFromStorage(STORAGE_KEY.NAVIGATION_STATE);
 
-    const isConfirmEmailPage = getPathName() === `/${CONFIRM_EMAIL_PATH}`;
+    const currentPath = getPathName();
+    const needToRestoreNavigationState = currentPath !== `/${CONFIRM_EMAIL_PATH}` && currentPath !== `/${RESET_PASSWORD_PATH}`;
 
-    if (savedNavigationState && !isConfirmEmailPage) {
+    if (savedNavigationState && needToRestoreNavigationState) {
       setNavigationInitialState(savedNavigationState);
     }
 
@@ -950,6 +963,7 @@ export default function App () {
                 Income: 'income/:id?',
                 Category: 'category/:id?',
                 ConfirmEmail: CONFIRM_EMAIL_PATH,
+                ResetPassword: RESET_PASSWORD_PATH,
                 SignIn: 'sign-in',
               },
             },
