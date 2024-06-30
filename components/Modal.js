@@ -62,7 +62,7 @@ export default function Modal (props) {
         style={[styles.container, {
           width: Platform.OS === 'ios'
             ? '100%'
-            : windowWidth - 64,
+            : windowWidth - 32,
           maxWidth: Platform.OS === 'ios'
             ? '100%'
             : maxWidth,
@@ -74,6 +74,7 @@ export default function Modal (props) {
               style={[styles.title, {
                 fontSize: windowWidth < MEDIA.WIDE_MOBILE ? 26 : 30,
                 lineHeight: windowWidth < MEDIA.WIDE_MOBILE ? 34 : 38,
+                paddingLeft: windowWidth < MEDIA.WIDE_MOBILE ? 8 : 20,
               }]}
             >
               {title}
@@ -89,13 +90,17 @@ export default function Modal (props) {
           />
         )}
 
-        <View style={[styles.content, contentStyle]}>
+        <View style={[styles.content, {
+          paddingHorizontal: Platform.select({ ios: 0, web: windowWidth < MEDIA.WIDE_MOBILE ? 0 : 32 }),
+          paddingRight: Platform.select({ ios: 0, web: windowWidth >= MEDIA.WIDE_MOBILE ? 48 : 0 }),
+          paddingVertical: Platform.select({ ios: 0, web: 32 }),
+        }, contentStyle]}>
           {children}
         </View>
 
-        <View
-          style={[styles.footer, { justifyContent: windowWidth < MEDIA.TABLET ? 'center' : 'flex-end' }]}
-        >
+        <View style={[styles.footer, {
+          justifyContent: windowWidth < MEDIA.TABLET ? 'center' : 'flex-end',
+        }]}>
           {typeof onDelete === 'function' && (
             <Button
               style={[styles.deleteButton, {
@@ -168,7 +173,6 @@ const styles = StyleSheet.create({
   },
   title: {
     height: 34,
-    paddingLeft: 20,
     fontFamily: FONT.NOTO_SERIF.BOLD,
     color: COLOR.DARK_GRAY,
   },
@@ -179,7 +183,6 @@ const styles = StyleSheet.create({
   },
 
   content: {
-    padding: Platform.select({ ios: 0, web: 32 }),
     paddingRight: Platform.select({ ios: 0, web: 52 }),
     zIndex: 1,
   },
