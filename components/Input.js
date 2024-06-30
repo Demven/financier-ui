@@ -21,9 +21,9 @@ export const INPUT_TYPE = {
 
 const KEYBOARD_TYPE = {
   [INPUT_TYPE.DEFAULT]: 'default',
-  [INPUT_TYPE.NUMBER]: 'numeric',
-  [INPUT_TYPE.QUANTITY]: 'numeric',
-  [INPUT_TYPE.CURRENCY]: 'numeric',
+  [INPUT_TYPE.NUMBER]: 'decimal-pad',
+  [INPUT_TYPE.QUANTITY]: 'decimal-pad',
+  [INPUT_TYPE.CURRENCY]: 'decimal-pad',
   [INPUT_TYPE.EMAIL]: 'email-address',
 };
 
