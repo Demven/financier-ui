@@ -35,10 +35,6 @@ export default function DatePicker (props) {
   const [focused, setFocused] = useState(false);
   const [pickerModalOpened, setPickerModalOpened] = useState(false);
 
-  function onDateChange (date) {
-    onChange(dateToDateString(date));
-  }
-
   return (
     <View
       style={[
@@ -63,7 +59,7 @@ export default function DatePicker (props) {
         max,
         pattern: '\d{4}-\d{2}-\d{2}',
         onChange: (event) => {
-          onDateChange(new Date(event.target.value));
+          onChange(event.target.value);
         },
         onFocus: () => setFocused(true),
         onBlur: () => setFocused(false),
@@ -90,7 +86,7 @@ export default function DatePicker (props) {
               setPickerModalOpened(false);
 
               try {
-                onDateChange(new Date(date));
+                onChange(dateToDateString(date));
               } catch (error) {}
             }}
             onCancel={() => setPickerModalOpened(false)}
