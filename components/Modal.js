@@ -4,6 +4,7 @@ import {
   Pressable,
   StyleSheet,
   Platform,
+  ScrollView,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -90,13 +91,15 @@ export default function Modal (props) {
           />
         )}
 
-        <View style={[styles.content, {
-          paddingHorizontal: Platform.select({ ios: 0, web: windowWidth < MEDIA.WIDE_MOBILE ? 0 : 32 }),
-          paddingRight: Platform.select({ ios: 0, web: windowWidth >= MEDIA.WIDE_MOBILE ? 48 : 0 }),
-          paddingVertical: Platform.select({ ios: 0, web: 32 }),
-        }, contentStyle]}>
+        <ScrollView
+          style={[styles.content, {
+            paddingHorizontal: Platform.select({ ios: 0, web: windowWidth < MEDIA.WIDE_MOBILE ? 0 : 32 }),
+            paddingRight: Platform.select({ ios: 0, web: windowWidth >= MEDIA.WIDE_MOBILE ? 48 : 0 }),
+            paddingVertical: Platform.select({ ios: 0, web: 32 }),
+          }, contentStyle]}
+        >
           {children}
-        </View>
+        </ScrollView>
 
         <View style={[styles.footer, {
           justifyContent: windowWidth < MEDIA.TABLET ? 'center' : 'flex-end',
