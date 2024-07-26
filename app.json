@@ -4,7 +4,8 @@
     "slug": "financier-ui",
     "userInterfaceStyle": "automatic",
     "web": {
-      "bundler": "metro"
+      "bundler": "metro",
+      "favicon": "/assets/favicons/favicon-32x32.png"
     }
   }
 }

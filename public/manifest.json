@@ -1,0 +1,30 @@
+{
+  "name": "Financier",
+  "short_name": "Financier",
+  "icons": [
+    {
+      "src": "/assets/favicons/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/assets/favicons/favicon-32x32.png",
+      "type": "image/png",
+      "sizes": "32x32"
+    },
+    {
+      "src": "/assets/favicons/favicon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/assets/favicons/favicon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#CA7703",
+  "background_color": "#ffffff"
+}
