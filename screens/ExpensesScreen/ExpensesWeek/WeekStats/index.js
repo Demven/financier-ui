@@ -86,6 +86,7 @@ export default function WeekStats (props) {
                 <View style={styles.statNameWrapper}>
                   {expenses.length === 1 && (
                     <TitleLink
+                      style={{ maxWidth: '100%' }}
                       textStyle={[
                         styles.statName,
                         windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
@@ -111,12 +112,14 @@ export default function WeekStats (props) {
                   )}
                 </View>
 
-                <Text style={[
-                  styles.statValue,
-                  windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
-                ]}>
-                  {formatAmount(-getListTotal(expenses), currencySymbol)}
-                </Text>
+                <View style={styles.statValueWrapper}>
+                  <Text style={[
+                    styles.statValue,
+                    windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
+                  ]}>
+                    {formatAmount(-getListTotal(expenses), currencySymbol)}
+                  </Text>
+                </View>
               </View>
             ))
           }
@@ -154,6 +157,7 @@ const styles = StyleSheet.create({
 
   statNameWrapper: {
     flexGrow: 1,
+    flexShrink: 1,
     alignItems: 'flex-start',
   },
 
@@ -169,6 +173,11 @@ const styles = StyleSheet.create({
   statNameSmaller: {
     fontSize: 18,
     lineHeight: 23,
+  },
+
+  statValueWrapper: {
+    flexShrink: 0,
+    paddingLeft: 12,
   },
 
   statValue: {

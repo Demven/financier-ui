@@ -40,7 +40,7 @@ export default function TitleLink (props) {
       ]}
       onPress={onPress}
     >
-      <View style={{ overflow: 'hidden'}}>
+      <View style={styles.wrapper}>
         <View
           style={[
             styles.container,
@@ -51,6 +51,7 @@ export default function TitleLink (props) {
         >
           <Text
             style={[styles.text, textStyle]}
+            numberOfLines={1}
             onMouseEnter={onPress ? () => setHighlighted(true) : undefined}
             onMouseLeave={onPress ? () => setHighlighted(false) : undefined}
           >
@@ -66,6 +67,11 @@ const styles = StyleSheet.create({
   titleLink: {},
   titleLinkPressed: {
     opacity: 0.7,
+  },
+
+  wrapper: {
+    width: '100%',
+    overflow: 'hidden',
   },
 
   container: {
