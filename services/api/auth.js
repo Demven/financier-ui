@@ -1,3 +1,5 @@
+import { saveToStorage, STORAGE_KEY } from '../storage';
+
 const apiUrl = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 export function signIn (email, password) {
@@ -41,10 +43,15 @@ export function validateToken (token) {
 
       throw new Error('Failed to get response');
     })
-    .then(({ success, payload }) => success
-      ? payload
-      : undefined
-    )
+    .then(({ success, payload, refreshToken }) => {
+      if (refreshToken) {
+        saveToStorage(STORAGE_KEY.TOKEN, refreshToken);
+      }
+
+      return success
+        ? payload
+        : undefined;
+    })
     .catch(console.error);
 }
 
