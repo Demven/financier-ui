@@ -23,6 +23,7 @@ import SavingsYear from './SavingsYear/SavingsYear';
 import NoDataPlaceholder from '../../components/NoDataPlaceholder';
 import HeaderDropdown from '../../components/HeaderDropdown';
 import { TAB } from '../../components/HeaderTabs';
+import Loader from '../../components/Loader';
 import { getLastMonthNumberInYear, MONTH_NAME } from '../../services/date';
 import { COLOR } from '../../styles/colors';
 import { MEDIA } from '../../styles/media';
@@ -32,9 +33,10 @@ export default function SavingsScreen () {
   const navigation = useNavigation();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
-
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const selectedYear = useSelector(state => state.ui.selectedYear);
+  const loading = useSelector(state => state.ui.loading);
+
   const savings = useSelector(state => state.savings.savings) || {};
   const savingsTotals = useSelector(state => state.savings.savingsTotals) || {};
   const investments = useSelector(state => state.savings.investments) || {};
@@ -215,6 +217,8 @@ export default function SavingsScreen () {
           paddingHorizontal: overviewScreenPadding,
         }]}
       >
+        <Loader loading={loading} />
+
         {(windowWidth < MEDIA.TABLET && !hideYearSelector) && (
           <HeaderDropdown
             style={[styles.yearsDropdown, {

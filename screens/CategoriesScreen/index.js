@@ -23,6 +23,7 @@ import CategoriesYear from './CategoriesYear/CategoriesYear';
 import NoDataPlaceholder from '../../components/NoDataPlaceholder';
 import HeaderDropdown from '../../components/HeaderDropdown';
 import { TAB } from '../../components/HeaderTabs';
+import Loader from '../../components/Loader';
 import { getDaysInMonth, getLastMonthNumberInYear, MONTH_NAME } from '../../services/date';
 import { COLOR } from '../../styles/colors';
 import { MEDIA } from '../../styles/media';
@@ -32,9 +33,9 @@ export default function CategoriesScreen () {
   const navigation = useNavigation();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
-
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const selectedYear = useSelector(state => state.ui.selectedYear);
+  const loading = useSelector(state => state.ui.loading);
 
   const expenses = useSelector(state => state.expenses.expenses) || {};
   const expensesTotals = useSelector(state => state.expenses.expensesTotals) || {};
@@ -201,6 +202,8 @@ export default function CategoriesScreen () {
           paddingHorizontal: overviewScreenPadding,
         }]}
       >
+        <Loader loading={loading} />
+
         {(windowWidth < MEDIA.TABLET && !hideYearSelector) && (
           <HeaderDropdown
             style={[

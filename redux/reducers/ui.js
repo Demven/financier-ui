@@ -13,6 +13,7 @@ const getInitialState = () => ({
     type: TOAST_TYPE.INFO,
     visible: false,
   },
+  loading: true, // on first load, the loading state is true by default
   reinitialize: false,
 });
 
@@ -60,6 +61,12 @@ const uiSlice = createSlice({
         },
       };
     },
+    setLoading: (state, action) => {
+      return {
+        ...state,
+        loading: action.payload,
+      };
+    },
     reinitialize: (state, action) => {
       return {
         ...state,
@@ -76,6 +83,7 @@ export const setSelectedTabAction = uiSlice.actions.setSelectedTab;
 export const setSelectedYearAction = uiSlice.actions.setSelectedYear;
 export const showToastAction = uiSlice.actions.showToast;
 export const hideToastAction = uiSlice.actions.hideToast;
+export const setLoadingAction = uiSlice.actions.setLoading;
 export const reinitializeAction = uiSlice.actions.reinitialize;
 
 export default uiSlice.reducer;

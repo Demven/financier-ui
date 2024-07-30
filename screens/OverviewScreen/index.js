@@ -14,6 +14,7 @@ import OverviewYear from './OverviewYear/OverviewYear';
 import NoDataPlaceholder from '../../components/NoDataPlaceholder';
 import { TAB } from '../../components/HeaderTabs';
 import HeaderDropdown from '../../components/HeaderDropdown';
+import Loader from '../../components/Loader';
 import { COLOR } from '../../styles/colors';
 import { MEDIA } from '../../styles/media';
 
@@ -22,9 +23,10 @@ export default function OverviewScreen () {
   const navigation = useNavigation();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
-
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const selectedYear = useSelector(state => state.ui.selectedYear);
+  const loading = useSelector(state => state.ui.loading);
+
   const expenses = useSelector(state => state.expenses.expenses) || {};
   const expensesTotals = useSelector(state => state.expenses.expensesTotals) || {};
   const incomes = useSelector(state => state.incomes.incomes) || {};
@@ -187,6 +189,8 @@ export default function OverviewScreen () {
           paddingHorizontal: overviewScreenPadding,
         }]}
       >
+        <Loader loading={loading} />
+
         {(windowWidth < MEDIA.TABLET && !hideYearSelector) && (
           <HeaderDropdown
             style={[styles.yearsDropdown, {

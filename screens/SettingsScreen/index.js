@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import Dropdown from '../../components/Dropdown';
+import Loader from '../../components/Loader';
 import Button, { BUTTON_LOOK } from '../../components/Button';
 import { TOAST_TYPE } from '../../components/Toast';
 import { setAccountAction } from '../../redux/reducers/account';
@@ -22,6 +23,7 @@ export default function SettingsScreen () {
   const dispatch = useDispatch();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
+  const loading = useSelector(state => state.ui.loading);
 
   const account = useSelector(state => state.account);
   const initialFirstName = useSelector(state => state.account.firstName);
@@ -187,6 +189,8 @@ export default function SettingsScreen () {
           onPress={onSave}
         />
       </View>
+
+      <Loader loading={loading} />
     </View>
   );
 }

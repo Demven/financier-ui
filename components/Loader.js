@@ -20,7 +20,7 @@ import { MEDIA } from '../styles/media';
 Loader.propTypes = {
   style: PropTypes.object,
   loading: PropTypes.bool.isRequired,
-  setLoading: PropTypes.func.isRequired,
+  setLoading: PropTypes.func,
   timeout: PropTypes.number,
 };
 
@@ -28,7 +28,7 @@ export default function Loader (props) {
   const {
     style,
     loading,
-    setLoading,
+    setLoading = () => {},
     timeout,
   } = props;
 
@@ -123,7 +123,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR.WHITE,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1,
+    zIndex: 10000,
+    pointerEvents: 'none',
   },
   loaderPressed: {
     opacity: 0.7,

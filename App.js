@@ -65,6 +65,7 @@ import {
   setWindowWidthAction,
   setSelectedTabAction,
   setSelectedYearAction,
+  setLoadingAction,
   reinitializeAction,
 } from './redux/reducers/ui';
 import { setIncomesAction, setIncomesTotalsAction } from './redux/reducers/incomes';
@@ -746,6 +747,8 @@ function Navigator () {
     if (incomesTotals) {
       dispatch(setIncomesTotalsAction(incomesTotals));
     }
+
+    dispatch(setLoadingAction(false));
   }
 
   const modalScreenOptions = {
