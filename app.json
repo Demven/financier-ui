@@ -5,7 +5,7 @@
     "userInterfaceStyle": "automatic",
     "web": {
       "bundler": "metro",
-      "favicon": "./assets/favicons/favicon-32x32.png"
+      "favicon": "./public/images/favicons/favicon-32x32.png"
     }
   }
 }
