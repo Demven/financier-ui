@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
+import { ViewPortDetector, ViewPortDetectorProvider } from 'react-native-viewport-detector';
 import { setSelectedTabAction, setSelectedYearAction } from '../../redux/reducers/ui';
 import OverviewMonth from './OverviewMonth/OverviewMonth';
 import OverviewWeek from './OverviewWeek/OverviewWeek';
@@ -25,6 +26,7 @@ export default function OverviewScreen () {
   const windowWidth = useSelector(state => state.ui.windowWidth);
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const selectedYear = useSelector(state => state.ui.selectedYear);
+
   const loading = useSelector(state => state.ui.loading);
 
   const expenses = useSelector(state => state.expenses.expenses) || {};
@@ -35,6 +37,9 @@ export default function OverviewScreen () {
   const savingsTotals = useSelector(state => state.savings.savingsTotals) || {};
   const investments = useSelector(state => state.savings.investments) || {};
   const investmentsTotals = useSelector(state => state.savings.investmentsTotals) || {};
+
+  const [yearDropdownWidth, setYearDropdownWidth] = useState(0);
+  const [visibleYear, setVisibleYear] = useState(yearsToSelect?.[0]);
 
   const expensesYears = Object
     .keys(expensesTotals)
@@ -52,8 +57,6 @@ export default function OverviewScreen () {
     .keys(investmentsTotals)
     .map(Number)
     .filter(Boolean);
-
-  const [yearDropdownWidth, setYearDropdownWidth] = useState(0);
 
   const route = useRoute();
   const overviewType = route.params?.type;
@@ -148,18 +151,33 @@ export default function OverviewScreen () {
   function renderYears () {
     return yearsToSelect
       .map(yearString => Number(yearString))
-      .map((yearNumber, index) => (
-        <OverviewYear
-          key={index}
-          style={[styles.overview, {
-            paddingBottom: windowWidth < MEDIA.DESKTOP ? 80 : 40,
-          }]}
-          year={yearNumber}
-          expenses={expenses[yearNumber]}
-          incomes={incomes[yearNumber]}
-          savings={savings[yearNumber]}
-          investments={investments[yearNumber]}
-        />
+      .map(yearNumber => (
+        <ViewPortDetector
+          key={yearNumber}
+          onChange={(visible) => {
+            if (visible) {
+              setVisibleYear(yearNumber);
+            }
+          }}
+          percentHeight={1}
+          frequency={500}
+        >
+          <OverviewYear
+            style={[styles.overview, {
+              paddingBottom: windowWidth < MEDIA.DESKTOP ? 80 : 40,
+            }]}
+            visible={visibleYear === yearNumber}
+            year={yearNumber}
+            expenses={expenses[yearNumber]}
+            expensesTotals={expensesTotals[yearNumber]}
+            incomes={incomes[yearNumber]}
+            incomesTotals={incomesTotals[yearNumber]}
+            savings={savings[yearNumber]}
+            savingsTotals={savingsTotals[yearNumber]}
+            investments={investments[yearNumber]}
+            investmentsTotals={investmentsTotals[yearNumber]}
+          />
+        </ViewPortDetector>
       ));
   }
 
@@ -206,23 +224,25 @@ export default function OverviewScreen () {
           />
         )}
 
-        <View style={[styles.listContainer, { paddingTop: listContainerPaddingTop }]}>
-          {((noDataForSelectedYear && selectedTab !== TAB.YEARS)
-            || (noDataForAnyYear && selectedTab === TAB.YEARS)
-          ) && <NoDataPlaceholder />}
+        <ViewPortDetectorProvider flex={1}>
+          <View style={[styles.listContainer, { paddingTop: listContainerPaddingTop }]}>
+            {((noDataForSelectedYear && selectedTab !== TAB.YEARS)
+              || (noDataForAnyYear && selectedTab === TAB.YEARS)
+            ) && <NoDataPlaceholder />}
 
-          {!noDataForSelectedYear && selectedTab === TAB.WEEKS && (
-            renderWeeks()
-          )}
+            {!noDataForSelectedYear && selectedTab === TAB.WEEKS && (
+              renderWeeks()
+            )}
 
-          {!noDataForSelectedYear && selectedTab === TAB.MONTHS && (
-            renderMonths()
-          )}
+            {!noDataForSelectedYear && selectedTab === TAB.MONTHS && (
+              renderMonths()
+            )}
 
-          {!noDataForAnyYear && selectedTab === TAB.YEARS && (
-            renderYears()
-          )}
-        </View>
+            {!noDataForAnyYear && selectedTab === TAB.YEARS && (
+              renderYears()
+            )}
+          </View>
+        </ViewPortDetectorProvider>
       </View>
     </ScrollView>
   );

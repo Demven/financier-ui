@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 
 YearChart.propTypes = {
   style: PropTypes.any,
-  savingsByMonths: PropTypes.arrayOf(PropTypes.number),
+  amountsByMonths: PropTypes.arrayOf(PropTypes.number),
   selectedMonthIndex: PropTypes.number,
   onMonthSelected: PropTypes.func.isRequired,
   total: PropTypes.number,
@@ -24,7 +24,7 @@ YearChart.propTypes = {
 export default function YearChart (props) {
   const {
     style,
-    savingsByMonths,
+    amountsByMonths,
     selectedMonthIndex,
     onMonthSelected,
     total,
@@ -73,7 +73,7 @@ export default function YearChart (props) {
           width={chartWidth}
           height={chartHeight}
           legendHeight={LEGEND_HEIGHT}
-          data={savingsByMonths}
+          data={amountsByMonths}
           getColor={(opacity = 1) => `rgba(42, 113, 40, ${opacity})`} // COLOR.GREEN
           barSelected={selectedMonthIndex}
           onBarSelected={onMonthSelected}

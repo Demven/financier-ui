@@ -33,6 +33,16 @@ const savingsSlice = createSlice({
       };
     },
 
+    addSavingsGroupedByYearMonthWeek: (state, action) => {
+      return {
+        ...state,
+        savings: {
+          ...state.savings,
+          ...action.payload,
+        },
+      };
+    },
+
     addSaving: (state, action) => {
       const { year, month, week, saving } = action.payload;
 
@@ -144,11 +154,30 @@ const savingsSlice = createSlice({
         savingsTotals: action.payload,
       };
     },
+    addYearSavingsTotals: (state, action) => {
+      return {
+        ...state,
+        savingsTotals: {
+          ...state.savingsTotals,
+          ...action.payload,
+        },
+      };
+    },
 
     setInvestments: (state, action) => {
       return {
         ...state,
         investments: action.payload,
+      };
+    },
+
+    addInvestmentsGroupedByYearMonthWeek: (state, action) => {
+      return {
+        ...state,
+        investments: {
+          ...state.investments,
+          ...action.payload,
+        },
       };
     },
 
@@ -263,23 +292,36 @@ const savingsSlice = createSlice({
         investmentsTotals: action.payload,
       };
     },
+    addYearInvestmentsTotals: (state, action) => {
+      return {
+        ...state,
+        investmentsTotals: {
+          ...state.investmentsTotals,
+          ...action.payload,
+        },
+      };
+    },
   },
 });
 
 export const resetSavingsAndInvestmentsAction = savingsSlice.actions.resetSavingsAndInvestments;
 
 export const setSavingsAction = savingsSlice.actions.setSavings;
+export const addSavingsGroupedByYearMonthWeekAction = savingsSlice.actions.addSavingsGroupedByYearMonthWeek;
 export const addSavingAction = savingsSlice.actions.addSaving;
 export const updateSavingAction = savingsSlice.actions.updateSaving;
 export const deleteSavingAction = savingsSlice.actions.deleteSaving;
 
 export const setSavingsTotalsAction = savingsSlice.actions.setSavingsTotals;
+export const addYearSavingsTotalsAction = savingsSlice.actions.addYearSavingsTotals;
 
 export const setInvestmentsAction = savingsSlice.actions.setInvestments;
+export const addInvestmentsGroupedByYearMonthWeekAction = savingsSlice.actions.addInvestmentsGroupedByYearMonthWeek;
 export const addInvestmentAction = savingsSlice.actions.addInvestment;
 export const updateInvestmentAction = savingsSlice.actions.updateInvestment;
 export const deleteInvestmentAction = savingsSlice.actions.deleteInvestment;
 
 export const setInvestmentsTotalsAction = savingsSlice.actions.setInvestmentsTotals;
+export const addYearInvestmentsTotalsAction = savingsSlice.actions.addYearInvestmentsTotals;
 
 export default savingsSlice.reducer;

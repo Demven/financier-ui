@@ -1,5 +1,5 @@
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
@@ -8,14 +8,37 @@ import YearStats from './YearStats'
 import TitleLink from '../../../components/TitleLink';
 import { FONT } from '../../../styles/fonts';
 import { MEDIA } from '../../../styles/media';
+import { fetchOverviewForYear } from '../../../services/api/overview';
+import {
+  addInvestmentsGroupedByYearMonthWeekAction,
+  addSavingsGroupedByYearMonthWeekAction,
+  addYearSavingsTotalsAction,
+  addYearInvestmentsTotalsAction,
+} from '../../../redux/reducers/savings';
+import { addExpensesGroupedByYearMonthWeekAction, addYearExpensesTotalsAction } from '../../../redux/reducers/expenses';
+import { addIncomesGroupedByYearMonthWeekAction, addYearIncomesTotalsAction } from '../../../redux/reducers/incomes';
+import Loader from "../../../components/Loader";
 
 OverviewYear.propTypes = {
   style: PropTypes.any,
   year: PropTypes.number.isRequired,
   expenses: PropTypes.object, // weeks -> expenses { [1]: [], [2]: [] }
+  expensesTotals: PropTypes.shape({
+    total: PropTypes.number,
+  }),
   incomes: PropTypes.object, // weeks -> incomes { [1]: [], [2]: [] }
+  incomesTotals: PropTypes.shape({
+    total: PropTypes.number,
+  }),
   savings: PropTypes.object, // weeks -> savings { [1]: [], [2]: [] }
+  savingsTotals: PropTypes.shape({
+    total: PropTypes.number,
+  }),
   investments: PropTypes.object, // weeks -> investments { [1]: [], [2]: [] }
+  investmentsTotals: PropTypes.shape({
+    total: PropTypes.number,
+  }),
+  visible: PropTypes.bool.isRequired,
 };
 
 export default function OverviewYear (props) {
@@ -23,37 +46,44 @@ export default function OverviewYear (props) {
     style,
     year,
     expenses = {},
+    expensesTotals = {},
     incomes = {},
+    incomesTotals = {},
     savings = {},
+    savingsTotals = {},
     investments = {},
+    investmentsTotals = {},
+    visible = false,
   } = props;
 
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
+  const [initialized, setInitialized] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [chartView, setChartView] = useState(CHART_VIEW.INCOME);
 
-  function getTotalAmount (yearItems) {
-    return Object.keys(yearItems)
-      .map(monthNumber => ([
-        ...(yearItems[monthNumber]?.[1] || []),
-        ...(yearItems[monthNumber]?.[2] || []),
-        ...(yearItems[monthNumber]?.[3] || []),
-        ...(yearItems[monthNumber]?.[4] || []),
-      ]))
-      .map(flatMonthData => {
-        return flatMonthData.reduce((total, item) => {
-          const amount = item.amount || (item.shares * item.pricePerShare);
-          return total + amount;
-        }, 0);
-      })
-      .reduce((monthTotal, yearTotal) => monthTotal + yearTotal, 0);
-  }
+  const totalExpenses = expensesTotals?.total || 0;
+  const totalIncomes = incomesTotals?.total || 0;
+  const totalSavingsAndInvestments = (savingsTotals?.total || 0) + (investmentsTotals?.total || 0);
 
-  const totalIncomes = getTotalAmount(incomes);
-  const totalExpenses = getTotalAmount(expenses);
-  const totalSavingsAndInvestments = (getTotalAmount(savings) + getTotalAmount(investments)) || 0;
+  useEffect(() => {
+    if (visible && !initialized) {
+      setInitialized(true);
+    }
+  }, [visible]);
+
+  useEffect(() => {
+    const yearHasData = !!Object.keys(savings).length;
+
+    if (visible && !yearHasData && !loading) {
+      loadYearOverview();
+    } else if (loading && yearHasData) {
+      setLoading(false);
+    }
+  }, [visible, savings, loading]);
 
   useEffect(() => {
     if (chartView === CHART_VIEW.INCOME && !totalIncomes) {
@@ -76,6 +106,51 @@ export default function OverviewYear (props) {
       }
     }
   }, [totalIncomes, totalExpenses, totalSavingsAndInvestments]);
+
+  async function loadYearOverview () {
+    setLoading(true);
+
+    const {
+      expenses,
+      expensesTotals,
+      incomes,
+      incomesTotals,
+      savings,
+      savingsTotals,
+      investments,
+      investmentsTotals,
+    } = await fetchOverviewForYear(year);
+
+    if (expenses) {
+      dispatch(addExpensesGroupedByYearMonthWeekAction(expenses));
+    }
+    if (expensesTotals) {
+      dispatch(addYearExpensesTotalsAction(expensesTotals));
+    }
+
+    if (savings) {
+      dispatch(addSavingsGroupedByYearMonthWeekAction(savings));
+    }
+    if (savingsTotals) {
+      dispatch(addYearSavingsTotalsAction(savingsTotals));
+    }
+
+    if (investments) {
+      dispatch(addInvestmentsGroupedByYearMonthWeekAction(investments));
+    }
+    if (investmentsTotals) {
+      dispatch(addYearInvestmentsTotalsAction(investmentsTotals));
+    }
+
+    if (incomes) {
+      dispatch(addIncomesGroupedByYearMonthWeekAction(incomes));
+    }
+    if (incomesTotals) {
+      dispatch(addYearIncomesTotalsAction(incomesTotals));
+    }
+
+    setLoading(false);
+  }
 
   const columnWidth = windowWidth < MEDIA.DESKTOP
     ? '100%'
@@ -172,6 +247,8 @@ export default function OverviewYear (props) {
           totalSavingsAndInvestments={totalSavingsAndInvestments}
         />
       </View>
+
+      <Loader loading={!initialized || loading} />
     </View>
   );
 }

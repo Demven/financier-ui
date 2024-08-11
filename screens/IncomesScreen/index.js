@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
+import { ViewPortDetector, ViewPortDetectorProvider } from 'react-native-viewport-detector';
 import Animated, {
   scrollTo,
   useAnimatedRef,
@@ -35,6 +36,7 @@ export default function IncomesScreen () {
   const windowWidth = useSelector(state => state.ui.windowWidth);
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const selectedYear = useSelector(state => state.ui.selectedYear);
+
   const loading = useSelector(state => state.ui.loading);
 
   const incomes = useSelector(state => state.incomes.incomes) || {};
@@ -45,14 +47,15 @@ export default function IncomesScreen () {
     .map(Number)
     .filter(Boolean);
 
-  const [yearDropdownWidth, setYearDropdownWidth] = useState(0);
-
   const yearsToSelect = useMemo(() => {
     return Array.from(new Set([
       new Date().getFullYear(),
       ...incomesYears,
     ]))
   }, [incomesYears]);
+
+  const [yearDropdownWidth, setYearDropdownWidth] = useState(0);
+  const [visibleYear, setVisibleYear] = useState(yearsToSelect?.[0]);
 
   const route = useRoute();
   const overviewType = route.params?.type;
@@ -159,20 +162,31 @@ export default function IncomesScreen () {
   function renderYears () {
     return yearsToSelect
       .map(yearString => Number(yearString))
-      .map((yearNumber, index) => (
-        <IncomesYear
-          key={index}
-          style={[
-            styles.incomes,
-            windowWidth < MEDIA.WIDE_MOBILE && styles.incomesMobile,
-          ]}
-          year={yearNumber}
-          allTimeTotalIncome={incomesTotals?.total || 0}
-          yearIncomes={incomes[yearNumber]}
-          yearIncomesTotal={incomesTotals[yearNumber]?.total || 0}
-          previousYearTotalIncomes={incomesTotals?.[yearNumber - 1]?.total || 0}
-          previousYear={yearNumber - 1}
-        />
+      .map(yearNumber => (
+        <ViewPortDetector
+          key={yearNumber}
+          onChange={(visible) => {
+            if (visible) {
+              setVisibleYear(yearNumber);
+            }
+          }}
+          percentHeight={1}
+          frequency={500}
+        >
+          <IncomesYear
+            style={[
+              styles.incomes,
+              windowWidth < MEDIA.WIDE_MOBILE && styles.incomesMobile,
+            ]}
+            visible={visibleYear === yearNumber}
+            year={yearNumber}
+            allTimeTotalIncome={incomesTotals?.total || 0}
+            yearIncomes={incomes[yearNumber]}
+            yearIncomesTotal={incomesTotals[yearNumber]?.total || 0}
+            previousYearTotalIncomes={incomesTotals?.[yearNumber - 1]?.total || 0}
+            previousYear={yearNumber - 1}
+          />
+        </ViewPortDetector>
       ));
   }
 
@@ -218,23 +232,25 @@ export default function IncomesScreen () {
           />
         )}
 
-        <View style={[styles.listContainer, { paddingTop: listContainerPaddingTop }]}>
-          {((noDataForSelectedYear && selectedTab !== TAB.YEARS)
-            || (noDataForAnyYear && selectedTab === TAB.YEARS)
-          ) && <NoDataPlaceholder />}
+        <ViewPortDetectorProvider flex={1}>
+          <View style={[styles.listContainer, { paddingTop: listContainerPaddingTop }]}>
+            {((noDataForSelectedYear && selectedTab !== TAB.YEARS)
+              || (noDataForAnyYear && selectedTab === TAB.YEARS)
+            ) && <NoDataPlaceholder />}
 
-          {!noDataForSelectedYear && selectedTab === TAB.WEEKS && (
-            renderWeeks()
-          )}
+            {!noDataForSelectedYear && selectedTab === TAB.WEEKS && (
+              renderWeeks()
+            )}
 
-          {!noDataForSelectedYear && selectedTab === TAB.MONTHS && (
-            renderMonths()
-          )}
+            {!noDataForSelectedYear && selectedTab === TAB.MONTHS && (
+              renderMonths()
+            )}
 
-          {!noDataForAnyYear && selectedTab === TAB.YEARS && (
-            renderYears()
-          )}
-        </View>
+            {!noDataForAnyYear && selectedTab === TAB.YEARS && (
+              renderYears()
+            )}
+          </View>
+        </ViewPortDetectorProvider>
       </View>
     </Animated.ScrollView>
   );

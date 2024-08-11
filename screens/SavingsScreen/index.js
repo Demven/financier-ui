@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
+import { ViewPortDetector, ViewPortDetectorProvider } from 'react-native-viewport-detector';
 import Animated, {
   scrollTo,
   useAnimatedRef,
@@ -35,6 +36,7 @@ export default function SavingsScreen () {
   const windowWidth = useSelector(state => state.ui.windowWidth);
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const selectedYear = useSelector(state => state.ui.selectedYear);
+
   const loading = useSelector(state => state.ui.loading);
 
   const savings = useSelector(state => state.savings.savings) || {};
@@ -51,8 +53,6 @@ export default function SavingsScreen () {
     .map(Number)
     .filter(Boolean);
 
-  const [yearDropdownWidth, setYearDropdownWidth] = useState(0);
-
   const yearsToSelect = useMemo(() => {
     return Array.from(new Set([
       new Date().getFullYear(),
@@ -60,6 +60,9 @@ export default function SavingsScreen () {
       ...investmentsYears,
     ]))
   }, [savingsYears, investmentsYears]);
+
+  const [yearDropdownWidth, setYearDropdownWidth] = useState(0);
+  const [visibleYear, setVisibleYear] = useState(yearsToSelect?.[0]);
 
   const route = useRoute();
   const overviewType = route.params?.type;
@@ -175,20 +178,33 @@ export default function SavingsScreen () {
   function renderYears () {
     return yearsToSelect
       .map(yearString => Number(yearString))
-      .map((yearNumber, index) => (
-        <SavingsYear
-          key={index}
-          style={[
-            styles.savings,
-            windowWidth < MEDIA.WIDE_MOBILE && styles.savingsMobile,
-          ]}
-          year={yearNumber}
-          savings={savings[yearNumber]}
-          investments={investments[yearNumber]}
-          allTimeTotalSavingsAndInvestments={(savingsTotals?.total || 0) + (investmentsTotals?.total || 0)}
-          previousYearTotalSavingsAndInvestments={(savingsTotals?.[yearNumber - 1]?.total || 0) + (investmentsTotals?.[yearNumber - 1]?.total || 0)}
-          previousYear={yearNumber - 1}
-        />
+      .map(yearNumber => (
+        <ViewPortDetector
+          key={yearNumber}
+          onChange={(visible) => {
+            if (visible) {
+              setVisibleYear(yearNumber);
+            }
+          }}
+          percentHeight={1}
+          frequency={500}
+        >
+          <SavingsYear
+            style={[
+              styles.savings,
+              windowWidth < MEDIA.WIDE_MOBILE && styles.savingsMobile,
+            ]}
+            visible={visibleYear === yearNumber}
+            year={yearNumber}
+            savings={savings[yearNumber]}
+            savingsTotals={savingsTotals?.[yearNumber]}
+            investments={investments[yearNumber]}
+            investmentsTotals={investmentsTotals?.[yearNumber]}
+            allTimeTotalSavingsAndInvestments={(savingsTotals?.total || 0) + (investmentsTotals?.total || 0)}
+            previousYearTotalSavingsAndInvestments={(savingsTotals?.[yearNumber - 1]?.total || 0) + (investmentsTotals?.[yearNumber - 1]?.total || 0)}
+            previousYear={yearNumber - 1}
+          />
+        </ViewPortDetector>
       ));
   }
 
@@ -234,23 +250,25 @@ export default function SavingsScreen () {
           />
         )}
 
-        <View style={[styles.listContainer, { paddingTop: listContainerPaddingTop }]}>
-          {((noDataForSelectedYear && selectedTab !== TAB.YEARS)
-            || (noDataForAnyYear && selectedTab === TAB.YEARS)
-          ) && <NoDataPlaceholder />}
+        <ViewPortDetectorProvider flex={1}>
+          <View style={[styles.listContainer, { paddingTop: listContainerPaddingTop }]}>
+            {((noDataForSelectedYear && selectedTab !== TAB.YEARS)
+              || (noDataForAnyYear && selectedTab === TAB.YEARS)
+            ) && <NoDataPlaceholder />}
 
-          {!noDataForSelectedYear && selectedTab === TAB.WEEKS && (
-            renderWeeks()
-          )}
+            {!noDataForSelectedYear && selectedTab === TAB.WEEKS && (
+              renderWeeks()
+            )}
 
-          {!noDataForSelectedYear && selectedTab === TAB.MONTHS && (
-            renderMonths()
-          )}
+            {!noDataForSelectedYear && selectedTab === TAB.MONTHS && (
+              renderMonths()
+            )}
 
-          {!noDataForAnyYear && selectedTab === TAB.YEARS && (
-            renderYears()
-          )}
-        </View>
+            {!noDataForAnyYear && selectedTab === TAB.YEARS && (
+              renderYears()
+            )}
+          </View>
+        </ViewPortDetectorProvider>
       </View>
     </Animated.ScrollView>
   );

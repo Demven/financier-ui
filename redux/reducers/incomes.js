@@ -26,6 +26,16 @@ const incomesSlice = createSlice({
       };
     },
 
+    addIncomesGroupedByYearMonthWeek: (state, action) => {
+      return {
+        ...state,
+        incomes: {
+          ...state.incomes,
+          ...action.payload,
+        },
+      };
+    },
+
     addIncome: (state, action) => {
       const { year, month, week, income } = action.payload;
 
@@ -138,14 +148,26 @@ const incomesSlice = createSlice({
         incomesTotals: action.payload,
       };
     },
+    addYearIncomesTotals: (state, action) => {
+      return {
+        ...state,
+        incomesTotals: {
+          ...state.incomesTotals,
+          ...action.payload,
+        },
+      };
+    },
   },
 });
 
 export const resetIncomesAndIncomesTotalsAction = incomesSlice.actions.resetIncomesAndIncomesTotals;
 export const setIncomesAction = incomesSlice.actions.setIncomes;
+export const addIncomesGroupedByYearMonthWeekAction = incomesSlice.actions.addIncomesGroupedByYearMonthWeek;
 export const addIncomeAction = incomesSlice.actions.addIncome;
 export const updateIncomeAction = incomesSlice.actions.updateIncome;
 export const deleteIncomeAction = incomesSlice.actions.deleteIncome;
+
 export const setIncomesTotalsAction = incomesSlice.actions.setIncomesTotals;
+export const addYearIncomesTotalsAction = incomesSlice.actions.addYearIncomesTotals;
 
 export default incomesSlice.reducer;

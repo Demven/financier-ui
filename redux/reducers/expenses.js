@@ -25,6 +25,15 @@ const expensesSlice = createSlice({
         expenses: action.payload,
       };
     },
+    addExpensesGroupedByYearMonthWeek: (state, action) => {
+      return {
+        ...state,
+        expenses: {
+          ...state.expenses,
+          ...action.payload,
+        },
+      };
+    },
     addExpense: (state, action) => {
       const { year, month, week, expense } = action.payload;
 
@@ -135,15 +144,27 @@ const expensesSlice = createSlice({
         expensesTotals: action.payload,
       };
     },
+    addYearExpensesTotals: (state, action) => {
+      return {
+        ...state,
+        expensesTotals: {
+          ...state.expensesTotals,
+          ...action.payload,
+        },
+      };
+    },
   },
 });
 
 export const resetExpensesAction = expensesSlice.actions.resetExpenses;
 
 export const setExpensesAction = expensesSlice.actions.setExpenses;
+export const addExpensesGroupedByYearMonthWeekAction = expensesSlice.actions.addExpensesGroupedByYearMonthWeek;
 export const addExpenseAction = expensesSlice.actions.addExpense;
 export const updateExpenseAction = expensesSlice.actions.updateExpense;
 export const deleteExpenseAction = expensesSlice.actions.deleteExpense;
+
 export const setExpensesTotalsAction = expensesSlice.actions.setExpensesTotals;
+export const addYearExpensesTotalsAction = expensesSlice.actions.addYearExpensesTotals;
 
 export default expensesSlice.reducer;

@@ -19,6 +19,7 @@ import { MEDIA } from '../styles/media';
 
 Loader.propTypes = {
   style: PropTypes.object,
+  overlayStyle: PropTypes.object,
   loading: PropTypes.bool.isRequired,
   setLoading: PropTypes.func,
   timeout: PropTypes.number,
@@ -27,6 +28,7 @@ Loader.propTypes = {
 export default function Loader (props) {
   const {
     style,
+    overlayStyle,
     loading,
     setLoading = () => {},
     timeout,
@@ -85,7 +87,7 @@ export default function Loader (props) {
     : Platform.OS === 'ios' ? 30 : 45; // desktop
 
   return (
-    <Pressable style={({ pressed }) => [styles.loader, pressed && styles.loaderPressed]}>
+    <Pressable style={({ pressed }) => [styles.loader, pressed && styles.loaderPressed, overlayStyle]}>
       <Animated.View
         style={[
           styles.logoContainer,

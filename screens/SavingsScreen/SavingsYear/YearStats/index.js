@@ -13,7 +13,7 @@ import { MEDIA } from '../../../../styles/media';
 
 YearStats.propTypes = {
   style: PropTypes.any,
-  savingsByMonths: PropTypes.arrayOf(PropTypes.number).isRequired,
+  amountsByMonths: PropTypes.arrayOf(PropTypes.number).isRequired,
   total: PropTypes.number,
   year: PropTypes.number,
   selectedMonthIndex: PropTypes.number,
@@ -26,7 +26,7 @@ YearStats.propTypes = {
 export default function YearStats (props) {
   const {
     style,
-    savingsByMonths,
+    amountsByMonths,
     total,
     year,
     selectedMonthIndex,
@@ -52,7 +52,7 @@ export default function YearStats (props) {
             paddingLeft: windowWidth < MEDIA.DESKTOP ? 16 : 24,
           }]}
         >
-          {savingsByMonths.map((total, index) => (
+          {amountsByMonths.map((total, index) => (
             <View
               key={index}
               style={[styles.statRow, index === 0 && { marginTop: 0 }]}
@@ -64,7 +64,7 @@ export default function YearStats (props) {
                   selectedMonthIndex === index && styles.statNameBold,
                 ]}
                 alwaysHighlighted={!!total}
-                onPress={total > 0
+                onPress={total !== 0
                   ? () => navigation.navigate('SavingsWeeks', { monthNumber: index + 1, year })
                   : undefined
                 }
@@ -77,7 +77,7 @@ export default function YearStats (props) {
                 windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
                 selectedMonthIndex === index && styles.statValueBold,
               ]}>
-                {total > 0 ? formatAmount(total) : '–'}
+                {!!total ? formatAmount(total) : '–'}
               </Text>
             </View>
           ))}

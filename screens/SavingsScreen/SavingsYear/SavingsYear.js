@@ -1,13 +1,20 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import YearChart from './YearChart';
 import YearStats from './YearStats';
 import TitleLink from '../../../components/TitleLink';
+import Loader from '../../../components/Loader';
 import { MONTHS_IN_YEAR } from '../../../services/date';
+import { fetchSavingsForYear } from '../../../services/api/saving';
+import { fetchInvestmentsForYear } from '../../../services/api/investment';
 import { getTotalAmountsByMonths } from '../../../services/amount';
+import {
+  addInvestmentsGroupedByYearMonthWeekAction,
+  addSavingsGroupedByYearMonthWeekAction
+} from '../../../redux/reducers/savings';
 import { FONT } from '../../../styles/fonts';
 import { MEDIA } from '../../../styles/media';
 
@@ -15,10 +22,17 @@ SavingsYear.propTypes = {
   style: PropTypes.any,
   year: PropTypes.number.isRequired,
   savings: PropTypes.object, // weeks -> savings { [1]: [], [2]: [] }
+  savingsTotals: PropTypes.shape({
+    total: PropTypes.number,
+  }),
   investments: PropTypes.object, // weeks -> investments { [1]: [], [2]: [] }
+  investmentsTotals: PropTypes.shape({
+    total: PropTypes.number,
+  }),
   allTimeTotalSavingsAndInvestments: PropTypes.number,
   previousYearTotalSavingsAndInvestments: PropTypes.number,
   previousYear: PropTypes.number,
+  visible: PropTypes.bool.isRequired,
 };
 
 export default function SavingsYear (props) {
@@ -26,21 +40,64 @@ export default function SavingsYear (props) {
     style,
     year,
     savings = {},
+    savingsTotals = {},
     investments = {},
+    investmentsTotals = {},
     allTimeTotalSavingsAndInvestments,
     previousYearTotalSavingsAndInvestments,
     previousYear,
+    visible = false,
   } = props;
 
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
+  const [initialized, setInitialized] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [selectedMonthIndex, setSelectedMonthIndex] = useState();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
-  const savingsAllTimeYearAverage = useSelector(state => state.savings.savingsYearAverage);
-  const investmentsAllTimeYearAverage = useSelector(state => state.savings.investmentsYearAverage);
+  const savingsAllTimeYearAverage = useSelector(state => state.savings.savingsTotals.yearAverage);
+  const investmentsAllTimeYearAverage = useSelector(state => state.savings.investmentsTotals.yearAverage);
 
   const allTimeYearAverage = savingsAllTimeYearAverage + investmentsAllTimeYearAverage;
+
+  useEffect(() => {
+    if (visible && !initialized) {
+      setInitialized(true);
+    }
+  }, [visible]);
+
+  useEffect(() => {
+    const yearHasData = !!Object.keys(savings).length;
+
+    if (visible && !yearHasData && !loading) {
+      loadYearSavingsInvestments();
+    } else if (loading && yearHasData) {
+      setLoading(false);
+    }
+  }, [visible, savings, loading]);
+
+  async function loadYearSavingsInvestments () {
+    setLoading(true);
+
+    const [savings, investments] = await Promise.all([
+      fetchSavingsForYear(year),
+      fetchInvestmentsForYear(year),
+    ]).finally(() => {
+      setLoading(false);
+    });
+
+    if (savings) {
+      dispatch(addSavingsGroupedByYearMonthWeekAction(savings));
+    }
+
+    if (investments) {
+      dispatch(addInvestmentsGroupedByYearMonthWeekAction(investments));
+    }
+
+    setLoading(false);
+  }
 
   function groupByMonth (yearItems) {
     const groupedByMonth = new Array(MONTHS_IN_YEAR).fill([]);
@@ -70,9 +127,9 @@ export default function SavingsYear (props) {
   const savingsGroupedByMonth = groupByMonth(savings);
   const investmentsGroupedByMonth = groupByMonth(investments);
   const savingsAndInvestmentsGroupedByMonth = mergeGroupedByMonth(savingsGroupedByMonth, investmentsGroupedByMonth);
-  const savingsByMonths = getTotalAmountsByMonths(savingsAndInvestmentsGroupedByMonth);
+  const amountsByMonths = getTotalAmountsByMonths(savingsAndInvestmentsGroupedByMonth);
 
-  const totalSavingsAndInvestments = savingsByMonths.reduce((total, month) => total + month, 0);
+  const totalSavingsAndInvestments = (savingsTotals?.total || 0) + (investmentsTotals?.total || 0);
 
   const columnWidth = windowWidth < MEDIA.DESKTOP
     ? '100%'
@@ -128,7 +185,7 @@ export default function SavingsYear (props) {
       >
         <YearChart
           style={{ width: chartWidth }}
-          savingsByMonths={savingsByMonths}
+          amountsByMonths={amountsByMonths}
           selectedMonthIndex={selectedMonthIndex}
           onMonthSelected={setSelectedMonthIndex}
           total={totalSavingsAndInvestments}
@@ -145,7 +202,7 @@ export default function SavingsYear (props) {
             paddingLeft: windowWidth < MEDIA.DESKTOP ? 0 : 40,
           }}
           year={year}
-          savingsByMonths={savingsByMonths}
+          amountsByMonths={amountsByMonths}
           total={totalSavingsAndInvestments}
           selectedMonthIndex={selectedMonthIndex}
           allTimeYearAverage={allTimeYearAverage}
@@ -154,6 +211,11 @@ export default function SavingsYear (props) {
           previousYear={previousYear}
         />
       </View>
+
+      <Loader
+        overlayStyle={styles.loaderOverlay}
+        loading={!initialized || loading}
+      />
     </View>
   );
 }
@@ -177,5 +239,9 @@ const styles = StyleSheet.create({
 
   content: {
     justifyContent: 'space-between',
+  },
+
+  loaderOverlay: {
+    marginTop: -12,
   },
 });

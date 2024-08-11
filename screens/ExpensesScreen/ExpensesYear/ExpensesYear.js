@@ -1,15 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import YearChart from './YearChart';
 import YearStats from './YearStats';
 import TitleLink from '../../../components/TitleLink';
 import CategoryDropdown, { SHOW_ALL_CATEGORY_ID } from '../../../components/CategoryDropdown';
+import Loader from '../../../components/Loader';
 import { MONTHS_IN_YEAR } from '../../../services/date';
 import { getTotalAmountsByMonths } from '../../../services/amount';
 import { filterYearExpensesByCategory } from '../../../services/dataItems';
+import { fetchExpensesForYear } from '../../../services/api/expense';
+import { addExpensesGroupedByYearMonthWeekAction } from '../../../redux/reducers/expenses';
 import { FONT } from '../../../styles/fonts';
 import { MEDIA } from '../../../styles/media';
 
@@ -21,6 +24,7 @@ ExpensesYear.propTypes = {
   yearIncome: PropTypes.number.isRequired,
   previousYear: PropTypes.number.isRequired,
   previousYearTotalExpenses: PropTypes.number.isRequired,
+  visible: PropTypes.bool.isRequired,
 };
 
 export default function ExpensesYear (props) {
@@ -32,16 +36,48 @@ export default function ExpensesYear (props) {
     yearIncome,
     previousYear,
     previousYearTotalExpenses,
+    visible = false,
   } = props;
 
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
+  const [initialized, setInitialized] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [selectedMonthIndex, setSelectedMonthIndex] = useState();
 
   const [categoryId, setCategoryId] = useState(SHOW_ALL_CATEGORY_ID);
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
   const allTimeYearAverage = useSelector(state => state.expenses.expensesTotals.yearAverage);
+
+  useEffect(() => {
+    if (visible && !initialized) {
+      setInitialized(true);
+    }
+  }, [visible]);
+
+  useEffect(() => {
+    const yearHasData = !!Object.keys(yearExpenses).length;
+
+    if (visible && !yearHasData && !loading) {
+      loadYearExpenses();
+    } else if (loading && yearHasData) {
+      setLoading(false);
+    }
+  }, [visible, yearExpenses, loading]);
+
+  async function loadYearExpenses () {
+    setLoading(true);
+
+    const expenses = await fetchExpensesForYear(year);
+
+    if (expenses) {
+      dispatch(addExpensesGroupedByYearMonthWeekAction(expenses));
+    }
+
+    setLoading(false);
+  }
 
   function groupByMonth (yearItems) {
     const groupedByMonth = new Array(MONTHS_IN_YEAR).fill([]);
@@ -166,6 +202,11 @@ export default function ExpensesYear (props) {
           showSecondaryComparisons={categoryId === SHOW_ALL_CATEGORY_ID}
         />
       </View>
+
+      <Loader
+        overlayStyle={styles.loaderOverlay}
+        loading={!initialized || loading}
+      />
     </View>
   );
 }
@@ -209,5 +250,9 @@ const styles = StyleSheet.create({
 
   content: {
     justifyContent: 'space-between',
+  },
+
+  loaderOverlay: {
+    marginTop: -12,
   },
 });
