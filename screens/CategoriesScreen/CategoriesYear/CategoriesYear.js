@@ -1,4 +1,8 @@
-import { useLayoutEffect, useMemo, useState } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
@@ -38,20 +42,6 @@ export default function CategoriesYear (props) {
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
   const categories = useSelector(state => state.categories);
-
-  useLayoutEffect(() => {
-    if (!selectedCategoryId && categories?.[0]?.id) {
-      setTimeout(() => {
-        setSelectedCategoryId(categories[0].id);
-      }, 1000);
-    }
-  }, [categories]);
-
-  const isEmptyYear = !yearExpensesTotal;
-
-  if (isEmptyYear) {
-    return null;
-  }
 
   function getAllMonthExpenses (expenses, monthNumber) {
     return [
@@ -122,6 +112,16 @@ export default function CategoriesYear (props) {
     ...getAllMonthExpenses(previousYearExpenses, 12),
   ]),[previousYearExpenses]);
 
+  useEffect(() => {
+    const findFirstCategoryWithPositiveValue = categories.find(category => expensesTotalsGroupedByCategoryId[category.id] > 0);
+
+    if (!selectedCategoryId && findFirstCategoryWithPositiveValue?.id) {
+      setTimeout(() => {
+        setSelectedCategoryId(findFirstCategoryWithPositiveValue.id);
+      }, 1000);
+    }
+  }, [categories, expensesTotalsGroupedByCategoryId]);
+
   const columnWidth = windowWidth < MEDIA.DESKTOP
     ? '100%'
     : '50%';
@@ -138,7 +138,13 @@ export default function CategoriesYear (props) {
     ? windowWidth < MEDIA.TABLET
       ? 32 // mobile
       : 40 // tablet
-    : 44; // desktop
+    : 50; // desktop
+
+  const isEmptyYear = !yearExpensesTotal;
+
+  if (isEmptyYear) {
+    return null;
+  }
 
   return (
     <View style={[styles.categoriesYear, style]}>
@@ -211,9 +217,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
 
-  yearChart: {
-    marginTop: 24,
-  },
+  yearChart: {},
 
   content: {
     width: '100%',

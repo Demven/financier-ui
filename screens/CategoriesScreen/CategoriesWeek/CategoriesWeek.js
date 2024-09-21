@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -12,9 +12,9 @@ import {
   getDaysInWeek,
   MONTH_NAME,
 } from '../../../services/date';
+import { groupExpensesTotalsByCategoryId, groupWeekByDay } from '../../../services/dataItems';
 import { FONT } from '../../../styles/fonts';
 import { MEDIA } from '../../../styles/media';
-import { groupExpensesTotalsByCategoryId, groupWeekByDay } from "../../../services/dataItems";
 
 CategoriesWeek.propTypes = {
   style: PropTypes.any,
@@ -51,13 +51,31 @@ export default function CategoriesWeek (props) {
   const daysInMonth = getDaysInMonth(year, monthNumber);
   const daysInWeek = getDaysInWeek(weekNumber, daysInMonth);
 
-  useLayoutEffect(() => {
-    if (!selectedCategoryId && categories?.[0]?.id) {
+  const weekExpensesGroupedByDay = useMemo(() => groupWeekByDay(weekExpenses, daysInWeek), [weekExpenses]);
+
+  const dayExpensesTotalsGroupedByCategoryId = useMemo(() => {
+    return weekExpensesGroupedByDay
+      .map(dayExpenses => groupExpensesTotalsByCategoryId(dayExpenses || []));
+  }, [weekExpensesGroupedByDay]);
+
+  const expensesTotalsGroupedByCategoryId = useMemo(
+    () => groupExpensesTotalsByCategoryId(weekExpenses),
+    [weekExpenses],
+  );
+  const previousWeekExpensesTotalsGroupedByCategoryId = useMemo(
+    () => groupExpensesTotalsByCategoryId(previousWeekExpenses),
+    [previousWeekExpenses],
+  );
+
+  useEffect(() => {
+    const findFirstCategoryWithPositiveValue = categories.find(category => expensesTotalsGroupedByCategoryId[category.id] > 0);
+
+    if (!selectedCategoryId && findFirstCategoryWithPositiveValue?.id) {
       setTimeout(() => {
-        setSelectedCategoryId(categories[0].id);
+        setSelectedCategoryId(findFirstCategoryWithPositiveValue.id);
       }, 1000);
     }
-  }, [categories]);
+  }, [categories, expensesTotalsGroupedByCategoryId]);
 
   function onLayout (event) {
     if (typeof onScrollTo === 'function') {
@@ -81,29 +99,13 @@ export default function CategoriesWeek (props) {
     ? windowWidth < MEDIA.TABLET
       ? 32 // mobile
       : 40 // tablet
-    : 44; // desktop
+    : 50; // desktop
 
   const isEmptyWeek = !weekExpensesTotal;
 
   if (isEmptyWeek) {
     return null;
   }
-
-  const weekExpensesGroupedByDay = useMemo(() => groupWeekByDay(weekExpenses, daysInWeek), [weekExpenses]);
-
-  const dayExpensesTotalsGroupedByCategoryId = useMemo(() => {
-    return weekExpensesGroupedByDay
-      .map(dayExpenses => groupExpensesTotalsByCategoryId(dayExpenses || []));
-  }, [weekExpensesGroupedByDay]);
-
-  const expensesTotalsGroupedByCategoryId = useMemo(
-  () => groupExpensesTotalsByCategoryId(weekExpenses),
-  [weekExpenses],
-  );
-  const previousWeekExpensesTotalsGroupedByCategoryId = useMemo(
-    () => groupExpensesTotalsByCategoryId(previousWeekExpenses),
-    [previousWeekExpenses],
-  );
 
   return (
     <View
@@ -199,9 +201,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
 
-  weekChart: {
-    marginTop: 24,
-  },
+  weekChart: {},
 
   content: {
     width: '100%',

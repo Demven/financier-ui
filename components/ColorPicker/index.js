@@ -149,7 +149,7 @@ export default function ColorPicker (props) {
           </View>
         ))}
 
-        {colorsByRow[colorsByRow.length - 1].length === colorsPerRow && addColorButton}
+        {colorsByRow[colorsByRow.length - 1]?.length === colorsPerRow && addColorButton}
       </View>
 
       {!!errorText && (
@@ -198,8 +198,8 @@ const styles = StyleSheet.create({
 
   color: {
     paddingTop: 24,
-    paddingRight: 12,
-    paddingLeft: 12,
+    paddingRight: 11,
+    paddingLeft: 11,
   },
 
   picker: {

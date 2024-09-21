@@ -147,7 +147,7 @@ export default function CategoryScreen () {
   return (
     <Modal
       contentStyle={[styles.categoryScreen, {
-        paddingTop: Platform.select({ web: windowWidth <= MEDIA.WIDE_MOBILE ? 0 : 48 }),
+        paddingTop: Platform.select({ web: windowWidth <= MEDIA.WIDE_MOBILE ? 0 : 12 }),
         paddingBottom: Platform.select({ web: windowWidth <= MEDIA.WIDE_MOBILE ? 32 : 48 }),
         paddingRight: windowWidth <= MEDIA.TABLET ? 0 : 52,
       }]}
@@ -157,7 +157,7 @@ export default function CategoryScreen () {
       onCloseRequest={onClose}
       disableSave={!!nameError || !name.length || !!colorError}
     >
-      <ScrollView>
+      <ScrollView style={styles.scrollView}>
         <View style={{ flexGrow: 1, paddingBottom: 100 }}>
           <View style={styles.formRow}>
             <Input
@@ -205,7 +205,11 @@ const styles = StyleSheet.create({
   categoryScreen: {
     paddingRight: 0,
     paddingLeft: 16,
-    alignItems: 'flex-start',
+  },
+
+  scrollView: {
+    width: '100%',
+    maxHeight: 500,
   },
 
   formRow: {
@@ -217,6 +221,7 @@ const styles = StyleSheet.create({
   },
 
   formElement: {
+    width: '100%',
     flexShrink: 1,
   },
 });

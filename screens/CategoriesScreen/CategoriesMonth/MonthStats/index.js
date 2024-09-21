@@ -7,6 +7,9 @@ MonthStats.propTypes = {
   style: PropTypes.any,
   categories: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    description: PropTypes.string,
+    colorId: PropTypes.string.isRequired,
   })).isRequired,
   expensesTotalsGroupedByCategoryId: PropTypes.object.isRequired,
   previousMonthExpensesTotalsGroupedByCategoryId: PropTypes.object.isRequired,
@@ -35,6 +38,10 @@ export default function MonthStats (props) {
       {categories.map((category, index) => {
         const totalExpenses = expensesTotalsGroupedByCategoryId[category.id] || 0;
         const previousMonthTotalExpenses = previousMonthExpensesTotalsGroupedByCategoryId[category.id] || 0;
+
+        if (totalExpenses === 0) {
+          return null;
+        }
 
         return (
           <CategoryCompareStats

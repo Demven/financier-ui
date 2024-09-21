@@ -3,8 +3,8 @@ import { View, StyleSheet, Text } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Loader from '../../../../components/Loader';
+import DonutChart from '../../../../components/chart/DonutChart';
 import BarChart from '../../../../components/chart/BarChart';
-import RadialChart from '../../../../components/chart/RadialChart';
 import WeekChartLegend, { LEGEND_HEIGHT } from '../../../../components/chart/legends/WeekChartLegend';
 import { MEDIA } from '../../../../styles/media';
 import { COLOR } from '../../../../styles/colors';
@@ -48,22 +48,45 @@ export default function WeekChart (props) {
     setBarChartWidth(width);
   }
 
-  const chartData = categories.map(category => {
-    const { red, green, blue, intensity } = colors.find(color => color.id === category.colorId);
+  const chartData = categories
+    .map(category => {
+      const { red, green, blue, intensity } = colors.find(color => color.id === category.colorId);
+      const value = expensesTotalsGroupedByCategoryId[category.id];
 
-    return {
-      id: category.id,
-      value: expensesTotalsGroupedByCategoryId[category.id] * 100 / weekTotal,
-      label: category.name,
-      textColor: intensity === 'light' ? COLOR.DARK_GRAY : COLOR.WHITE,
-      getColor: (opacity = 1) => `rgba(${red}, ${green}, ${blue}, ${opacity})`,
-    };
-  });
+      if (!value) {
+        return null;
+      }
+
+      return {
+        id: category.id,
+        value: value * 100 / weekTotal,
+        absoluteValue: value,
+        label: category.name,
+        textColor: intensity === 'light' ? COLOR.DARK_GRAY : COLOR.WHITE,
+        getColor: (opacity = 1) => `rgba(${red}, ${green}, ${blue}, ${opacity})`,
+      };
+    })
+    .filter(Boolean);
 
   const selectedChartSegment = chartData.find(category => category.id === selectedCategoryId);
 
   const categoryExpensesByDays = Array.from(new Array(daysInWeek))
     .map((_, index) => dayExpensesTotalsGroupedByCategoryId[index][selectedCategoryId] || 0);
+
+  const selectedSegmentTextFontSize = windowWidth > MEDIA.DESKTOP && windowWidth < MEDIA.MEDIUM_DESKTOP
+    ? 28  // desktop
+    : windowWidth < MEDIA.TABLET
+      ? 24 // mobile
+      : windowWidth < MEDIA.DESKTOP
+        ? 28 // tablet
+        : 30; // wide desktop
+  const selectedSegmentLineHeight = windowWidth > MEDIA.DESKTOP && windowWidth < MEDIA.MEDIUM_DESKTOP
+    ? 32 // desktop
+    : windowWidth < MEDIA.TABLET
+      ? 28 // mobile
+      : windowWidth < MEDIA.DESKTOP
+        ? 32 // tablet
+        : 34; // wide desktop
 
   return (
     <View style={[styles.weekChart, style]}>
@@ -74,29 +97,62 @@ export default function WeekChart (props) {
         timeout={500}
       />
 
-      <RadialChart
+      {selectedChartSegment && (
+        <View style={[
+          styles.selectedChartSegmentTextContainer,
+          windowWidth < MEDIA.DESKTOP && styles.selectedChartSegmentTextContainerTabletMobile,
+        ]}>
+          <Text style={[
+            styles.selectedChartSegmentText,
+            windowWidth < MEDIA.DESKTOP && styles.selectedChartSegmentTextTabletMobile,
+            {
+              fontSize: selectedSegmentTextFontSize,
+              lineHeight: selectedSegmentLineHeight,
+            },
+          ]}>
+            {selectedChartSegment.label} ({selectedChartSegment?.value?.toFixed(2)}%)
+          </Text>
+        </View>
+      )}
+
+      <DonutChart
         style={[styles.chart, windowWidth < MEDIA.TABLET && styles.chartMobile]}
         data={chartData}
         selectedSegmentId={selectedCategoryId}
         onSelectSegment={onSelectCategoryId}
       />
 
-      <View
-        style={[styles.barChartContainer, {
-          marginTop: windowWidth < MEDIA.DESKTOP ? 32 : 52,
-        }]}
-        onLayout={onBarChartLayout}
-      >
-        {selectedChartSegment && (
-          <>
-            <View style={styles.selectedChartSegmentTextContainer}>
-              <Text style={styles.selectedChartSegmentText}>
-                {selectedChartSegment.label} ({Math.round(selectedChartSegment.value)}%)
-              </Text>
-            </View>
+      {selectedChartSegment && (
+        <View style={[styles.barChartContainer, windowWidth < MEDIA.TABLET && styles.barChartContainerMobile]}>
+          <View
+            style={[
+              styles.selectedChartSegmentTextContainer,
+              windowWidth < MEDIA.DESKTOP && styles.selectedChartSegmentTextContainerTabletMobile,
+            ]}
+          >
+            <Text
+              style={[
+                styles.selectedChartSegmentText,
+                windowWidth < MEDIA.DESKTOP && styles.selectedChartSegmentTextTabletMobile,
+                {
+                  fontSize: selectedSegmentTextFontSize,
+                  lineHeight: selectedSegmentLineHeight,
+                },
+              ]}
+            >
+              {selectedChartSegment.label} (by weeks)
+            </Text>
+          </View>
 
+          <View
+            style={[
+              styles.barChartWrapper,
+              windowWidth < MEDIA.DESKTOP && styles.barChartWrapperTabletMobile,
+            ]}
+            onLayout={onBarChartLayout}
+          >
             <BarChart
-              style={styles.barChart}
+              style={[styles.barChart, windowWidth < MEDIA.DESKTOP && styles.barChartTabletMobile]}
               width={barChartWidth}
               height={300}
               legendHeight={LEGEND_HEIGHT}
@@ -105,9 +161,9 @@ export default function WeekChart (props) {
             />
 
             <WeekChartLegend daysInWeek={daysInWeek} />
-          </>
-        )}
-      </View>
+          </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -124,25 +180,45 @@ const styles = StyleSheet.create({
 
   chart: {
     width: '100%',
+    marginTop: 52,
   },
   chartMobile: {
-    marginTop: 40,
+    marginTop: 32,
   },
 
   barChartContainer: {
-    marginLeft: 32,
     position: 'relative',
   },
+  barChartContainerMobile: {
+    paddingHorizontal: 16,
+  },
 
-  selectedChartSegmentTextContainer: {},
+  selectedChartSegmentTextContainer: {
+    marginTop: 42,
+    marginLeft: 28,
+  },
+  selectedChartSegmentTextContainerTabletMobile: {
+    marginLeft: 0,
+  },
   selectedChartSegmentText: {
     fontFamily: FONT.NOTO_SERIF.BOLD,
-    fontSize: 24,
-    lineHeight: 32,
     color: COLOR.DARK_GRAY,
+  },
+  selectedChartSegmentTextTabletMobile: {
+    textAlign: 'center',
+  },
+
+  barChartWrapper: {
+    marginLeft: 28,
+  },
+  barChartWrapperTabletMobile: {
+    marginLeft: 0,
   },
 
   barChart: {
     marginTop: 72,
+  },
+  barChartTabletMobile: {
+    marginTop: 56,
   },
 });

@@ -63,7 +63,7 @@ export default function SavingsMonth (props) {
     ? windowWidth < MEDIA.TABLET
       ? 32 // mobile
       : 40 // tablet
-    : 44; // desktop
+    : 50; // desktop
 
   const statsMarginTop = windowWidth < MEDIA.MEDIUM_DESKTOP
     ? windowWidth < MEDIA.DESKTOP

@@ -80,7 +80,7 @@ export default function OverviewMonth (props) {
     ? windowWidth < MEDIA.TABLET
       ? 32 // mobile
       : 40 // tablet
-    : 44; // desktop
+    : 50; // desktop
   const subtitlePaddingLeft = windowWidth < MEDIA.DESKTOP ? 28 : 0;
 
   const statsMarginTop = windowWidth < MEDIA.DESKTOP

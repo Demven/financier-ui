@@ -1,4 +1,4 @@
-import { useMemo, useState, useLayoutEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
@@ -42,20 +42,6 @@ export default function CategoriesMonth (props) {
   const windowWidth = useSelector(state => state.ui.windowWidth);
   const categories = useSelector(state => state.categories);
 
-  useLayoutEffect(() => {
-    if (!selectedCategoryId && categories?.[0]?.id) {
-      setTimeout(() => {
-        setSelectedCategoryId(categories[0].id);
-      }, 1000);
-    }
-  }, [categories]);
-
-  const isEmptyMonth = !monthExpensesTotal;
-
-  if (isEmptyMonth) {
-    return null;
-  }
-
   const weekExpensesTotalsGroupedByCategoryId = useMemo(() => ({
     [1]: groupExpensesTotalsByCategoryId(monthExpenses[1] || []),
     [2]: groupExpensesTotalsByCategoryId(monthExpenses[2] || []),
@@ -77,6 +63,16 @@ export default function CategoriesMonth (props) {
     ...(previousMonthExpenses[4] || []),
   ]),[previousMonthExpenses]);
 
+  useEffect(() => {
+    const findFirstCategoryWithPositiveValue = categories.find(category => expensesTotalsGroupedByCategoryId[category.id] > 0);
+
+    if (!selectedCategoryId && findFirstCategoryWithPositiveValue?.id) {
+      setTimeout(() => {
+        setSelectedCategoryId(findFirstCategoryWithPositiveValue.id);
+      }, 1000);
+    }
+  }, [categories, expensesTotalsGroupedByCategoryId]);
+
   const columnWidth = windowWidth < MEDIA.DESKTOP
     ? '100%'
     : '50%';
@@ -93,7 +89,13 @@ export default function CategoriesMonth (props) {
     ? windowWidth < MEDIA.TABLET
       ? 32 // mobile
       : 40 // tablet
-    : 44; // desktop
+    : 50; // desktop
+
+  const isEmptyMonth = !monthExpensesTotal;
+
+  if (isEmptyMonth) {
+    return null;
+  }
 
   return (
     <View style={[styles.categoriesMonth, style]}>
@@ -165,9 +167,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
 
-  monthChart: {
-    marginTop: 24,
-  },
+  monthChart: {},
 
   content: {
     width: '100%',

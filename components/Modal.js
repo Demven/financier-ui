@@ -16,8 +16,8 @@ import { COLOR } from '../styles/colors';
 import { MEDIA } from '../styles/media';
 
 Modal.propTypes = {
-  style: PropTypes.object,
-  contentStyle: PropTypes.object,
+  style: PropTypes.any,
+  contentStyle: PropTypes.any,
   title: PropTypes.string.isRequired,
   children: PropTypes.any.isRequired,
   maxWidth: PropTypes.number,
@@ -97,6 +97,9 @@ export default function Modal (props) {
             paddingRight: Platform.select({ ios: 0, web: windowWidth >= MEDIA.WIDE_MOBILE ? 48 : 0 }),
             paddingVertical: Platform.select({ ios: 0, web: 32 }),
           }, contentStyle]}
+          contentContainerStyle={{
+            alignItems: 'flex-start'
+          }}
         >
           {children}
         </ScrollView>

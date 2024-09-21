@@ -7,6 +7,9 @@ YearStats.propTypes = {
   style: PropTypes.any,
   categories: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    description: PropTypes.string,
+    colorId: PropTypes.string.isRequired,
   })).isRequired,
   expensesTotalsGroupedByCategoryId: PropTypes.object.isRequired,
   previousYearExpensesTotalsGroupedByCategoryId: PropTypes.object.isRequired,
@@ -35,6 +38,10 @@ export default function YearStats (props) {
       {categories.map((category, index) => {
         const totalExpenses = expensesTotalsGroupedByCategoryId[category.id] || 0;
         const previousYearTotalExpenses = previousYearExpensesTotalsGroupedByCategoryId[category.id] || 0;
+
+        if (totalExpenses === 0) {
+          return null;
+        }
 
         return (
           <CategoryCompareStats

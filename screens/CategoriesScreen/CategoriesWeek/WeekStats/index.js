@@ -1,7 +1,4 @@
-import {
-  StyleSheet,
-  View,
-} from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import CategoryCompareStats from '../../CategoryCompareStats/CategoryCompareStats';
@@ -10,6 +7,9 @@ WeekStats.propTypes = {
   style: PropTypes.any,
   categories: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    description: PropTypes.string,
+    colorId: PropTypes.string.isRequired,
   })).isRequired,
   monthIncome: PropTypes.number.isRequired,
   expensesTotalsGroupedByCategoryId: PropTypes.object.isRequired,
@@ -38,6 +38,10 @@ export default function WeekStats (props) {
       {categories.map((category, index) => {
         const totalExpenses = expensesTotalsGroupedByCategoryId[category.id] || 0;
         const previousWeekTotalExpenses = previousWeekExpensesTotalsGroupedByCategoryId[category.id] || 0;
+
+        if (totalExpenses === 0) {
+          return null;
+        }
 
         return (
           <CategoryCompareStats
