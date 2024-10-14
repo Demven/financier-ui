@@ -16,6 +16,7 @@ import Animated, {
   useSharedValue,
   useDerivedValue,
 } from 'react-native-reanimated';
+import { ViewPortDetector, ViewPortDetectorProvider } from 'react-native-viewport-detector';
 import { setSelectedTabAction, setSelectedYearAction } from '../../redux/reducers/ui';
 import CategoriesMonth from './CategoriesMonth/CategoriesMonth';
 import CategoriesWeek from './CategoriesWeek/CategoriesWeek';
@@ -47,6 +48,7 @@ export default function CategoriesScreen () {
     .filter(Boolean);
 
   const [yearDropdownWidth, setYearDropdownWidth] = useState(0);
+  const [visibleYear, setVisibleYear] = useState(yearsToSelect?.[0]);
 
   const yearsToSelect = useMemo(() => {
     return Array.from(new Set([
@@ -162,20 +164,31 @@ export default function CategoriesScreen () {
   function renderYears () {
     return yearsToSelect
       .map(yearString => Number(yearString))
-      .map((yearNumber, index) => (
-        <CategoriesYear
-          key={index}
-          style={[
-            styles.categories,
-            windowWidth < MEDIA.WIDE_MOBILE && styles.categoriesMobile,
-          ]}
-          year={yearNumber}
-          previousYear={yearNumber - 1}
-          yearIncome={incomesTotals?.[yearNumber]?.total || 0}
-          yearExpenses={expenses[yearNumber]}
-          yearExpensesTotal={expensesTotals[yearNumber]?.total || 0}
-          previousYearExpenses={expenses?.[yearNumber - 1]}
-        />
+      .map(yearNumber => (
+        <ViewPortDetector
+          key={yearNumber}
+          onChange={(visible) => {
+            if (visible) {
+              setVisibleYear(yearNumber);
+            }
+          }}
+          percentHeight={0.5}
+          frequency={1000}
+        >
+          <CategoriesYear
+            style={[
+              styles.categories,
+              windowWidth < MEDIA.WIDE_MOBILE && styles.categoriesMobile,
+            ]}
+            visible={visibleYear === yearNumber}
+            year={yearNumber}
+            previousYear={yearNumber - 1}
+            yearIncome={incomesTotals?.[yearNumber]?.total || 0}
+            yearExpenses={expenses[yearNumber]}
+            yearExpensesTotal={expensesTotals[yearNumber]?.total || 0}
+            previousYearExpenses={expenses?.[yearNumber - 1]}
+          />
+        </ViewPortDetector>
       ));
   }
 
@@ -221,23 +234,25 @@ export default function CategoriesScreen () {
           />
         )}
 
-        <View style={[styles.listContainer, { paddingTop: listContainerPaddingTop }]}>
-          {((noDataForSelectedYear && selectedTab !== TAB.YEARS)
-            || (noDataForAnyYear && selectedTab === TAB.YEARS)
-          ) && <NoDataPlaceholder />}
+        <ViewPortDetectorProvider flex={1}>
+          <View style={[styles.listContainer, { paddingTop: listContainerPaddingTop }]}>
+            {((noDataForSelectedYear && selectedTab !== TAB.YEARS)
+              || (noDataForAnyYear && selectedTab === TAB.YEARS)
+            ) && <NoDataPlaceholder />}
 
-          {!noDataForSelectedYear && selectedTab === TAB.WEEKS && (
-            renderWeeks()
-          )}
+            {!noDataForSelectedYear && selectedTab === TAB.WEEKS && (
+              renderWeeks()
+            )}
 
-          {!noDataForSelectedYear && selectedTab === TAB.MONTHS && (
-            renderMonths()
-          )}
+            {!noDataForSelectedYear && selectedTab === TAB.MONTHS && (
+              renderMonths()
+            )}
 
-          {!noDataForAnyYear && selectedTab === TAB.YEARS && (
-            renderYears()
-          )}
-        </View>
+            {!noDataForAnyYear && selectedTab === TAB.YEARS && (
+              renderYears()
+            )}
+          </View>
+        </ViewPortDetectorProvider>
       </View>
     </Animated.ScrollView>
   );

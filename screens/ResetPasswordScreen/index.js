@@ -185,7 +185,7 @@ export default function ResetPasswordScreen () {
               buttonContainerStyle={styles.buttonContainer}
               look={BUTTON_LOOK.PRIMARY}
               text='Set a new password'
-              disabled={passwordError || repeatPasswordError}
+              disabled={!!passwordError || !!repeatPasswordError}
               onPress={onSave}
             />
           </>

@@ -4,14 +4,17 @@ import {
   useState,
 } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import YearChart from './YearChart';
 import YearStats from './YearStats';
 import TitleLink from '../../../components/TitleLink';
 import FoldedContainer from '../../../components/FoldedContainer';
+import Loader from '../../../components/Loader';
+import { addExpensesGroupedByYearMonthWeekAction } from '../../../redux/reducers/expenses';
 import { groupExpensesTotalsByCategoryId } from '../../../services/dataItems';
+import { fetchExpensesForYear } from '../../../services/api/expense';
 import { FONT } from '../../../styles/fonts';
 import { MEDIA } from '../../../styles/media';
 
@@ -23,6 +26,7 @@ CategoriesYear.propTypes = {
   yearExpenses: PropTypes.object.isRequired, // weeks -> expenses { [1]: [], [2]: [] }
   yearExpensesTotal: PropTypes.number.isRequired,
   previousYearExpenses: PropTypes.object.isRequired,
+  visible: PropTypes.bool.isRequired,
 };
 
 export default function CategoriesYear (props) {
@@ -34,14 +38,46 @@ export default function CategoriesYear (props) {
     yearExpenses = {},
     yearExpensesTotal = 0,
     previousYearExpenses = {},
+    visible = false,
   } = props;
 
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const [selectedCategoryId, setSelectedCategoryId] = useState();
+  const [initialized, setInitialized] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
   const categories = useSelector(state => state.categories);
+
+  useEffect(() => {
+    if (visible && !initialized) {
+      setInitialized(true);
+    }
+  }, [visible]);
+
+  useEffect(() => {
+    const yearHasData = !!Object.keys(yearExpenses).length;
+
+    if (visible && !yearHasData && !loading) {
+      loadYearExpenses();
+    } else if (loading && yearHasData) {
+      setLoading(false);
+    }
+  }, [visible, yearExpenses, loading]);
+
+  async function loadYearExpenses () {
+    setLoading(true);
+
+    const expenses = await fetchExpensesForYear(year);
+
+    if (expenses) {
+      dispatch(addExpensesGroupedByYearMonthWeekAction(expenses));
+    }
+
+    setLoading(false);
+  }
 
   function getAllMonthExpenses (expenses, monthNumber) {
     return [
@@ -196,6 +232,11 @@ export default function CategoriesYear (props) {
             onSelectCategoryId={setSelectedCategoryId}
           />
         </View>
+
+        <Loader
+          overlayStyle={styles.loaderOverlay}
+          loading={!initialized || loading}
+        />
       </FoldedContainer>
     </View>
   );
@@ -223,4 +264,6 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'space-between',
   },
+
+  loaderOverlay: {},
 });

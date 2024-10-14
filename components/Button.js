@@ -17,7 +17,7 @@ export const BUTTON_LOOK = {
 };
 
 Button.propTypes = {
-  style: PropTypes.object,
+  style: PropTypes.any,
   buttonContainerStyle: PropTypes.object,
   textStyle: PropTypes.object,
   look: PropTypes.oneOf(Object.values(BUTTON_LOOK)),
