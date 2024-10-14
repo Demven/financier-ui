@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import TitleLink from '../../../../components/TitleLink';
 import FoldedContainer from '../../../../components/FoldedContainer';
 import CompareStats from '../../../../components/CompareStats';
-import { getAmount } from '../../../../services/amount';
+import { formatAmount, getAmount } from '../../../../services/amount';
 import { COLOR } from '../../../../styles/colors';
 import { FONT } from '../../../../styles/fonts';
 import { MEDIA } from '../../../../styles/media';
@@ -36,6 +36,7 @@ export default function WeekStats (props) {
   const navigation = useNavigation();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
+  const currencySymbol = useSelector(state => state.account.currencySymbol);
 
   return (
     <View style={[styles.weekStats, style]}>
@@ -85,7 +86,7 @@ export default function WeekStats (props) {
                     windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
                     selectedDayIndex === index && styles.statValueBold,
                   ]}>
-                    {getAmount(item)}
+                    {formatAmount(getAmount(item), currencySymbol)}
                   </Text>
                 </View>
               ))}

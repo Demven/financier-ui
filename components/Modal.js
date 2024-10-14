@@ -97,9 +97,6 @@ export default function Modal (props) {
             paddingRight: Platform.select({ ios: 0, web: windowWidth >= MEDIA.WIDE_MOBILE ? 48 : 0 }),
             paddingVertical: Platform.select({ ios: 0, web: 32 }),
           }, contentStyle]}
-          contentContainerStyle={{
-            alignItems: 'flex-start'
-          }}
         >
           {children}
         </ScrollView>

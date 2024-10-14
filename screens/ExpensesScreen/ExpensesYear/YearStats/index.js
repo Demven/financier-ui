@@ -41,6 +41,7 @@ export default function YearStats (props) {
   const navigation = useNavigation();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
+  const currencySymbol = useSelector(state => state.account.currencySymbol);
 
   return (
     <View style={[styles.yearStats, style]}>
@@ -79,7 +80,7 @@ export default function YearStats (props) {
                 windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
                 selectedMonthIndex === index && styles.statValueBold,
               ]}>
-                {total > 0 ? formatAmount(-total) : '–'}
+                {total > 0 ? formatAmount(-total, currencySymbol) : '–'}
               </Text>
             </View>
           ))}

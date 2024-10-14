@@ -36,8 +36,10 @@ export default function MonthStats (props) {
   const navigation = useNavigation();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
+  const currencySymbol = useSelector(state => state.account.currencySymbol);
   const allTimeSavingsMonthAverage = useSelector(state => state.savings.savingsMonthAverage);
   const allTimeInvestmentsMonthAverage = useSelector(state => state.savings.investmentsMonthAverage);
+
   const allTimeMonthAverage = allTimeSavingsMonthAverage + allTimeInvestmentsMonthAverage;
 
   return (
@@ -76,7 +78,7 @@ export default function MonthStats (props) {
                 windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
                 selectedWeekIndex === index && styles.statValueBold,
               ]}>
-                {total > 0 ? formatAmount(total) : '–'}
+                {!!total ? formatAmount(total, currencySymbol) : '–'}
               </Text>
             </View>
           ))}
