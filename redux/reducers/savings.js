@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { getWeekNumberByDayNumber } from '../../services/date';
+import { sortItemsByDateAsc } from '../../services/dataItems';
 
 const INITIAL_STATE = {
   savings: {},
@@ -91,15 +92,10 @@ const savingsSlice = createSlice({
         ...(updatedSavings?.[newYear] || {}),
         [newMonth]: {
           ...(updatedSavings?.[newYear]?.[newMonth] || {}),
-          [newWeek]: [
+          [newWeek]: sortItemsByDateAsc([
             ...(updatedSavings?.[newYear]?.[newMonth]?.[newWeek] || []),
             saving,
-          ].sort((saving1, saving2) => {
-            const date1 = +(new Date(saving1.dateString));
-            const date2 = +(new Date(saving2.dateString));
-
-            return date1 - date2; // asc
-          }),
+          ]),
         },
       };
 
@@ -229,15 +225,10 @@ const savingsSlice = createSlice({
         ...(updatedInvestments?.[newYear] || {}),
         [newMonth]: {
           ...(updatedInvestments?.[newYear]?.[newMonth] || {}),
-          [newWeek]: [
+          [newWeek]: sortItemsByDateAsc([
             ...(updatedInvestments?.[newYear]?.[newMonth]?.[newWeek] || []),
             investment,
-          ].sort((investment1, investment2) => {
-            const date1 = +(new Date(investment1.dateString));
-            const date2 = +(new Date(investment2.dateString));
-
-            return date1 - date2; // asc
-          }),
+          ]),
         },
       };
 

@@ -12,6 +12,7 @@ import FoldedContainer from '../../../../components/FoldedContainer';
 import ItemGroup from '../../../../components/ItemGroup';
 import CompareStats from '../../../../components/CompareStats';
 import { formatAmount, getListTotal } from '../../../../services/amount';
+import { sortItemsByDateAsc } from '../../../../services/dataItems';
 import { COLOR } from '../../../../styles/colors';
 import { FONT } from '../../../../styles/fonts';
 import { MEDIA } from '../../../../styles/media';
@@ -78,50 +79,54 @@ export default function WeekStats (props) {
         >
           {Object
             .entries(expensesGroupedByName)
-            .map(([groupName, expenses], index) => (
-              <View
-                key={groupName}
-                style={[styles.statRow, index === 0 && { marginTop: 0 }]}
-              >
-                <View style={styles.statNameWrapper}>
-                  {expenses.length === 1 && (
-                    <TitleLink
-                      style={{ maxWidth: '100%' }}
-                      textStyle={[
-                        styles.statName,
-                        windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
-                      ]}
-                      alwaysHighlighted
-                      onPress={() => navigation.navigate('Expense', { expense: expenses[0] })}
-                    >
-                      {groupName}
-                    </TitleLink>
-                  )}
+            .map(([groupName, expenses], index) => {
+              const expensesSortedByDate = sortItemsByDateAsc(expenses);
 
-                  {expenses.length > 1 && (
-                    <ItemGroup
-                      titleStyle={[
-                        styles.statName,
-                        windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
-                      ]}
-                      title={groupName}
-                      items={expenses}
-                      monthNumber={monthNumber}
-                      onPressItem={expense => navigation.navigate('Expense', { expense })}
-                    />
-                  )}
-                </View>
+              return (
+                <View
+                  key={groupName}
+                  style={[styles.statRow, index === 0 && { marginTop: 0 }]}
+                >
+                  <View style={styles.statNameWrapper}>
+                    {expenses.length === 1 && (
+                      <TitleLink
+                        style={{ maxWidth: '100%' }}
+                        textStyle={[
+                          styles.statName,
+                          windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
+                        ]}
+                        alwaysHighlighted
+                        onPress={() => navigation.navigate('Expense', { expense: expenses[0] })}
+                      >
+                        {groupName}
+                      </TitleLink>
+                    )}
 
-                <View style={styles.statValueWrapper}>
-                  <Text style={[
-                    styles.statValue,
-                    windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
-                  ]}>
-                    {formatAmount(-getListTotal(expenses), currencySymbol)}
-                  </Text>
+                    {expenses.length > 1 && (
+                      <ItemGroup
+                        titleStyle={[
+                          styles.statName,
+                          windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
+                        ]}
+                        title={groupName}
+                        items={expensesSortedByDate}
+                        monthNumber={monthNumber}
+                        onPressItem={expense => navigation.navigate('Expense', { expense })}
+                      />
+                    )}
+                  </View>
+
+                  <View style={styles.statValueWrapper}>
+                    <Text style={[
+                      styles.statValue,
+                      windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
+                    ]}>
+                      {formatAmount(-getListTotal(expenses), currencySymbol)}
+                    </Text>
+                  </View>
                 </View>
-              </View>
-            ))
+              );
+            })
           }
         </View>
       </FoldedContainer>

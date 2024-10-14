@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { getWeekNumberByDayNumber } from '../../services/date';
+import { sortItemsByDateAsc } from '../../services/dataItems';
 
 const INITIAL_STATE = {
   incomes: {},
@@ -85,15 +86,10 @@ const incomesSlice = createSlice({
         ...(updatedIncomes?.[newYear] || {}),
         [newMonth]: {
           ...(updatedIncomes?.[newYear]?.[newMonth] || {}),
-          [newWeek]: [
+          [newWeek]: sortItemsByDateAsc([
             ...(updatedIncomes?.[newYear]?.[newMonth]?.[newWeek] || []),
             income,
-          ].sort((income1, income2) => {
-            const date1 = +(new Date(income1.dateString));
-            const date2 = +(new Date(income2.dateString));
-
-            return date1 - date2; // asc
-          }),
+          ]),
         },
       };
 

@@ -5,7 +5,6 @@ import {
   Text,
 } from 'react-native';
 import { useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import TitleLink from './TitleLink';
 import FoldedContainer from './FoldedContainer';

@@ -2,6 +2,15 @@ import { SHOW_ALL_CATEGORY_ID } from '../components/CategoryDropdown';
 import { getAmount, getListTotal } from './amount';
 import { dayOfMonthToDayOfWeek } from './date';
 
+export function sortItemsByDateAsc (items) {
+  return items.sort((item1, item2) => {
+    const date1 = +(new Date(item1.dateString));
+    const date2 = +(new Date(item2.dateString));
+
+    return date1 - date2; // asc
+  });
+}
+
 export function groupWeekByDay (weekItems, daysInWeek) {
   const groupedByDay = new Array(daysInWeek).fill([]);
 

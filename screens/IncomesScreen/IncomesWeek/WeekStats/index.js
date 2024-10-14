@@ -12,6 +12,7 @@ import FoldedContainer from '../../../../components/FoldedContainer';
 import CompareStats from '../../../../components/CompareStats';
 import ItemGroup from '../../../../components/ItemGroup';
 import { formatAmount, getListTotal } from '../../../../services/amount';
+import { sortItemsByDateAsc } from '../../../../services/dataItems';
 import { COLOR } from '../../../../styles/colors';
 import { FONT } from '../../../../styles/fonts';
 import { MEDIA } from '../../../../styles/media';
@@ -75,47 +76,51 @@ export default function WeekStats (props) {
         >
           {Object
             .entries(incomesGroupedByName)
-            .map(([groupName, incomes], index) => (
-              <View
-                key={groupName}
-                style={[styles.statRow, index === 0 && { marginTop: 0 }]}
-              >
-                <View style={styles.statNameWrapper}>
-                  {incomes.length === 1 && (
-                    <TitleLink
-                      textStyle={[
-                        styles.statName,
-                        windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
-                      ]}
-                      alwaysHighlighted
-                      onPress={() => navigation.navigate('Income', { income: incomes[0] })}
-                    >
-                      {groupName}
-                    </TitleLink>
-                  )}
+            .map(([groupName, incomes], index) => {
+              const incomesSortedByDate = sortItemsByDateAsc(incomes);
 
-                  {incomes.length > 1 && (
-                    <ItemGroup
-                      titleStyle={[
-                        styles.statName,
-                        windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
-                      ]}
-                      title={groupName}
-                      items={incomes}
-                      monthNumber={monthNumber}
-                      onPressItem={income => navigation.navigate('Income', { income })}
-                    />
-                  )}
+              return (
+                <View
+                  key={groupName}
+                  style={[styles.statRow, index === 0 && { marginTop: 0 }]}
+                >
+                  <View style={styles.statNameWrapper}>
+                    {incomes.length === 1 && (
+                      <TitleLink
+                        textStyle={[
+                          styles.statName,
+                          windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
+                        ]}
+                        alwaysHighlighted
+                        onPress={() => navigation.navigate('Income', { income: incomes[0] })}
+                      >
+                        {groupName}
+                      </TitleLink>
+                    )}
+
+                    {incomes.length > 1 && (
+                      <ItemGroup
+                        titleStyle={[
+                          styles.statName,
+                          windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
+                        ]}
+                        title={groupName}
+                        items={incomesSortedByDate}
+                        monthNumber={monthNumber}
+                        onPressItem={income => navigation.navigate('Income', { income })}
+                      />
+                    )}
+                  </View>
+
+                  <Text style={[
+                    styles.statValue,
+                    windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
+                  ]}>
+                    {formatAmount(getListTotal(incomes), currencySymbol)}
+                  </Text>
                 </View>
-
-                <Text style={[
-                  styles.statValue,
-                  windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
-                ]}>
-                  {formatAmount(getListTotal(incomes), currencySymbol)}
-                </Text>
-              </View>
-            ))
+              );
+            })
           }
         </View>
       </FoldedContainer>
