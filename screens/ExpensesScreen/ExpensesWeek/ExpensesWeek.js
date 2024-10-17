@@ -26,11 +26,11 @@ ExpensesWeek.propTypes = {
   monthNumber: PropTypes.number.isRequired,
   weekNumber: PropTypes.number.isRequired,
   monthIncome: PropTypes.number.isRequired,
-  onScrollTo: PropTypes.func,
   weekExpenses: PropTypes.arrayOf(PropTypes.object), // []
   weekExpensesTotal: PropTypes.number.isRequired,
   previousWeekTotalExpenses: PropTypes.number.isRequired,
   previousMonthName: PropTypes.string,
+  onScrollTo: PropTypes.func,
 };
 
 export default function ExpensesWeek (props) {
@@ -40,11 +40,11 @@ export default function ExpensesWeek (props) {
     monthNumber,
     weekNumber,
     monthIncome,
-    onScrollTo,
     weekExpenses = [],
     weekExpensesTotal = 0,
     previousWeekTotalExpenses = 0,
-    previousMonthName = ''
+    previousMonthName = '',
+    onScrollTo,
   } = props;
 
   const windowWidth = useSelector(state => state.ui.windowWidth);

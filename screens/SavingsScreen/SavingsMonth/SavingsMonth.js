@@ -21,6 +21,7 @@ SavingsMonth.propTypes = {
   yearInvestmentsTotal: PropTypes.object.isRequired,
   previousMonthTotalSavingsAndInvestments: PropTypes.number,
   previousMonthName: PropTypes.string,
+  onScrollTo: PropTypes.func,
 };
 
 export default function SavingsMonth (props) {
@@ -34,6 +35,7 @@ export default function SavingsMonth (props) {
     yearInvestmentsTotal = 0,
     previousMonthTotalSavingsAndInvestments,
     previousMonthName,
+    onScrollTo,
   } = props;
 
   const [selectedWeekIndex, setSelectedWeekIndex] = useState();
@@ -46,6 +48,12 @@ export default function SavingsMonth (props) {
   const savingsAndInvestmentsByWeeks = getMonthChartPointsByWeek(savingsAndInvestmentsGroupedByWeek);
 
   const totalSavingsAndInvestments = savingsAndInvestmentsByWeeks.reduce((total, weekTotal) => total + weekTotal, 0);
+
+  function onLayout (event) {
+    if (typeof onScrollTo === 'function') {
+      onScrollTo(event.nativeEvent.layout.y);
+    }
+  }
 
   const columnWidth = windowWidth < MEDIA.DESKTOP
     ? '100%'
@@ -78,7 +86,10 @@ export default function SavingsMonth (props) {
   }
 
   return (
-    <View style={[styles.savingsMonth, style]}>
+    <View
+      style={[styles.savingsMonth, style]}
+      onLayout={onLayout}
+    >
       <TitleLink
         style={styles.subtitleLink}
         textStyle={[styles.subtitleLinkText, {

@@ -136,7 +136,7 @@ export default function OverviewMonth (props) {
             paddingRight: windowWidth < MEDIA.DESKTOP ? 32 : 0,
           }]}
           chartView={chartView}
-          setChartView={setChartView}
+          monthNumber={monthNumber}
           totalIncomes={totalIncomes}
           totalExpenses={totalExpenses}
           totalSavingsAndInvestments={totalSavingsAndInvestments}

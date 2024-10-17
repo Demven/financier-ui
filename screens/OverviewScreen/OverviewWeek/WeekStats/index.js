@@ -1,12 +1,19 @@
 import { StyleSheet, View, Text } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
-import { COLOR } from '../../../../styles/colors';
-import { MEDIA } from '../../../../styles/media';
+import { TAB } from '../../../../components/HeaderTabs';
 import TitleLink from '../../../../components/TitleLink';
 import { CHART_VIEW } from '../WeekChart';
+import {
+  setSelectedMonthAction,
+  setSelectedTabAction,
+  setSelectedWeekAction,
+} from '../../../../redux/reducers/ui';
 import { formatAmount, getAmountColor } from '../../../../services/amount';
 import { FONT } from '../../../../styles/fonts';
+import { COLOR } from '../../../../styles/colors';
+import { MEDIA } from '../../../../styles/media';
 
 WeekStats.propTypes = {
   style: PropTypes.any,
@@ -15,7 +22,8 @@ WeekStats.propTypes = {
     CHART_VIEW.INCOME,
     CHART_VIEW.SAVINGS,
   ]).isRequired,
-  setChartView: PropTypes.func.isRequired,
+  monthNumber: PropTypes.number.isRequired,
+  weekNumber: PropTypes.number.isRequired,
   totalIncomes: PropTypes.number,
   previousWeeksTotalIncomes: PropTypes.number,
   totalExpenses: PropTypes.number,
@@ -29,7 +37,8 @@ export default function WeekStats (props) {
   const {
     style,
     chartView,
-    setChartView = () => {},
+    monthNumber,
+    weekNumber,
     totalIncomes,
     previousWeeksTotalIncomes,
     totalExpenses,
@@ -39,7 +48,11 @@ export default function WeekStats (props) {
     previousWeeksTotalInvestments,
   } = props;
 
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+
   const windowWidth = useSelector(state => state.ui.windowWidth);
+  const currencySymbol = useSelector(state => state.account.currencySymbol);
 
   const totalExcludingSavings = (totalIncomes + previousWeeksTotalIncomes) - (totalExpenses + previousWeeksTotalExpenses);
   const total = totalExcludingSavings - totalSavingsAndInvestments - previousWeeksTotalSavings - previousWeeksTotalInvestments;
@@ -57,9 +70,14 @@ export default function WeekStats (props) {
               chartView === CHART_VIEW.INCOME && styles.statNameBold,
               windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
             ]}
-            onPress={() => setChartView(CHART_VIEW.INCOME)}
+            onPress={() => {
+              dispatch(setSelectedTabAction(TAB.WEEKS));
+              dispatch(setSelectedMonthAction(monthNumber));
+              dispatch(setSelectedWeekAction(weekNumber));
+              setTimeout(() => navigation.navigate('Incomes'), 0);
+            }}
           >
-            Income
+            Incomes
           </TitleLink>
 
           <Text style={[
@@ -67,7 +85,7 @@ export default function WeekStats (props) {
             chartView === CHART_VIEW.INCOME && styles.statValueBold,
             windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
           ]}>
-            {formatAmount(totalIncomes)}
+            {formatAmount(totalIncomes, currencySymbol)}
           </Text>
         </View>
       )}
@@ -80,7 +98,12 @@ export default function WeekStats (props) {
               chartView === CHART_VIEW.EXPENSES && styles.statNameBold,
               windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
             ]}
-            onPress={() => setChartView(CHART_VIEW.EXPENSES)}
+            onPress={() => {
+              dispatch(setSelectedTabAction(TAB.WEEKS));
+              dispatch(setSelectedMonthAction(monthNumber));
+              dispatch(setSelectedWeekAction(weekNumber));
+              setTimeout(() => navigation.navigate('Expenses'), 0);
+            }}
           >
             Expenses
           </TitleLink>
@@ -90,7 +113,7 @@ export default function WeekStats (props) {
             chartView === CHART_VIEW.EXPENSES && styles.statValueBold,
             windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
           ]}>
-            {formatAmount(-totalExpenses)}
+            {formatAmount(-totalExpenses, currencySymbol)}
           </Text>
         </View>
       )}
@@ -103,7 +126,12 @@ export default function WeekStats (props) {
               chartView === CHART_VIEW.SAVINGS && styles.statNameBold,
               windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
             ]}
-            onPress={() => setChartView(CHART_VIEW.SAVINGS)}
+            onPress={() => {
+              dispatch(setSelectedTabAction(TAB.WEEKS));
+              dispatch(setSelectedMonthAction(monthNumber));
+              dispatch(setSelectedWeekAction(weekNumber));
+              setTimeout(() => navigation.navigate('Savings'), 0);
+            }}
           >
             Savings / Investments
           </TitleLink>
@@ -113,7 +141,7 @@ export default function WeekStats (props) {
             chartView === CHART_VIEW.SAVINGS && styles.statValueBold,
             windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
           ]}>
-            {formatAmount(totalSavingsAndInvestments)}
+            {formatAmount(totalSavingsAndInvestments, currencySymbol)}
           </Text>
         </View>
       )}
@@ -130,7 +158,7 @@ export default function WeekStats (props) {
             windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
             { color: totalExcludingSavingsColor },
           ]}>
-            {formatAmount(totalExcludingSavings)}
+            {formatAmount(totalExcludingSavings, currencySymbol)}
           </Text>
         </View>
       )}
@@ -151,7 +179,7 @@ export default function WeekStats (props) {
           windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
           { color: totalColor },
         ]}>
-          {formatAmount(total)}
+          {formatAmount(total, currencySymbol)}
         </Text>
       </View>
     </View>

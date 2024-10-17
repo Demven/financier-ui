@@ -1,12 +1,19 @@
 import { StyleSheet, View, Text } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
-import { COLOR } from '../../../../styles/colors';
-import { MEDIA } from '../../../../styles/media';
 import TitleLink from '../../../../components/TitleLink';
+import { TAB } from '../../../../components/HeaderTabs';
 import { CHART_VIEW } from '../MonthChart';
 import { formatAmount, getAmountColor } from '../../../../services/amount';
+import {
+  setSelectedTabAction,
+  setSelectedMonthAction,
+  setSelectedWeekAction,
+} from '../../../../redux/reducers/ui';
 import { FONT } from '../../../../styles/fonts';
+import { COLOR } from '../../../../styles/colors';
+import { MEDIA } from '../../../../styles/media';
 
 MonthStats.propTypes = {
   style: PropTypes.any,
@@ -15,7 +22,7 @@ MonthStats.propTypes = {
     CHART_VIEW.INCOME,
     CHART_VIEW.SAVINGS,
   ]).isRequired,
-  setChartView: PropTypes.func.isRequired,
+  monthNumber: PropTypes.number.isRequired,
   totalIncomes: PropTypes.number,
   totalExpenses: PropTypes.number,
   totalSavingsAndInvestments: PropTypes.number,
@@ -25,13 +32,17 @@ export default function MonthStats (props) {
   const {
     style,
     chartView,
-    setChartView = () => {},
+    monthNumber,
     totalIncomes,
     totalExpenses,
     totalSavingsAndInvestments,
   } = props;
 
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+
   const windowWidth = useSelector(state => state.ui.windowWidth);
+  const currencySymbol = useSelector(state => state.account.currencySymbol);
 
   const savingsPercent = Math.floor(totalSavingsAndInvestments * 100 / totalIncomes);
   const totalExcludingSavings = totalIncomes - totalExpenses;
@@ -50,9 +61,14 @@ export default function MonthStats (props) {
               chartView === CHART_VIEW.INCOME && styles.statNameBold,
               windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
             ]}
-            onPress={() => setChartView(CHART_VIEW.INCOME)}
+            onPress={() => {
+              dispatch(setSelectedTabAction(TAB.MONTHS));
+              dispatch(setSelectedMonthAction(monthNumber));
+              dispatch(setSelectedWeekAction(undefined));
+              setTimeout(() => navigation.navigate('Incomes'), 0);
+            }}
           >
-            Income
+            Incomes
           </TitleLink>
 
           <Text style={[
@@ -60,7 +76,7 @@ export default function MonthStats (props) {
             chartView === CHART_VIEW.INCOME && styles.statValueBold,
             windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
           ]}>
-            {formatAmount(totalIncomes)}
+            {formatAmount(totalIncomes, currencySymbol)}
           </Text>
         </View>
       )}
@@ -73,7 +89,12 @@ export default function MonthStats (props) {
               chartView === CHART_VIEW.EXPENSES && styles.statNameBold,
               windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
             ]}
-            onPress={() => setChartView(CHART_VIEW.EXPENSES)}
+            onPress={() => {
+              dispatch(setSelectedTabAction(TAB.MONTHS));
+              dispatch(setSelectedMonthAction(monthNumber));
+              dispatch(setSelectedWeekAction(undefined));
+              setTimeout(() => navigation.navigate('Expenses'), 0);
+            }}
           >
             Expenses
           </TitleLink>
@@ -83,7 +104,7 @@ export default function MonthStats (props) {
             chartView === CHART_VIEW.EXPENSES && styles.statValueBold,
             windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
           ]}>
-            {formatAmount(-totalExpenses)}
+            {formatAmount(-totalExpenses, currencySymbol)}
           </Text>
         </View>
       )}
@@ -96,7 +117,12 @@ export default function MonthStats (props) {
               chartView === CHART_VIEW.SAVINGS && styles.statNameBold,
               windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
             ]}
-            onPress={() => setChartView(CHART_VIEW.SAVINGS)}
+            onPress={() => {
+              dispatch(setSelectedTabAction(TAB.MONTHS));
+              dispatch(setSelectedMonthAction(monthNumber));
+              dispatch(setSelectedWeekAction(undefined));
+              setTimeout(() => navigation.navigate('Savings'), 0);
+            }}
           >
             Savings
           </TitleLink>
@@ -106,7 +132,7 @@ export default function MonthStats (props) {
             chartView === CHART_VIEW.SAVINGS && styles.statValueBold,
             windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
           ]}>
-            {formatAmount(totalSavingsAndInvestments)}
+            {formatAmount(totalSavingsAndInvestments, currencySymbol)}
           </Text>
         </View>
       )}
@@ -129,7 +155,7 @@ export default function MonthStats (props) {
             windowWidth < MEDIA.DESKTOP && styles.statValueSmaller,
             { color: totalExcludingSavingsColor },
           ]}>
-            {formatAmount(totalExcludingSavings)}
+            {formatAmount(totalExcludingSavings, currencySymbol)}
           </Text>
         </View>
       )}
@@ -154,7 +180,7 @@ export default function MonthStats (props) {
             { color: totalColor },
           ]}
         >
-          {formatAmount(total)}
+          {formatAmount(total, currencySymbol)}
         </Text>
       </View>
     </View>

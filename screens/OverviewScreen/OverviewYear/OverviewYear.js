@@ -240,8 +240,8 @@ export default function OverviewYear (props) {
             paddingLeft: windowWidth < MEDIA.DESKTOP ? 32 : 40,
             paddingRight: windowWidth < MEDIA.DESKTOP ? 32 : 0,
           }}
+          year={year}
           chartView={chartView}
-          setChartView={setChartView}
           totalIncomes={totalIncomes}
           totalExpenses={totalExpenses}
           totalSavingsAndInvestments={totalSavingsAndInvestments}

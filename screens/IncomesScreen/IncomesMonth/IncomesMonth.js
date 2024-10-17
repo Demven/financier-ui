@@ -20,6 +20,7 @@ IncomesMonth.propTypes = {
   monthIncomesTotal: PropTypes.number,
   previousMonthTotalIncomes: PropTypes.number,
   previousMonthName: PropTypes.string,
+  onScrollTo: PropTypes.func,
 };
 
 export default function IncomesMonth (props) {
@@ -32,6 +33,7 @@ export default function IncomesMonth (props) {
     monthIncomesTotal = 0,
     previousMonthTotalIncomes = 0,
     previousMonthName = '',
+    onScrollTo,
   } = props;
 
   const [selectedWeekIndex, setSelectedWeekIndex] = useState();
@@ -41,6 +43,12 @@ export default function IncomesMonth (props) {
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
   const incomesByWeeks = getMonthChartPointsByWeek(monthIncomes);
+
+  function onLayout (event) {
+    if (typeof onScrollTo === 'function') {
+      onScrollTo(event.nativeEvent.layout.y);
+    }
+  }
 
   const columnWidth = windowWidth < MEDIA.DESKTOP
     ? '100%'
@@ -73,7 +81,10 @@ export default function IncomesMonth (props) {
   }
 
   return (
-    <View style={[styles.incomesMonth, style]}>
+    <View
+      style={[styles.incomesMonth, style]}
+      onLayout={onLayout}
+    >
       <View style={[styles.titleContainer, { width: columnWidth }]}>
         <TitleLink
           style={styles.subtitleLink}

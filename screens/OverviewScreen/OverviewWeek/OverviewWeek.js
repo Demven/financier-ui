@@ -220,7 +220,8 @@ export default function OverviewWeek (props) {
             paddingRight: windowWidth < MEDIA.DESKTOP ? 32 : 0,
           }]}
           chartView={chartView}
-          setChartView={setChartView}
+          monthNumber={monthNumber}
+          weekNumber={weekNumber}
           totalIncomes={totalIncomes}
           previousWeeksTotalIncomes={previousWeeksTotalIncomes}
           totalExpenses={totalExpenses}

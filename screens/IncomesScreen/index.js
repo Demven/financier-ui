@@ -36,6 +36,8 @@ export default function IncomesScreen () {
   const windowWidth = useSelector(state => state.ui.windowWidth);
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const selectedYear = useSelector(state => state.ui.selectedYear);
+  const selectedMonth = useSelector(state => state.ui.selectedMonth);
+  const selectedWeek = useSelector(state => state.ui.selectedWeek);
 
   const loading = useSelector(state => state.ui.loading);
 
@@ -70,8 +72,8 @@ export default function IncomesScreen () {
     .reverse();
   const firstMonthNumber = incomesMonths[0];
 
-  const monthNumber = route.params?.monthNumber || firstMonthNumber;
-  const routeWeekNumber = route.params?.weekNumber;
+  const routeMonthNumber = route.params?.monthNumber || selectedMonth || firstMonthNumber;
+  const routeWeekNumber = route.params?.weekNumber || selectedWeek;
 
   useEffect(() => {
     if (overviewType !== selectedTab) {
@@ -101,8 +103,8 @@ export default function IncomesScreen () {
 
   function renderWeeks () {
     return [1, 2, 3, 4].map((weekNumber, index) => {
-      const previousMonthNumber = monthNumber > 1
-        ? monthNumber - 1
+      const previousMonthNumber = routeMonthNumber > 1
+        ? routeMonthNumber - 1
         : getLastMonthNumberInYear(incomesTotals?.[selectedYear - 1]); // the last month of the previous year
 
       return (
@@ -113,19 +115,19 @@ export default function IncomesScreen () {
             windowWidth < MEDIA.WIDE_MOBILE && styles.incomesMobile,
           ]}
           year={selectedYear}
-          monthNumber={monthNumber}
+          monthNumber={routeMonthNumber}
           weekNumber={weekNumber}
-          monthIncome={incomesTotals?.[selectedYear]?.[monthNumber]?.total || 0}
-          onScrollTo={weekNumber === routeWeekNumber
-            ? (scrollY) => scrollViewY.value = scrollY
-            : undefined}
-          weekIncomes={incomes?.[selectedYear]?.[monthNumber]?.[weekNumber]}
-          weekIncomesTotal={incomesTotals?.[selectedYear]?.[monthNumber]?.[weekNumber]}
-          previousMonthTotalIncomes={monthNumber > 1
+          monthIncome={incomesTotals?.[selectedYear]?.[routeMonthNumber]?.total || 0}
+          weekIncomes={incomes?.[selectedYear]?.[routeMonthNumber]?.[weekNumber]}
+          weekIncomesTotal={incomesTotals?.[selectedYear]?.[routeMonthNumber]?.[weekNumber]}
+          previousMonthTotalIncomes={routeMonthNumber > 1
             ? incomesTotals?.[selectedYear]?.[previousMonthNumber]?.[weekNumber] || 0
             : incomesTotals?.[selectedYear - 1]?.[previousMonthNumber]?.[weekNumber] || 0
           }
           previousMonthName={MONTH_NAME[previousMonthNumber]}
+          onScrollTo={weekNumber === routeWeekNumber
+            ? (scrollY) => scrollViewY.value = scrollY
+            : undefined}
         />
       );
     });
@@ -154,6 +156,9 @@ export default function IncomesScreen () {
             : incomesTotals?.[selectedYear - 1]?.[previousMonthNumber]?.total || 0 // compare to the last month of the previous year
           }
           previousMonthName={MONTH_NAME[previousMonthNumber]}
+          onScrollTo={monthNumber === routeMonthNumber
+            ? (scrollY) => scrollViewY.value = scrollY
+            : undefined}
         />
       );
     });

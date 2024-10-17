@@ -68,7 +68,7 @@ export default function YearStats (props) {
                 ]}
                 alwaysHighlighted={!!total}
                 onPress={total > 0
-                  ? () => navigation.navigate('ExpensesWeeks', { monthNumber: index + 1, year })
+                  ? () => navigation.navigate('ExpensesMonths', { monthNumber: index + 1, year })
                   : undefined
                 }
               >

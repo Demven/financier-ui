@@ -24,12 +24,12 @@ SavingsWeek.propTypes = {
   year: PropTypes.number.isRequired,
   monthNumber: PropTypes.number.isRequired,
   weekNumber: PropTypes.number.isRequired,
-  onScrollTo: PropTypes.func,
   savings: PropTypes.object, // weeks -> savings { [1]: [], [2]: [] }
   investments: PropTypes.object, // weeks -> investments { [1]: [], [2]: [] }
   monthTotalSavingsAndInvestments: PropTypes.number,
   previousWeekSavingsAndInvestments: PropTypes.number,
   previousMonthName: PropTypes.string,
+  onScrollTo: PropTypes.func,
 };
 
 export default function SavingsWeek (props) {
@@ -38,12 +38,12 @@ export default function SavingsWeek (props) {
     year,
     monthNumber,
     weekNumber,
-    onScrollTo,
     savings = {},
     investments = {},
     monthTotalSavingsAndInvestments,
     previousWeekSavingsAndInvestments,
     previousMonthName,
+    onScrollTo,
   } = props;
 
   const [selectedDayIndex, setSelectedDayIndex] = useState();

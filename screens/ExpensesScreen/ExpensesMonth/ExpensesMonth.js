@@ -24,6 +24,7 @@ ExpensesMonth.propTypes = {
   monthExpensesTotal: PropTypes.number,
   previousMonthTotalExpenses: PropTypes.number,
   previousMonthName: PropTypes.string,
+  onScrollTo: PropTypes.func,
 };
 
 export default function ExpensesMonth (props) {
@@ -36,6 +37,7 @@ export default function ExpensesMonth (props) {
     monthExpensesTotal = 0,
     previousMonthTotalExpenses = 0,
     previousMonthName = '',
+    onScrollTo,
   } = props;
 
   const [selectedWeekIndex, setSelectedWeekIndex] = useState();
@@ -61,6 +63,12 @@ export default function ExpensesMonth (props) {
       ...(monthExpenses?.[4] || []),
     ].map(expense => expense.categoryId))
   );
+
+  function onLayout (event) {
+    if (typeof onScrollTo === 'function') {
+      onScrollTo(event.nativeEvent.layout.y);
+    }
+  }
 
   const columnWidth = windowWidth < MEDIA.DESKTOP
     ? '100%'
@@ -93,7 +101,10 @@ export default function ExpensesMonth (props) {
   }
 
   return (
-    <View style={[styles.expensesMonth, style]}>
+    <View
+      style={[styles.expensesMonth, style]}
+      onLayout={onLayout}
+    >
       <View style={[styles.titleContainer, { width: columnWidth }]}>
         <TitleLink
           style={styles.subtitleLink}

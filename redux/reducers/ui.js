@@ -8,6 +8,8 @@ const getInitialState = () => ({
   windowWidth: Dimensions.get('window').width,
   selectedTab: TAB.MONTHS,
   selectedYear: new Date().getFullYear(),
+  selectedMonth: undefined,
+  selectedWeek: undefined,
   toast: {
     message: '',
     type: TOAST_TYPE.INFO,
@@ -37,6 +39,7 @@ const uiSlice = createSlice({
         selectedTab: action.payload,
       };
     },
+
     setSelectedYear: (state, action) => {
       saveToStorage(STORAGE_KEY.SELECTED_YEAR, String(action.payload));
 
@@ -45,6 +48,19 @@ const uiSlice = createSlice({
         selectedYear: action.payload,
       };
     },
+    setSelectedMonth: (state, action) => {
+      return {
+        ...state,
+        selectedMonth: action.payload,
+      };
+    },
+    setSelectedWeek: (state, action) => {
+      return {
+        ...state,
+        selectedWeek: action.payload,
+      };
+    },
+
     showToast: (state, action) => {
       return {
         ...state,
@@ -80,7 +96,11 @@ export const resetUIAction = uiSlice.actions.resetUI;
 
 export const setWindowWidthAction = uiSlice.actions.setWindowWidth;
 export const setSelectedTabAction = uiSlice.actions.setSelectedTab;
+
 export const setSelectedYearAction = uiSlice.actions.setSelectedYear;
+export const setSelectedMonthAction = uiSlice.actions.setSelectedMonth;
+export const setSelectedWeekAction = uiSlice.actions.setSelectedWeek;
+
 export const showToastAction = uiSlice.actions.showToast;
 export const hideToastAction = uiSlice.actions.hideToast;
 export const setLoadingAction = uiSlice.actions.setLoading;

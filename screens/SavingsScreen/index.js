@@ -36,6 +36,8 @@ export default function SavingsScreen () {
   const windowWidth = useSelector(state => state.ui.windowWidth);
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const selectedYear = useSelector(state => state.ui.selectedYear);
+  const selectedMonth = useSelector(state => state.ui.selectedMonth);
+  const selectedWeek = useSelector(state => state.ui.selectedWeek);
 
   const loading = useSelector(state => state.ui.loading);
 
@@ -82,8 +84,8 @@ export default function SavingsScreen () {
     .reverse();
   const firstMonthNumber = months[0];
 
-  const monthNumber = route.params?.monthNumber || firstMonthNumber;
-  const routeWeekNumber = route.params?.weekNumber;
+  const routeMonthNumber = route.params?.monthNumber || selectedMonth || firstMonthNumber;
+  const routeWeekNumber = route.params?.weekNumber || selectedWeek;
 
   useEffect(() => {
     if (overviewType !== selectedTab) {
@@ -113,8 +115,8 @@ export default function SavingsScreen () {
 
   function renderWeeks () {
     return [1, 2, 3, 4].map((weekNumber, index) => {
-      const previousMonthNumber = monthNumber > 1
-        ? monthNumber - 1
+      const previousMonthNumber = routeMonthNumber > 1
+        ? routeMonthNumber - 1
           // the last month of the previous year
         : getLastMonthNumberInYear(savingsTotals?.[selectedYear - 1] || investmentsTotals?.[selectedYear - 1]);
 
@@ -126,19 +128,19 @@ export default function SavingsScreen () {
             windowWidth < MEDIA.WIDE_MOBILE && styles.savingsMobile,
           ]}
           year={selectedYear}
-          monthNumber={monthNumber}
+          monthNumber={routeMonthNumber}
           weekNumber={weekNumber}
-          onScrollTo={weekNumber === routeWeekNumber
-            ? (scrollY) => scrollViewY.value = scrollY
-            : undefined}
-          savings={savings?.[selectedYear]?.[monthNumber]}
-          investments={investments?.[selectedYear]?.[monthNumber]}
-          monthTotalSavingsAndInvestments={(savingsTotals?.[selectedYear]?.[monthNumber]?.total || 0) + (investmentsTotals?.[selectedYear]?.[monthNumber]?.total || 0)}
-          previousWeekTotalSavingsAndInvestments={monthNumber > 1
+          savings={savings?.[selectedYear]?.[routeMonthNumber]}
+          investments={investments?.[selectedYear]?.[routeMonthNumber]}
+          monthTotalSavingsAndInvestments={(savingsTotals?.[selectedYear]?.[routeMonthNumber]?.total || 0) + (investmentsTotals?.[selectedYear]?.[routeMonthNumber]?.total || 0)}
+          previousWeekTotalSavingsAndInvestments={routeMonthNumber > 1
             ? (savingsTotals?.[selectedYear]?.[previousMonthNumber]?.[weekNumber] || 0)
             : investmentsTotals?.[selectedYear - 1]?.[previousMonthNumber]?.[weekNumber] || 0
           }
           previousMonthName={MONTH_NAME[previousMonthNumber]}
+          onScrollTo={weekNumber === routeWeekNumber
+            ? (scrollY) => scrollViewY.value = scrollY
+            : undefined}
         />
       );
     });
@@ -170,6 +172,9 @@ export default function SavingsScreen () {
             : (savingsTotals?.[selectedYear - 1]?.[previousMonthNumber]?.total || 0) + (investmentsTotals?.[selectedYear - 1]?.[previousMonthNumber]?.total || 0)
           }
           previousMonthName={MONTH_NAME[previousMonthNumber]}
+          onScrollTo={monthNumber === routeMonthNumber
+            ? (scrollY) => scrollViewY.value = scrollY
+            : undefined}
         />
       );
     });
