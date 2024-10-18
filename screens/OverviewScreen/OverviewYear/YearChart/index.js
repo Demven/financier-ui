@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Platform, StyleSheet, ScrollView } from 'react-native';
 import { useSelector } from 'react-redux';
 import { LineChart } from 'react-native-chart-kit';
@@ -48,8 +48,6 @@ export default function YearChart (props) {
 
   const chartRef = useRef();
 
-  const [loading, setLoading] = useState(true);
-
   const [chartWidth, setChartWidth] = useState(0);
   const [chartHeight, setChartHeight] = useState(0);
   const [realChartWidth, setRealChartWidth] = useState(0);
@@ -64,12 +62,38 @@ export default function YearChart (props) {
     color: COLOR.DARK_GRAY,
   });
 
+  const expensesGroupedByMonth = groupByMonth(expenses);
+  const expensesPoints = getChartPoints(expensesGroupedByMonth);
+  const expensesPointsEmpty = expensesPoints.every(point => point === 0);
+
+  const incomesGroupedByMonth = groupByMonth(incomes);
+  const incomesPoints = getChartPoints(incomesGroupedByMonth);
+  const incomesPointsEmpty = incomesPoints.every(point => point === 0);
+
+  const savingsGroupedByMonth = groupByMonth(savings);
+  const investmentsGroupedByMonth = groupByMonth(investments);
+  const savingsAndInvestmentsGroupedByMonth = mergeGroupedByMonth(savingsGroupedByMonth, investmentsGroupedByMonth);
+  const savingsPoints = getChartPoints(savingsAndInvestmentsGroupedByMonth);
+  const savingsPointsEmpty = savingsPoints.every(point => point === 0);
+
+  const chartIsEmpty = expensesPointsEmpty && incomesPointsEmpty && savingsPointsEmpty;
+
+  useEffect(() => {
+    if (!chartIsEmpty) {
+      calculateChartSizeForWeb();
+    }
+  }, [chartIsEmpty]);
+
   function onLayout (event) {
     const { width } = event.nativeEvent.layout;
 
     setChartWidth(width);
     setChartHeight(Math.floor(width / 16 * 9));
 
+    calculateChartSizeForWeb();
+  }
+
+  function calculateChartSizeForWeb () {
     if (Platform.OS === 'web') {
       const { width = 0, height = 0 } = chartRef?.current?.querySelector('svg > g > g:nth-child(7)')?.getBoundingClientRect() || {};
 
@@ -169,17 +193,6 @@ export default function YearChart (props) {
     return `rgba(42, 113, 40, ${opacity * (chartView === CHART_VIEW.SAVINGS ? 3 : 1)})`;
   }
 
-  const expensesGroupedByMonth = groupByMonth(expenses);
-  const expensesPoints = getChartPoints(expensesGroupedByMonth);
-
-  const incomesGroupedByMonth = groupByMonth(incomes);
-  const incomesPoints = getChartPoints(incomesGroupedByMonth);
-
-  const savingsGroupedByMonth = groupByMonth(savings);
-  const investmentsGroupedByMonth = groupByMonth(investments);
-  const savingsAndInvestmentsGroupedByMonth = mergeGroupedByMonth(savingsGroupedByMonth, investmentsGroupedByMonth);
-  const savingsPoints = getChartPoints(savingsAndInvestmentsGroupedByMonth);
-
   const loaderMarginLeft = windowWidth < MEDIA.DESKTOP
     ? windowWidth < MEDIA.TABLET
       ? 40 // mobile
@@ -194,9 +207,7 @@ export default function YearChart (props) {
     >
       <Loader
         style={{ marginLeft: loaderMarginLeft }}
-        loading={loading}
-        setLoading={setLoading}
-        timeout={500}
+        loading={chartIsEmpty}
       />
 
       <LineChart
