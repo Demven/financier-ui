@@ -15,8 +15,8 @@ const SCALE_FACTOR = 1.2;
 const SCALE_DURATION = 300; // ms
 
 DonutChartSegment.propTypes = {
-  id: PropTypes.string.isRequired,
-  color: PropTypes.string.isRequired,
+  id: PropTypes.number.isRequired,
+  getColor: PropTypes.func.isRequired,
   startAngle: PropTypes.number.isRequired,
   endAngle: PropTypes.number.isRequired,
   radius: PropTypes.number.isRequired,
@@ -75,7 +75,7 @@ function getArcPath (
 export default function DonutChartSegment (props) {
   const {
     id,
-    color,
+    getColor = (opacity) => 'black',
     startAngle,
     endAngle,
     radius,
@@ -243,7 +243,12 @@ export default function DonutChartSegment (props) {
   return <AnimatedPath
     style={styles.donutChartSegment}
     fillRule='evenodd'
-    fill={color}
+    fill={isSelected
+      ? getColor(1)
+      : isHighlighted
+        ? getColor(0.75)
+        : getColor(0.6)
+    }
     animatedProps={animatedProps}
     onClick={() => onSelect(id)}
     onPress={() => onSelect(id)}

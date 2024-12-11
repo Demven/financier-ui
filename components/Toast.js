@@ -74,7 +74,13 @@ export default function Toast (props) {
       : COLOR.RED;
 
   return (
-    <View style={[styles.toast, visible && styles.toastVisible]}>
+    <View style={[
+      styles.toast,
+      visible && styles.toastVisible,
+      Platform.OS === 'web' && {
+        transition: 'transform 0.15s, opacity 0.2s',
+      },
+    ]}>
       <View style={[
         styles.content,
         style,
@@ -114,7 +120,6 @@ const styles = StyleSheet.create({
     position: 'fixed',
     bottom: 64,
     left: 0,
-    transition: Platform.select({ web: 'transform 0.15s, opacity 0.2s' }),
     transform: [{ translateY: 140 }],
     opacity: 0,
   },

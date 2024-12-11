@@ -1,32 +1,33 @@
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import PropTypes from 'prop-types';
+import { Link } from 'expo-router';
 import { COLOR } from '../../styles/colors';
 import { FONT } from '../../styles/fonts';
 
 HeaderTab.propTypes = {
   active: PropTypes.bool,
   children: PropTypes.string.isRequired,
-  onPress: PropTypes.func.isRequired,
+  navigateTo: PropTypes.string.isRequired,
 };
 
 export default function HeaderTab (props) {
   const {
     active,
     children,
-    onPress,
+    navigateTo,
   } = props;
 
   return (
-    <Pressable
-      style={({ pressed }) => [styles.headerTab, pressed && styles.headerTabPressed, active && styles.headerTabActive]}
-      onPress={onPress}
+    <Link
+      style={[styles.headerTab, active && styles.headerTabActive]}
+      href={navigateTo}
     >
       <View style={styles.headerTabTextContainer}>
         <Text style={[styles.headerTabText, active && styles.headerTabActiveText]}>
           {children}
         </Text>
       </View>
-    </Pressable>
+    </Link>
   );
 }
 
@@ -35,8 +36,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 6,
     borderBottomColor: COLOR.TRANSPARENT,
   },
-
-  headerTabPressed: {},
   headerTabActive: {
     borderBottomWidth: 5,
     borderBottomColor: COLOR.LIGHT_ORANGE,

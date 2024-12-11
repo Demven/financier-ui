@@ -123,7 +123,13 @@ export default function ColorPicker (props) {
       onBlur={() => setFocused(false)}
     >
       {label && (
-        <Text style={[styles.label, focused && styles.labelFocused]}>
+        <Text style={[
+          styles.label,
+          focused && styles.labelFocused,
+          Platform.OS === 'web' && {
+            transition: 'color 0.3s',
+          },
+        ]}>
           {`${label}: ${color?.name || ''}`}
         </Text>
       )}
@@ -180,7 +186,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     lineHeight: 10,
     color: COLOR.GRAY,
-    transition: Platform.select({ web: 'color 0.3s' }),
   },
   labelFocused: {
     color: COLOR.ORANGE,

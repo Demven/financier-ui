@@ -21,7 +21,7 @@ ItemGroup.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string,
     name: PropTypes.string,
-    categoryId: PropTypes.string,
+    categoryId: PropTypes.number,
     dateString: PropTypes.string,
     amount: PropTypes.number,
   })).isRequired,

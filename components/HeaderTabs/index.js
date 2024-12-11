@@ -1,11 +1,12 @@
 import { StyleSheet, View } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import HeaderTab from './HeaderTab';
 
 HeaderTabs.propTypes = {
   style: PropTypes.object,
+  routeName: PropTypes.string.isRequired,
 };
 
 export const TAB = {
@@ -24,36 +25,63 @@ export const TABS = [
   TAB.YEARS,
 ];
 
+export function getTabBarIcon (selectedTab, color, size) {
+  if (selectedTab === TAB.WEEKS) {
+    return (
+      <MaterialCommunityIcons
+        name='calendar-week'
+        color={color}
+        size={size}
+      />
+    );
+  } else if (selectedTab === TAB.MONTHS) {
+    return (
+      <MaterialCommunityIcons
+        name='calendar-text'
+        color={color}
+        size={size}
+      />
+    );
+  } else if (selectedTab === TAB.YEARS) {
+    return (
+      <Ionicons
+        name='calendar-sharp'
+        color={color}
+        size={size}
+      />
+    );
+  }
+}
+
 export default function HeaderTabs (props) {
-  const {
-    style,
-  } = props;
+  const { style, routeName } = props;
 
-  const navigation = useNavigation();
-  const route = useRoute();
+  const pagePath = routeName.split('/')[0];
+  const correctedPagePath = pagePath === 'index' || !pagePath
+    ? 'overview'
+    : pagePath;
+
   const selectedTab = useSelector(state => state.ui.selectedTab);
-
-  const navigateToPage = route.name;
 
   return (
     <View style={[styles.headerTabs, style]}>
       <HeaderTab
         active={selectedTab === TAB.WEEKS}
-        onPress={() => navigation.navigate(`${navigateToPage}${TAB_NAME[TAB.WEEKS]}`)}
+        navigateTo={`${correctedPagePath}/${TAB.WEEKS}`}
       >
         {TAB_NAME[TAB.WEEKS]}
       </HeaderTab>
 
       <HeaderTab
         active={selectedTab === TAB.MONTHS}
-        onPress={() => navigation.navigate(`${navigateToPage}${TAB_NAME[TAB.MONTHS]}`)}
+        navigateTo={`${correctedPagePath}/${TAB.MONTHS}`}
       >
         {TAB_NAME[TAB.MONTHS]}
       </HeaderTab>
 
       <HeaderTab
         active={selectedTab === TAB.YEARS}
-        onPress={() => navigation.navigate(`${navigateToPage}${TAB_NAME[TAB.YEARS]}`)}
+        navigateTo={`${correctedPagePath}/${TAB.YEARS}`}
       >
         {TAB_NAME[TAB.YEARS]}
       </HeaderTab>

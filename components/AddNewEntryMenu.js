@@ -1,6 +1,12 @@
 import { useState } from 'react';
-import { StyleSheet, View, Text, Pressable, Platform } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Pressable,
+  Platform,
+} from 'react-native';
+import { useRouter } from 'expo-router';
 import PropTypes from 'prop-types';
 import Icon, { ICON_COLLECTION } from './Icon';
 import { COLOR } from '../styles/colors';
@@ -9,7 +15,7 @@ import { FONT } from '../styles/fonts';
 const MENU_ITEMS = [
   {
     title: 'Income',
-    navigateTo: 'Income',
+    navigateTo: '/income',
     color: COLOR.ORANGE,
     iconName: 'money-check-alt',
     iconCollection: ICON_COLLECTION.FONT_AWESOME_5,
@@ -19,7 +25,7 @@ const MENU_ITEMS = [
   },
   {
     title: 'Saving',
-    navigateTo: 'Saving',
+    navigateTo: '/saving',
     color: COLOR.GREEN,
     iconName: 'bank',
     iconCollection: ICON_COLLECTION.MATERIAL_COMMUNITY,
@@ -29,7 +35,7 @@ const MENU_ITEMS = [
   },
   {
     title: 'Expense',
-    navigateTo: 'Expense',
+    navigateTo: '/expense',
     color: COLOR.BLACK,
     iconName: 'money-off',
     iconCollection: ICON_COLLECTION.MATERIAL,
@@ -48,7 +54,7 @@ export default function AddNewEntryMenu ({ style, alwaysShowLabel }) {
   const [opened, setOpened] = useState(false);
   const [highlightedItemIndex, setHighlightedItemIndex] = useState(undefined);
 
-  const navigation = useNavigation();
+  const router = useRouter();
 
   function toggleDropDown () {
     setOpened(!opened);
@@ -57,7 +63,7 @@ export default function AddNewEntryMenu ({ style, alwaysShowLabel }) {
   function onNavigate (navigateTo) {
     return () => {
       setOpened(false);
-      navigation.navigate(navigateTo);
+      router.push(navigateTo);
     };
   }
 
@@ -77,7 +83,13 @@ export default function AddNewEntryMenu ({ style, alwaysShowLabel }) {
           )}
 
           <Icon
-            style={[styles.icon, opened && styles.iconRotate45Degrees]}
+            style={[
+              styles.icon,
+              opened && styles.iconRotate45Degrees,
+              Platform.OS === 'web' && {
+                transition: 'transform 0.2s',
+              },
+            ]}
             name='add-circle-outline'
             collection={ICON_COLLECTION.IONICONS}
             size={32}
@@ -147,7 +159,6 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 8,
-    transition: Platform.select({ web: 'transform 0.2s' }),
   },
   iconRotate45Degrees: {
     transform: [{ translateY: 1 }, { rotate: '45deg' }]

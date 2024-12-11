@@ -17,12 +17,12 @@ Dropdown.propTypes = {
   placeholderStyle: PropTypes.any,
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
-  value: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   maxVisibleItems: PropTypes.number,
   setValue: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.shape({
     label: PropTypes.string.isRequired,
-    value: PropTypes.string.isRequired,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     description: PropTypes.string,
   })).isRequired,
   setItems: PropTypes.func.isRequired,
@@ -59,13 +59,30 @@ export default function Dropdown (props) {
 
   return (
     <View style={[styles.dropdown, style]}>
-      <Text style={[styles.label, (open || focused) && styles.labelActive]}>
+      <Text style={[
+        styles.label,
+        (open || focused) && styles.labelActive,
+        Platform.OS === 'web' && {
+          transition: 'color 0.3s',
+        },
+      ]}>
         {label}
       </Text>
 
       <DropDownPicker
-        style={[styles.picker]}
-        containerStyle={[styles.pickerContainer, (open || focused) && styles.pickerContainerActive]}
+        style={[
+          styles.picker,
+          Platform.OS === 'web' && {
+            outlineStyle: 'none',
+          },
+        ]}
+        containerStyle={[
+          styles.pickerContainer,
+          (open || focused) && styles.pickerContainerActive,
+          Platform.OS === 'web' && {
+            transition: 'border 0.3s',
+          },
+        ]}
         containerProps={{ onFocus, onBlur }}
         textStyle={[styles.pickerText, placeholderStyle]}
         dropDownContainerStyle={[styles.pickerList, {
@@ -132,7 +149,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 12,
     color: COLOR.GRAY,
-    transition: 'color 0.3s',
   },
   labelFocused: {
     color: COLOR.ORANGE,
@@ -147,7 +163,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderBottomColor: COLOR.LIGHTER_GRAY,
     borderStyle: 'solid',
-    transition: 'border 0.3s',
   },
   pickerContainerActive: {
     borderBottomColor: COLOR.BRIGHT_ORANGE,
@@ -156,7 +171,6 @@ const styles = StyleSheet.create({
 
   picker: {
     borderWidth: 0,
-    outlineStyle: 'none',
   },
 
   pickerList: {

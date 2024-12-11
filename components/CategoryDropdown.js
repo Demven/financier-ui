@@ -7,18 +7,21 @@ import Dropdown from './Dropdown';
 export const SHOW_ALL_CATEGORY_ID = 'all';
 export const PRESELECTED_CATEGORY = {
   FIRST: 'first',
-  LAST: 'first',
+  LAST: 'last',
 };
 
 CategoryDropdown.propTypes = {
   style: PropTypes.any,
-  categoryId: PropTypes.string,
+  categoryId: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ]),
   preselectedCategory: PropTypes.oneOf([
     PRESELECTED_CATEGORY.FIRST,
     PRESELECTED_CATEGORY.LAST,
   ]),
   placeholderStyle: PropTypes.any,
-  includeCategoryIds: PropTypes.arrayOf(PropTypes.string),
+  includeCategoryIds: PropTypes.arrayOf(PropTypes.number),
   showAll: PropTypes.bool,
   onSelect: PropTypes.func,
 };
@@ -51,12 +54,18 @@ export default function CategoryDropdown (props) {
   const [categories, setCategories] = useState(categoriesList);
 
   useEffect(() => {
-    if (preselectedCategory === PRESELECTED_CATEGORY.FIRST && categoriesList.length > 0) {
+    if (preselectedCategory === PRESELECTED_CATEGORY.FIRST && categories.length > 0) {
       onSelect(categories?.[0]?.value);
-    } else if (preselectedCategory === PRESELECTED_CATEGORY.LAST && categoriesList.length > 0) {
-      onSelect(categories?.[categoriesList.length - 1]?.value);
+    } else if (preselectedCategory === PRESELECTED_CATEGORY.LAST && categories.length > 0) {
+      onSelect(categories?.[categories.length - 1]?.value);
     }
-  }, [categories]);
+  }, [categories, preselectedCategory]);
+
+  useEffect(() => {
+    if (categoriesList.length) {
+      setCategories(categoriesList);
+    }
+  }, [categoriesList.length]);
 
   function storedCategoryToDropdownItems (categoriesList) {
     return categoriesList.map(category => ({

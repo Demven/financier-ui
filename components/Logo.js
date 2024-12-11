@@ -1,5 +1,10 @@
-import { StyleSheet, View, Image, Pressable } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import {
+  StyleSheet,
+  View,
+  Image,
+  Pressable,
+} from 'react-native';
+import { useRouter } from 'expo-router';
 import PropTypes from 'prop-types';
 
 Logo.propTypes = {
@@ -10,15 +15,15 @@ Logo.propTypes = {
 export default function Logo (props) {
   const {
     containerStyle,
-    navigateTo = 'Overview'
+    navigateTo = 'overview'
   } = props;
 
-  const navigation = useNavigation();
+  const router = useRouter();
 
   return (
     <Pressable
       style={({ pressed }) => [styles.logo, pressed && styles.logoPressed]}
-      onPress={() => navigation.navigate(navigateTo)}
+      onPress={() => router.push(navigateTo)}
     >
       <View style={[styles.logoContainer, containerStyle]}>
         <Image

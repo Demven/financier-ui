@@ -12,7 +12,7 @@ import { COLOR } from '../styles/colors';
 import { MEDIA } from '../styles/media';
 
 CompareStats.propTypes = {
-  style: PropTypes.object,
+  style: PropTypes.any,
   compareWhat: PropTypes.number.isRequired,
   compareTo: PropTypes.number,
   previousResult: PropTypes.number.isRequired,

@@ -4,6 +4,7 @@ import {
   View,
   Pressable,
   Text,
+  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import PropTypes from 'prop-types';
@@ -81,19 +82,28 @@ export default function BarChart (props) {
               <View style={[
                 styles.bar,
                 focused && styles.barFocused,
+                focused && Platform.OS === 'web' && {
+                  outlineStyle: 'solid',
+                },
               ]}>
                 <View style={[
                   styles.barTop, {
                     backgroundColor: getColor(0.8),
                   },
                   (highlighted || focused) && styles.barTopHighlighted,
+                  Platform.OS === 'web' && {
+                    transition: 'height 0.25s',
+                  },
                 ]}>
                   {!!point && (
-                    <Text style={[
-                      styles.value,
-                      highlighted && styles.valueHighlighted,
-                      focused && styles.valueFocused,
-                    ]}>
+                    <Text
+                      style={[
+                        styles.value,
+                        highlighted && styles.valueHighlighted,
+                        focused && styles.valueFocused,
+                      ]}
+                      numberOfLines={1}
+                    >
                       {Math.round(point)}
                     </Text>
                   )}
@@ -136,7 +146,6 @@ const styles = StyleSheet.create({
   },
   barFocused: {
     outlineWidth: 1,
-    outlineStyle: 'solid',
     outlineColor: COLOR.LIGHT_GRAY,
   },
 
@@ -147,7 +156,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    transition: 'height 0.25s',
   },
   barTopHighlighted: {
     height: 36,
@@ -168,7 +176,6 @@ const styles = StyleSheet.create({
     lineHeight: 10,
     textAlign: 'center',
     color: COLOR.DARK_GRAY,
-    whiteSpace: 'nowrap',
   },
   valueHighlighted: {
     fontSize: 11,
