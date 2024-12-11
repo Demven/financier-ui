@@ -50,6 +50,9 @@ export default function Button (props) {
         pressed && styles.buttonPressed,
         disabled && styles.buttonDisabled,
         destructive && styles.buttonDestructive,
+        Platform.OS === 'web' && {
+          outlineStyle: 'none',
+        },
         style,
       ]}
       disabled={disabled}
@@ -84,9 +87,7 @@ export default function Button (props) {
 }
 
 const styles = StyleSheet.create({
-  button: {
-    outlineStyle: 'none',
-  },
+  button: {},
   buttonPressed: {
     opacity: 0.7,
   },

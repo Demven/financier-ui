@@ -5,6 +5,7 @@ import {
   View,
   Text,
 } from 'react-native';
+import { Link } from 'expo-router';
 import PropTypes from 'prop-types';
 import { FONT } from '../styles/fonts';
 import { COLOR } from '../styles/colors';
@@ -12,6 +13,13 @@ import { COLOR } from '../styles/colors';
 TitleLink.propTypes = {
   style: PropTypes.any,
   textStyle: PropTypes.any,
+  navigateTo: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.shape({
+      pathname: PropTypes.string.isRequired,
+      params: PropTypes.object,
+    }),
+  ]),
   onPress: PropTypes.func, // without onPress will work as a simple Text node
   alwaysHighlighted: PropTypes.bool,
   children: PropTypes.any.isRequired,
@@ -22,45 +30,67 @@ export default function TitleLink (props) {
     style,
     textStyle,
     alwaysHighlighted,
+    navigateTo,
     onPress,
     children,
   } = props;
 
   const [highlighted, setHighlighted] = useState(false);
 
-  return (
-    <Pressable
-      style={({ pressed }) => [
-        styles.titleLink,
-        {
-          cursor: onPress ? 'pointer' : 'auto',
-        },
-        style,
-        (pressed && onPress) && styles.titleLinkPressed,
-      ]}
-      onPress={onPress}
-    >
-      <View style={styles.wrapper}>
-        <View
-          style={[
-            styles.container,
-            (highlighted || alwaysHighlighted) && {
-              borderColor: alwaysHighlighted && !highlighted ? COLOR.LIGHT_GRAY : COLOR.BLACK,
-            },
-          ]}
+  const linkContent = (
+    <View style={styles.wrapper}>
+      <View
+        style={[
+          styles.container,
+          (highlighted || alwaysHighlighted) && {
+            borderColor: alwaysHighlighted && !highlighted ? COLOR.LIGHT_GRAY : COLOR.BLACK,
+          },
+        ]}
+      >
+        <Text
+          style={[styles.text, textStyle]}
+          numberOfLines={1}
+          onMouseEnter={onPress ? () => setHighlighted(true) : undefined}
+          onMouseLeave={onPress ? () => setHighlighted(false) : undefined}
         >
-          <Text
-            style={[styles.text, textStyle]}
-            numberOfLines={1}
-            onMouseEnter={onPress ? () => setHighlighted(true) : undefined}
-            onMouseLeave={onPress ? () => setHighlighted(false) : undefined}
-          >
-            {children}
-          </Text>
-        </View>
+          {children}
+        </Text>
       </View>
-    </Pressable>
+    </View>
   );
+
+  return navigateTo
+    ? (
+      <Link
+        style={[
+          styles.titleLink,
+          {
+            cursor: 'pointer',
+          },
+          style,
+        ]}
+        onPress={onPress}
+        href={navigateTo}
+        push
+      >
+        {linkContent}
+      </Link>
+    )
+    : (
+      <Pressable
+        style={({ pressed }) => [
+          styles.titleLink,
+          {
+            cursor: onPress ? 'pointer' : 'auto',
+          },
+          style,
+          (pressed && onPress) && styles.titleLinkPressed,
+        ]}
+        onPress={onPress}
+      >
+        {linkContent}
+      </Pressable>
+    );
 }
 
 const styles = StyleSheet.create({

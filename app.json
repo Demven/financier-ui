@@ -2,10 +2,15 @@
   "expo": {
     "name": "financier-ui",
     "slug": "financier-ui",
+    "scheme": "financier-ui",
     "userInterfaceStyle": "automatic",
     "web": {
       "bundler": "metro",
       "favicon": "./public/images/favicons/favicon-32x32.png"
-    }
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "platforms": ["ios", "web"]
   }
 }

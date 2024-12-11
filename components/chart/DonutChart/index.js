@@ -29,7 +29,7 @@ const AnimatedG = Animated.createAnimatedComponent(G);
 DonutChart.propTypes = {
   style: PropTypes.any,
   data: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
+    id: PropTypes.number.isRequired,
     value: PropTypes.number.isRequired,
     absoluteValue: PropTypes.number.isRequired,
     label: PropTypes.string.isRequired,
@@ -144,7 +144,14 @@ export default function DonutChart (props) {
 
   return (
     <View
-      style={[styles.donutChart, { height: width }, style]}
+      style={[
+        styles.donutChart,
+        {
+          height: width,
+          borderRadius: width / 2,
+        },
+        style,
+      ]}
       onLayout={onLayout}
     >
       <Svg
@@ -170,12 +177,7 @@ export default function DonutChart (props) {
               <Fragment key={index}>
                 <DonutChartSegment
                   id={id}
-                  color={isSelected
-                    ? getColor(1)
-                    : isHighlighted
-                      ? getColor(0.75)
-                      : getColor(0.6)
-                  }
+                  getColor={getColor}
                   radius={radius}
                   cutoutRadius={donutRadius}
                   startAngle={startAngle}
@@ -220,7 +222,7 @@ export default function DonutChart (props) {
               <Fragment key={index}>
                 <DonutChartSegment
                   id={id}
-                  color={getColor(1)}
+                  getColor={() => getColor(1)}
                   radius={radius}
                   cutoutRadius={donutRadius}
                   startAngle={startAngle}
@@ -250,6 +252,7 @@ export default function DonutChart (props) {
           height: `${100 * DONUT_RADIUS}%`,
           top: `${(100 - (100 * DONUT_RADIUS)) / 2}%`,
           left: `${(100 - (100 * DONUT_RADIUS)) / 2}%`,
+          borderRadius: width * DONUT_RADIUS,
         }]}
       >
         {Number(selectedSegmentAbsoluteValue) > 0 && (
@@ -273,7 +276,6 @@ const styles = StyleSheet.create({
   donutChart: {
     width: '100%',
     height: '100%',
-    borderRadius: '50%',
     overflow: 'hidden',
     position: 'relative',
   },
@@ -286,7 +288,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: '50%',
     backgroundColor: COLOR.WHITE,
   },
   circleText: {

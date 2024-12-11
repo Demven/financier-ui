@@ -5,28 +5,132 @@ import {
   Pressable,
   Platform,
 } from 'react-native';
-import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { useSelector } from 'react-redux';
-import { Ionicons } from '@expo/vector-icons';
+import { useRouter, Link } from 'expo-router';
+import {
+  FontAwesome5,
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from '@expo/vector-icons';
 import Logo from './Logo';
 import { clearStorage } from '../services/storage';
 import { COLOR } from '../styles/colors';
 import { FONT } from '../styles/fonts';
 import { MEDIA } from '../styles/media';
 
+export const DRAWER_PAGE = {
+  OVERVIEW: 'overview',
+  CATEGORIES: 'categories',
+  EXPENSES: 'expenses',
+  INCOMES: 'incomes',
+  SAVINGS: 'savings',
+  SETTINGS: 'settings',
+};
+
+const DRAWER_PAGE_LABEL = {
+  [DRAWER_PAGE.OVERVIEW]: 'Overview',
+  [DRAWER_PAGE.CATEGORIES]: 'Categories',
+  [DRAWER_PAGE.EXPENSES]: 'Expenses',
+  [DRAWER_PAGE.INCOMES]: 'Incomes',
+  [DRAWER_PAGE.SAVINGS]: 'Savings',
+  [DRAWER_PAGE.SETTINGS]: 'Settings',
+};
+
+const DRAWER_ICON = {
+  [DRAWER_PAGE.OVERVIEW]: ({ color }) => (
+    <MaterialCommunityIcons
+      name='view-dashboard-outline'
+      color={color}
+      size={28}
+    />
+  ),
+  [DRAWER_PAGE.CATEGORIES]: ({ color }) => (
+    <MaterialCommunityIcons
+      name='format-columns'
+      color={color}
+      size={28}
+    />
+  ),
+  [DRAWER_PAGE.EXPENSES]: ({ color }) => (
+    <MaterialIcons
+      name='money-off'
+      color={color}
+      size={28}
+    />
+  ),
+  [DRAWER_PAGE.INCOMES]: ({ color }) => (
+    <FontAwesome5
+      name='money-bill-alt'
+      color={color}
+      size={24}
+    />
+  ),
+  [DRAWER_PAGE.SAVINGS]: ({ color }) => (
+    <MaterialCommunityIcons
+      name='bank'
+      color={color}
+      size={28}
+    />
+  ),
+  [DRAWER_PAGE.SETTINGS]: ({ color }) => (
+    <Ionicons
+      name='settings-outline'
+      color={color}
+      size={28}
+    />
+  ),
+};
+
+const DRAWER_ITEMS = [
+  {
+    name: DRAWER_PAGE.OVERVIEW,
+    label: DRAWER_PAGE_LABEL[DRAWER_PAGE.OVERVIEW],
+    icon: DRAWER_ICON[DRAWER_PAGE.OVERVIEW],
+  },
+  {
+    name: DRAWER_PAGE.CATEGORIES,
+    label: DRAWER_PAGE_LABEL[DRAWER_PAGE.CATEGORIES],
+    icon: DRAWER_ICON[DRAWER_PAGE.CATEGORIES],
+  },
+  {
+    name: DRAWER_PAGE.EXPENSES,
+    label: DRAWER_PAGE_LABEL[DRAWER_PAGE.EXPENSES],
+    icon: DRAWER_ICON[DRAWER_PAGE.EXPENSES],
+  },
+  {
+    name: DRAWER_PAGE.INCOMES,
+    label: DRAWER_PAGE_LABEL[DRAWER_PAGE.INCOMES],
+    icon: DRAWER_ICON[DRAWER_PAGE.INCOMES],
+  },
+  {
+    name: DRAWER_PAGE.SAVINGS,
+    label: DRAWER_PAGE_LABEL[DRAWER_PAGE.SAVINGS],
+    icon: DRAWER_ICON[DRAWER_PAGE.SAVINGS],
+  },
+  {
+    name: DRAWER_PAGE.SETTINGS,
+    label: DRAWER_PAGE_LABEL[DRAWER_PAGE.SETTINGS],
+    icon: DRAWER_ICON[DRAWER_PAGE.SETTINGS],
+  },
+];
+
 // props are passed by react-navigation
 // Read more here https://reactnavigation.org/docs/drawer-navigator/#drawercontent
 export default function DrawerContent (props) {
-  const { navigation } = props;
+  const router = useRouter();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
+  const selectedTab = useSelector(state => state.ui.selectedTab);
+
   const firstName = useSelector(state => state.account.firstName) || '';
   const lastName = useSelector(state => state.account.lastName) || '';
 
   async function onLogOut () {
     await clearStorage();
 
-    navigation.navigate('SignIn');
+    router.push('sign-in');
   }
 
   return (
@@ -40,8 +144,26 @@ export default function DrawerContent (props) {
         contentContainerStyle={[styles.drawerScrollView, {
           marginTop: Platform.select({ ios: windowWidth < MEDIA.WIDE_MOBILE ? -54 : 0 }),
         }]}
+        style={{ paddingTop: 16, paddingLeft: 16, backgroundColor: COLOR.WHITE }}
       >
-        <DrawerItemList {...props} />
+        {DRAWER_ITEMS.map(({ name, label, icon }) => (
+          <Link
+            key={name}
+            style={styles.drawerItem}
+            href={name === DRAWER_PAGE.SETTINGS
+              ? name
+              : `/${name}/${selectedTab}`
+            }
+          >
+            {icon(COLOR.BLACK)}
+
+            <View style={styles.drawerLabelContainer}>
+              <Text style={styles.drawerLabel}>
+                {label}
+              </Text>
+            </View>
+          </Link>
+        ))}
       </DrawerContentScrollView>
 
       <View style={styles.drawerFooter}>
@@ -82,6 +204,27 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     position: 'relative',
     padding: 0,
+  },
+
+  drawerItem: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 22,
+    paddingRight: 12,
+    paddingVertical: 8,
+    marginVertical: 4,
+  },
+
+  drawerLabelContainer: {
+    marginLeft: 32,
+    marginTop: 5,
+    marginBottom: 5,
+  },
+  drawerLabel: {
+    fontFamily: FONT.NOTO_SERIF.REGULAR,
+    fontSize: 18,
+    lineHeight: 36,
   },
 
   drawerFooter: {

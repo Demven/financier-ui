@@ -54,6 +54,9 @@ export default function AddColorButton (props) {
               pickerVisible && styles.closeIcon,
               highlighted && styles.plusIconHighlighted,
               highlighted && pickerVisible && styles.closeIconHighlighted,
+              Platform.OS === 'web' && {
+                transition: 'transform 0.25s',
+              },
             ]}
             collection={ICON_COLLECTION.FONT_AWESOME_5}
             name='plus'
@@ -108,7 +111,6 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    transition: Platform.select({ web: 'transform 0.25s' }),
   },
   plusIconHighlighted: {
     transform: [{ scale: 1.3 }],

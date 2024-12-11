@@ -59,7 +59,7 @@ export default function Input (props) {
     value,
     errorText,
     onChange,
-    onBlur,
+    onBlur = () => {},
     onKeyPress,
     disabled,
     autoFocus,
@@ -84,7 +84,10 @@ export default function Input (props) {
           <Text style={[
             styles.label,
             focused && styles.labelFocused,
-            !!errorText && styles.labelError
+            !!errorText && styles.labelError,
+            Platform.OS === 'web' && {
+              transition: 'color 0.3s',
+            },
           ]}>
             {label}
           </Text>
@@ -103,6 +106,10 @@ export default function Input (props) {
             disabled && styles.inputDisabled,
             inputType === INPUT_TYPE.NUMBER && styles.inputNumber,
             (inputType === INPUT_TYPE.QUANTITY || inputType === INPUT_TYPE.CURRENCY) && styles.inputWithSymbol,
+            Platform.OS === 'web' && {
+              transition: 'border 0.3s',
+              outlineStyle: 'none',
+            },
           ]}
           keyboardType={KEYBOARD_TYPE[inputType] || KEYBOARD_TYPE[INPUT_TYPE.DEFAULT]}
           placeholder={placeholder}
@@ -155,7 +162,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     lineHeight: 10,
     color: COLOR.GRAY,
-    transition: Platform.select({ web: 'color 0.3s' }),
   },
   labelFocused: {
     color: COLOR.ORANGE,
@@ -188,8 +194,6 @@ const styles = StyleSheet.create({
     fontSize: Platform.select({ web: 20, ios: 22 }),
     lineHeight: 34,
     borderWidth: 0,
-    transition: Platform.select({ web: 'border 0.3s' }),
-    outlineStyle: 'none',
   },
   inputDisabled: {
     color: COLOR.LIGHT_GRAY,

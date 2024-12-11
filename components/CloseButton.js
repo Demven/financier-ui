@@ -1,5 +1,10 @@
 import { useState } from 'react';
-import { StyleSheet, Pressable, View } from 'react-native';
+import {
+  StyleSheet,
+  Pressable,
+  View,
+  Platform,
+} from 'react-native';
 import PropTypes from 'prop-types';
 import { COLOR } from '../styles/colors';
 
@@ -36,6 +41,9 @@ export default function CloseButton (props) {
             iconStyle,
             hover && styles.iconLeftHover,
             hover && iconStyleHover,
+            Platform.OS === 'web' && {
+              transition: 'transform 0.3s, width 0.3s, backgroundColor 0.3s',
+            },
           ]}
         />
 
@@ -45,6 +53,9 @@ export default function CloseButton (props) {
             iconStyle,
             hover && styles.iconRightHover,
             hover && iconStyleHover,
+            Platform.OS === 'web' && {
+              transition: 'transform 0.3s, width 0.3s, backgroundColor 0.3s',
+            },
           ]}
         />
       </View>
@@ -69,7 +80,6 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '45deg' }],
     position: 'absolute',
     left: '50%',
-    transition: 'transform 0.3s, width 0.3s, backgroundColor 0.3s',
   },
   iconLeftHover: {
     width: 3,
@@ -84,7 +94,6 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '-45deg' }],
     position: 'absolute',
     left: '50%',
-    transition: 'transform 0.3s, width 0.3s, color 0.3s',
   },
   iconRightHover: {
     width: 3,

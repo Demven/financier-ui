@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,7 +9,7 @@ import {
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRouter } from 'expo-router';
 import CloseButton from './CloseButton';
 import Button, { BUTTON_LOOK } from './Button';
 import { FONT } from '../styles/fonts';
@@ -27,6 +28,19 @@ Modal.propTypes = {
   disableSave: PropTypes.bool,
 };
 
+export function useModal () {
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    navigation.setOptions({
+      presentation: Platform.OS === 'web' ? 'transparentModal' : 'modal',
+      headerShown: Platform.OS !== 'web',
+      contentStyle: { backgroundColor: Platform.select({ web: 'transparent' }) },
+      headerTitleStyle: styles.modalTitle,
+    });
+  }, [navigation]);
+}
+
 export default function Modal (props) {
   const {
     style,
@@ -40,7 +54,7 @@ export default function Modal (props) {
     disableSave,
   } = props;
 
-  const navigation = useNavigation();
+  const router = useRouter();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
@@ -48,7 +62,7 @@ export default function Modal (props) {
     if (typeof onCloseRequest === 'function') {
       onCloseRequest();
     } else {
-      navigation.goBack();
+      router.back();
     }
   }
 
@@ -152,6 +166,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
+  modalTitle: {
+    fontFamily: FONT.NOTO_SERIF.BOLD,
+    fontSize: 18,
+  },
+
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },

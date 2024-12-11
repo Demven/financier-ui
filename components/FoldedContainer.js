@@ -122,8 +122,19 @@ export default function FoldedContainer (props) {
     <View style={[styles.foldedContainer, style]}>
       <Pressable
         style={active
-          ? ({ pressed }) => [styles.button, pressed && styles.buttonPressed]
-          : styles.buttonDisabled}
+          ? ({ pressed }) => [
+            styles.button,
+            pressed && styles.buttonPressed,
+            pressed && Platform.OS === 'web' && {
+              transition: 'opacity 0.2s',
+            },
+          ]
+          : [
+            styles.buttonDisabled,
+            Platform.OS === 'web' && {
+              outlineStyle: 'none',
+            },
+          ]}
         onPress={active ? onPress : undefined}
       >
         <View style={styles.titleContainer}>
@@ -182,12 +193,10 @@ const styles = StyleSheet.create({
     outlineColor: COLOR.ORANGE,
   },
   buttonPressed: {
-    transition: 'opacity 0.2s',
     opacity: 0.6,
   },
   buttonDisabled: {
     cursor: 'default',
-    outlineStyle: 'none',
   },
 
   title: {

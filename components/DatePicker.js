@@ -44,7 +44,13 @@ export default function DatePicker (props) {
       ]}
     >
       {label && (
-        <Text style={[styles.label, focused && styles.labelFocused]}>
+        <Text style={[
+          styles.label,
+          focused && styles.labelFocused,
+          Platform.OS === 'web' && {
+            transition: 'color 0.3s',
+          },
+        ]}>
           {label}
         </Text>
       )}
@@ -53,6 +59,10 @@ export default function DatePicker (props) {
         style: {
           ...styles.input,
           ...(disabled ? styles.inputDisabled : {}),
+          ...(Platform.OS === 'web' ? {
+            transition: 'border 0.3s',
+            outlineStyle: 'none',
+          } : {}),
         },
         type: 'date',
         value: dateString,
@@ -120,7 +130,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     lineHeight: 10,
     color: COLOR.GRAY,
-    transition: Platform.select({ web: 'color 0.3s' }),
   },
   labelFocused: {
     color: COLOR.ORANGE,
@@ -139,8 +148,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     lineHeight: '34px',
     borderWidth: 0,
-    transition: 'border 0.3s',
-    outlineStyle: 'none',
     boxSizing: 'border-box'
   },
   inputDisabled: {
