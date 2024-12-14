@@ -26,8 +26,6 @@ export default function SignInScreen () {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  console.info('SignInScreen');
-
   const windowWidth = useSelector(state => state.ui.windowWidth);
 
   const [createAccountFlow, setCreateAccountFlow] = useState(false);

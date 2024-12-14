@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import { useEffect } from 'react';
 import { useFonts } from 'expo-font';
@@ -40,7 +40,7 @@ import { FONT } from '../styles/fonts';
 import { COLOR } from '../styles/colors';
 
 // Keep the splash screen visible while we fetch resources
-// SplashScreen.preventAutoHideAsync(); TODO revert
+SplashScreen.preventAutoHideAsync();
 
 export const CONFIRM_EMAIL_PATH = 'confirm-email';
 export const RESET_PASSWORD_PATH = 'reset-password';
@@ -71,13 +71,8 @@ function Navigator () {
     MaterialCommunityIcons: require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf'),
   });
 
-  const checkIfNeedToHideSplashScreen = useCallback(async () => {
-    if (fontsLoaded && isNavigationReady) {
-      await SplashScreen.hideAsync();
-      // to see and test the splash screen use instead timer:
-      // setTimeout(SplashScreen.hideAsync, 5000);
-    }
-  }, [fontsLoaded, isNavigationReady]);
+  console.info('fontsLoaded', fontsLoaded);
+  console.info('isNavigationReady', isNavigationReady);
 
   useEffect(() => {
     if (router && !isNavigationReady) {
@@ -111,6 +106,14 @@ function Navigator () {
         });
     }
   }, [needToReinitialize]);
+
+  useEffect(() => {
+    if (fontsLoaded && isNavigationReady) {
+      // SplashScreen.hideAsync();
+      // to see and test the splash screen use instead timer:
+      setTimeout(SplashScreen.hideAsync, 10000);
+    }
+  }, [fontsLoaded, isNavigationReady]);
 
   useEffect(() => {
     if (reduxInitialized && basicDataFetched && selectedYear) {
@@ -148,6 +151,8 @@ function Navigator () {
   }
 
   async function redirectToTheLastVisitedPage () {
+    console.info('redirectToTheLastVisitedPage');
+
     const lastVisitedPage = await retrieveFromStorage(STORAGE_KEY.LAST_VISITED_PAGE);
     const lastVisitedTimestamp = await retrieveFromStorage(STORAGE_KEY.LAST_VISITED_TIMESTAMP);
 
@@ -247,10 +252,7 @@ function Navigator () {
   return (
     <View
       style={{ flexGrow: 1 }}
-      onLayout={() => {
-        checkIfNeedToHideSplashScreen();
-        onLayout();
-      }}
+      onLayout={onLayout}
     >
       <Stack
         screenOptions={{
