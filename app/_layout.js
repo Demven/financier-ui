@@ -11,7 +11,7 @@ import {
   useDispatch,
 } from 'react-redux';
 import { StatusBar } from 'expo-status-bar';
-import Toast from '../components/Toast';
+// import Toast from '../components/Toast';
 import { TABS } from '../components/HeaderTabs';
 import { STORAGE_KEY, retrieveFromStorage, saveToStorage } from '../services/storage';
 import { getPathName, getTimespan } from '../services/location';
@@ -40,7 +40,7 @@ import { FONT } from '../styles/fonts';
 import { COLOR } from '../styles/colors';
 
 // Keep the splash screen visible while we fetch resources
-SplashScreen.preventAutoHideAsync();
+// SplashScreen.preventAutoHideAsync(); TODO revert
 
 export const CONFIRM_EMAIL_PATH = 'confirm-email';
 export const RESET_PASSWORD_PATH = 'reset-password';
@@ -144,7 +144,7 @@ function Navigator () {
 
   function saveLastVisitedPage (pathName) {
     saveToStorage(STORAGE_KEY.LAST_VISITED_PAGE, pathName);
-    saveToStorage(STORAGE_KEY.LAST_VISITED_TIMESTAMP, +(new Date()));
+    saveToStorage(STORAGE_KEY.LAST_VISITED_TIMESTAMP, String(+(new Date())));
   }
 
   async function redirectToTheLastVisitedPage () {
@@ -262,7 +262,7 @@ function Navigator () {
         }}
       />
 
-      <Toast {...toast} />
+      {/*<Toast {...toast} />*/}
     </View>
   );
 }

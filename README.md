@@ -2,4 +2,4 @@
 
 A React Native application, built for web and iOS devices.
 
-Node v20
+Node v22.3

@@ -22,9 +22,9 @@ import Animated, {
   useDerivedValue,
 } from 'react-native-reanimated';
 import { setSelectedTabAction, setSelectedYearAction } from '../../../../redux/reducers/ui';
-import SavingsMonth from '../../../../components/savings/SavingsMonth/SavingsMonth';
-import SavingsWeek from '../../../../components/savings/SavingsWeek/SavingsWeek';
-import SavingsYear from '../../../../components/savings/SavingsYear/SavingsYear';
+import IncomesMonth from '../../../../components/incomes/IncomesMonth/IncomesMonth';
+import IncomesWeek from '../../../../components/incomes/IncomesWeek/IncomesWeek';
+import IncomesYear from '../../../../components/incomes/IncomesYear/IncomesYear';
 import NoDataPlaceholder from '../../../../components/NoDataPlaceholder';
 import HeaderDropdown from '../../../../components/HeaderDropdown';
 import { TAB } from '../../../../components/HeaderTabs';
@@ -34,42 +34,36 @@ import { getTimespan } from '../../../../services/location';
 import { COLOR } from '../../../../styles/colors';
 import { MEDIA } from '../../../../styles/media';
 
-export default function SavingsScreen () {
+export default function IncomesScreen () {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const params = useGlobalSearchParams();
   const pathname = usePathname();
+  const params = useGlobalSearchParams();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const selectedYear = useSelector(state => state.ui.selectedYear);
   const selectedMonth = useSelector(state => state.ui.selectedMonth);
   const selectedWeek = useSelector(state => state.ui.selectedWeek);
+
   const loading = useSelector(state => state.ui.loading);
 
-  const savings = useSelector(state => state.savings.savings) || {};
-  const savingsTotals = useSelector(state => state.savings.savingsTotals) || {};
-  const investments = useSelector(state => state.savings.investments) || {};
-  const investmentsTotals = useSelector(state => state.savings.investmentsTotals) || {};
+  const incomes = useSelector(state => state.incomes.incomes) || {};
+  const incomesTotals = useSelector(state => state.incomes.incomesTotals) || {};
 
   const overviewType = getTimespan(pathname) || selectedTab;
 
-  const savingsYears = Object
-    .keys(savingsTotals)
-    .map(Number)
-    .filter(Boolean);
-  const investmentsYears = Object
-    .keys(investmentsTotals)
+  const incomesYears = Object
+    .keys(incomesTotals)
     .map(Number)
     .filter(Boolean);
 
   const yearsToSelect = useMemo(() => {
     return Array.from(new Set([
       new Date().getFullYear(),
-      ...savingsYears,
-      ...investmentsYears,
+      ...incomesYears,
     ]))
-  }, [savingsYears, investmentsYears]);
+  }, [incomesYears]);
 
   const [yearDropdownWidth, setYearDropdownWidth] = useState(0);
   const [visibleYear, setVisibleYear] = useState(yearsToSelect?.[0]);
@@ -77,18 +71,13 @@ export default function SavingsScreen () {
   const animatedScrollViewRef = useAnimatedRef();
   const scrollViewY = useSharedValue(0);
 
-  const savingMonths = Object
-    .keys(savings[selectedYear] || {})
-    .map(monthString => Number(monthString));
-  const investmentsMonths = Object
-    .keys(investments[selectedYear] || {})
-    .map(monthString => Number(monthString));
-  const months = Array
-    .from(new Set([...savingMonths, ...investmentsMonths]))
-    .sort((a, b) => a - b) // asc
+  const incomesMonths = Object
+    .keys(incomes[selectedYear] || {})
+    .map(monthString => Number(monthString))
     .reverse();
-  const firstMonthNumber = months[0];
+  const firstMonthNumber = incomesMonths[0];
 
+  const routeYear = parseInt(params?.year, 10);
   const routeMonthNumber = parseInt(params?.monthNumber, 10) || selectedMonth || firstMonthNumber;
   const routeWeekNumber = parseInt(params?.weekNumber, 10) || selectedWeek;
 
@@ -99,14 +88,14 @@ export default function SavingsScreen () {
   }, [params]);
 
   useEffect(() => {
-    if (Number(params?.year)) {
-      dispatch(setSelectedYearAction(parseInt(params.year, 10)));
+    if (Number(routeYear)) {
+      dispatch(setSelectedYearAction(Number(routeYear)));
 
       navigation.setParams({
         year: undefined,
       });
     }
-  }, [params?.year])
+  }, [routeYear])
 
   useDerivedValue(() => {
     scrollTo(animatedScrollViewRef, 0, scrollViewY.value, true);
@@ -122,25 +111,24 @@ export default function SavingsScreen () {
     return [1, 2, 3, 4].map((weekNumber, index) => {
       const previousMonthNumber = routeMonthNumber > 1
         ? routeMonthNumber - 1
-          // the last month of the previous year
-        : getLastMonthNumberInYear(savingsTotals?.[selectedYear - 1] || investmentsTotals?.[selectedYear - 1]);
+        : getLastMonthNumberInYear(incomesTotals?.[selectedYear - 1]); // the last month of the previous year
 
       return (
-        <SavingsWeek
+        <IncomesWeek
           key={index}
           style={[
-            styles.savings,
-            windowWidth < MEDIA.WIDE_MOBILE && styles.savingsMobile,
+            styles.incomes,
+            windowWidth < MEDIA.WIDE_MOBILE && styles.incomesMobile,
           ]}
           year={selectedYear}
           monthNumber={routeMonthNumber}
           weekNumber={weekNumber}
-          savings={savings?.[selectedYear]?.[routeMonthNumber]}
-          investments={investments?.[selectedYear]?.[routeMonthNumber]}
-          monthTotalSavingsAndInvestments={(savingsTotals?.[selectedYear]?.[routeMonthNumber]?.total || 0) + (investmentsTotals?.[selectedYear]?.[routeMonthNumber]?.total || 0)}
-          previousWeekTotalSavingsAndInvestments={routeMonthNumber > 1
-            ? (savingsTotals?.[selectedYear]?.[previousMonthNumber]?.[weekNumber] || 0)
-            : investmentsTotals?.[selectedYear - 1]?.[previousMonthNumber]?.[weekNumber] || 0
+          monthIncome={incomesTotals?.[selectedYear]?.[routeMonthNumber]?.total || 0}
+          weekIncomes={incomes?.[selectedYear]?.[routeMonthNumber]?.[weekNumber]}
+          weekIncomesTotal={incomesTotals?.[selectedYear]?.[routeMonthNumber]?.[weekNumber]}
+          previousMonthTotalIncomes={routeMonthNumber > 1
+            ? incomesTotals?.[selectedYear]?.[previousMonthNumber]?.[weekNumber] || 0
+            : incomesTotals?.[selectedYear - 1]?.[previousMonthNumber]?.[weekNumber] || 0
           }
           previousMonthName={MONTH_NAME[previousMonthNumber]}
           onScrollTo={weekNumber === routeWeekNumber
@@ -152,29 +140,26 @@ export default function SavingsScreen () {
   }
 
   function renderMonths () {
-    return months.map((monthNumber, index) => {
+    return incomesMonths.map((monthNumber, index) => {
       const previousMonthNumber = monthNumber > 1
-        ? months[index + 1] // + 1 because month numbers are sorted in ASC order
-          // the last month of the previous year
-        : getLastMonthNumberInYear(savingsTotals?.[selectedYear - 1] || investmentsTotals?.[selectedYear - 1]);
+        ? incomesMonths[index + 1] // + 1 because month numbers are sorted in ASC order
+        : getLastMonthNumberInYear(incomesTotals?.[selectedYear - 1]); // the last month of the previous year
 
       return (
-        <SavingsMonth
+        <IncomesMonth
           key={index}
           style={[
-            styles.savings,
-            windowWidth < MEDIA.WIDE_MOBILE && styles.savingsMobile,
+            styles.incomes,
+            windowWidth < MEDIA.WIDE_MOBILE && styles.incomesMobile,
           ]}
           year={selectedYear}
           monthNumber={monthNumber}
-          savings={savings?.[selectedYear]?.[monthNumber]}
-          yearSavingsTotal={savingsTotals?.[selectedYear]?.total}
-          investments={investments?.[selectedYear]?.[monthNumber]}
-          yearInvestmentsTotal={investmentsTotals?.[selectedYear]?.total}
-          previousMonthTotalSavingsAndInvestments={monthNumber > 1
-            ? (savingsTotals?.[selectedYear]?.[previousMonthNumber]?.total || 0) + (investmentsTotals?.[selectedYear]?.[previousMonthNumber]?.total || 0)
-              // compare to the last month of the previous year
-            : (savingsTotals?.[selectedYear - 1]?.[previousMonthNumber]?.total || 0) + (investmentsTotals?.[selectedYear - 1]?.[previousMonthNumber]?.total || 0)
+          yearIncome={incomesTotals?.[selectedYear]?.total || 0}
+          monthIncomes={incomes?.[selectedYear]?.[monthNumber]}
+          monthIncomesTotal={incomesTotals?.[selectedYear]?.[monthNumber]?.total || 0}
+          previousMonthTotalIncomes={monthNumber > 1
+            ? incomesTotals?.[selectedYear]?.[previousMonthNumber]?.total || 0
+            : incomesTotals?.[selectedYear - 1]?.[previousMonthNumber]?.total || 0 // compare to the last month of the previous year
           }
           previousMonthName={MONTH_NAME[previousMonthNumber]}
           onScrollTo={monthNumber === routeMonthNumber
@@ -199,19 +184,17 @@ export default function SavingsScreen () {
           percentHeight={1}
           frequency={500}
         >
-          <SavingsYear
+          <IncomesYear
             style={[
-              styles.savings,
-              windowWidth < MEDIA.WIDE_MOBILE && styles.savingsMobile,
+              styles.incomes,
+              windowWidth < MEDIA.WIDE_MOBILE && styles.incomesMobile,
             ]}
             visible={visibleYear === yearNumber}
             year={yearNumber}
-            savings={savings[yearNumber]}
-            savingsTotals={savingsTotals?.[yearNumber]}
-            investments={investments[yearNumber]}
-            investmentsTotals={investmentsTotals?.[yearNumber]}
-            allTimeTotalSavingsAndInvestments={(savingsTotals?.total || 0) + (investmentsTotals?.total || 0)}
-            previousYearTotalSavingsAndInvestments={(savingsTotals?.[yearNumber - 1]?.total || 0) + (investmentsTotals?.[yearNumber - 1]?.total || 0)}
+            allTimeTotalIncome={incomesTotals?.total || 0}
+            yearIncomes={incomes[yearNumber]}
+            yearIncomesTotal={incomesTotals[yearNumber]?.total || 0}
+            previousYearTotalIncomes={incomesTotals?.[yearNumber - 1]?.total || 0}
             previousYear={yearNumber - 1}
           />
         </ViewPortDetector>
@@ -225,10 +208,8 @@ export default function SavingsScreen () {
     : 40; // wide desktop
   const listContainerPaddingTop = windowWidth < MEDIA.TABLET ? 24 : 40;
 
-  const noDataForSelectedYear = !Object.keys(savings[selectedYear] || {}).length
-    && !Object.keys(investments[selectedYear] || {}).length;
-  const noDataForAnyYear = !Object.keys(savings).length
-    && !Object.keys(investments).length;
+  const noDataForSelectedYear = !Object.keys(incomes[selectedYear] || {}).length;
+  const noDataForAnyYear = !Object.keys(incomes).length;
 
   const hideYearSelector = selectedTab === TAB.YEARS;
 
@@ -239,7 +220,7 @@ export default function SavingsScreen () {
       ref={animatedScrollViewRef}
     >
       <View
-        style={[styles.savingsScreen, {
+        style={[styles.incomesScreen, {
           paddingHorizontal: overviewScreenPadding,
         }]}
       >
@@ -247,12 +228,14 @@ export default function SavingsScreen () {
 
         {(windowWidth < MEDIA.TABLET && !hideYearSelector) && (
           <HeaderDropdown
-            style={[styles.yearsDropdown, {
-              top: Platform.OS === 'ios' ? 26 : 24,
-            }, noDataForSelectedYear && {
-              right: '50%',
-              transform: [{translateX: yearDropdownWidth / 2}],
-            }]}
+            style={[
+              styles.yearsDropdown,
+              { top: Platform.OS === 'ios' ? 26 : 24 },
+              noDataForSelectedYear && {
+                right: '50%',
+                transform: [{translateX: yearDropdownWidth / 2}],
+              },
+            ]}
             selectedValue={selectedYear}
             values={yearsToSelect}
             onSelect={(selectedYear) => dispatch(setSelectedYearAction(Number(selectedYear)))}
@@ -285,7 +268,7 @@ export default function SavingsScreen () {
 }
 
 const styles = StyleSheet.create({
-  savingsScreen: {
+  incomesScreen: {
     height: '100%',
     backgroundColor: COLOR.WHITE,
     flexGrow: 1,
@@ -304,10 +287,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 
-  savings: {
+  incomes: {
     paddingBottom: 120,
   },
-  savingsMobile: {
+  incomesMobile: {
     paddingBottom: 80,
   },
 });

@@ -4,12 +4,25 @@
     "slug": "financier-ui",
     "scheme": "financier-ui",
     "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
     "web": {
       "bundler": "metro",
       "favicon": "./public/images/favicons/favicon-32x32.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/logo1x.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ]
     ],
     "platforms": ["ios", "web"]
   }

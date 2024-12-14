@@ -14,27 +14,31 @@ import {
   usePathname,
 } from 'expo-router';
 import { useSelector, useDispatch } from 'react-redux';
-import { ViewPortDetector, ViewPortDetectorProvider } from 'react-native-viewport-detector';
 import Animated, {
   scrollTo,
   useAnimatedRef,
   useSharedValue,
   useDerivedValue,
 } from 'react-native-reanimated';
+import { ViewPortDetector, ViewPortDetectorProvider } from 'react-native-viewport-detector';
 import { setSelectedTabAction, setSelectedYearAction } from '../../../../redux/reducers/ui';
-import ExpensesMonth from '../../../../components/expenses/ExpensesMonth/ExpensesMonth';
-import ExpensesWeek from '../../../../components/expenses/ExpensesWeek/ExpensesWeek';
-import ExpensesYear from '../../../../components/expenses/ExpensesYear/ExpensesYear';
+import CategoriesMonth from '../../../../components/categories/CategoriesMonth/CategoriesMonth';
+import CategoriesWeek from '../../../../components/categories/CategoriesWeek/CategoriesWeek';
+import CategoriesYear from '../../../../components/categories/CategoriesYear/CategoriesYear';
 import NoDataPlaceholder from '../../../../components/NoDataPlaceholder';
 import HeaderDropdown from '../../../../components/HeaderDropdown';
 import { TAB } from '../../../../components/HeaderTabs';
 import Loader from '../../../../components/Loader';
-import { getLastMonthNumberInYear, MONTH_NAME } from '../../../../services/date';
 import { getTimespan } from '../../../../services/location';
+import {
+  getDaysInMonth,
+  getLastMonthNumberInYear,
+  MONTH_NAME,
+} from '../../../../services/date';
 import { COLOR } from '../../../../styles/colors';
 import { MEDIA } from '../../../../styles/media';
 
-export default function ExpensesScreen () {
+export default function CategoriesScreen () {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const pathname = usePathname();
@@ -43,8 +47,6 @@ export default function ExpensesScreen () {
   const windowWidth = useSelector(state => state.ui.windowWidth);
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const selectedYear = useSelector(state => state.ui.selectedYear);
-  const selectedMonth = useSelector(state => state.ui.selectedMonth);
-  const selectedWeek = useSelector(state => state.ui.selectedWeek);
   const loading = useSelector(state => state.ui.loading);
 
   const expenses = useSelector(state => state.expenses.expenses) || {};
@@ -77,9 +79,9 @@ export default function ExpensesScreen () {
     .reverse();
   const firstMonthNumber = expensesMonths[0];
 
-  const routeYear = parseInt(params?.year);
-  const routeMonthNumber = parseInt(params?.monthNumber, 10) || selectedMonth || firstMonthNumber;
-  const routeWeekNumber = parseInt(params?.weekNumber, 10) || selectedWeek;
+  const routeYear = parseInt(params?.year, 10);
+  const monthNumber = parseInt(params?.monthNumber, 10) || firstMonthNumber;
+  const routeWeekNumber = parseInt(params?.weekNumber, 10);
 
   useEffect(() => {
     if (overviewType !== selectedTab) {
@@ -109,31 +111,31 @@ export default function ExpensesScreen () {
 
   function renderWeeks () {
     return [1, 2, 3, 4].map((weekNumber, index) => {
-      const previousMonthNumber = routeMonthNumber > 1
-        ? routeMonthNumber - 1
+      const previousMonthNumber = monthNumber > 1
+        ? monthNumber - 1
         : getLastMonthNumberInYear(expensesTotals?.[selectedYear - 1]); // the last month of the previous year
 
       return (
-        <ExpensesWeek
+        <CategoriesWeek
           key={index}
           style={[
-            styles.expenses,
-            windowWidth < MEDIA.WIDE_MOBILE && styles.expensesMobile,
+            styles.categories,
+            windowWidth < MEDIA.WIDE_MOBILE && styles.categoriesMobile,
           ]}
           year={selectedYear}
-          monthNumber={routeMonthNumber}
+          monthNumber={monthNumber}
           weekNumber={weekNumber}
-          monthIncome={incomesTotals?.[selectedYear]?.[routeMonthNumber]?.total || 0}
-          weekExpenses={expenses?.[selectedYear]?.[routeMonthNumber]?.[weekNumber]}
-          weekExpensesTotal={expensesTotals?.[selectedYear]?.[routeMonthNumber]?.[weekNumber]}
-          previousWeekTotalExpenses={routeMonthNumber > 1
-            ? expensesTotals?.[selectedYear]?.[previousMonthNumber]?.[weekNumber] || 0
-            : expensesTotals?.[selectedYear - 1]?.[previousMonthNumber]?.[weekNumber] || 0
-          }
-          previousMonthName={MONTH_NAME[previousMonthNumber]}
+          monthIncome={incomesTotals?.[selectedYear]?.[monthNumber]?.total || 0}
           onScrollTo={weekNumber === routeWeekNumber
             ? (scrollY) => scrollViewY.value = scrollY
             : undefined}
+          weekExpenses={expenses?.[selectedYear]?.[monthNumber]?.[weekNumber]}
+          weekExpensesTotal={expensesTotals?.[selectedYear]?.[monthNumber]?.[weekNumber]}
+          previousWeekExpenses={monthNumber > 1
+            ? expenses?.[selectedYear]?.[previousMonthNumber]?.[weekNumber] || 0
+            : expenses?.[selectedYear - 1]?.[previousMonthNumber]?.[weekNumber] || 0
+          }
+          previousMonthName={MONTH_NAME[previousMonthNumber]}
         />
       );
     });
@@ -142,29 +144,28 @@ export default function ExpensesScreen () {
   function renderMonths () {
     return expensesMonths.map((monthNumber, index) => {
       const previousMonthNumber = monthNumber > 1
-       ? expensesMonths[index + 1] // + 1 because month numbers are sorted in ASC order
-       : getLastMonthNumberInYear(expensesTotals?.[selectedYear - 1]); // the last month of the previous year
+        ? expensesMonths[index + 1] // + 1 because month numbers are sorted in ASC order
+        : getLastMonthNumberInYear(expensesTotals?.[selectedYear - 1]); // the last month of the previous year
+
+      const daysNumber = getDaysInMonth(selectedYear, monthNumber);
 
       return (
-        <ExpensesMonth
+        <CategoriesMonth
           key={index}
           style={[
-            styles.expenses,
-            windowWidth < MEDIA.WIDE_MOBILE && styles.expensesMobile,
+            styles.categories,
+            windowWidth < MEDIA.WIDE_MOBILE && styles.categoriesMobile,
           ]}
-          year={selectedYear}
+          daysNumber={daysNumber}
           monthNumber={monthNumber}
           monthIncome={incomesTotals?.[selectedYear]?.[monthNumber]?.total || 0}
           monthExpenses={expenses?.[selectedYear]?.[monthNumber]}
           monthExpensesTotal={expensesTotals?.[selectedYear]?.[monthNumber]?.total || 0}
-          previousMonthTotalExpenses={monthNumber > 1
-            ? expensesTotals?.[selectedYear]?.[previousMonthNumber]?.total || 0
-            : expensesTotals?.[selectedYear - 1]?.[previousMonthNumber]?.total || 0 // compare to the last month of the previous year
+          previousMonthExpenses={monthNumber > 1
+            ? expenses?.[selectedYear]?.[previousMonthNumber] || {}
+            : expenses?.[selectedYear - 1]?.[previousMonthNumber] || {} // compare to the last month of the previous year
           }
           previousMonthName={MONTH_NAME[previousMonthNumber]}
-          onScrollTo={monthNumber === routeMonthNumber
-            ? (scrollY) => scrollViewY.value = scrollY
-            : undefined}
         />
       );
     });
@@ -181,21 +182,21 @@ export default function ExpensesScreen () {
               setVisibleYear(yearNumber);
             }
           }}
-          percentHeight={1}
-          frequency={500}
+          percentHeight={0.5}
+          frequency={1000}
         >
-          <ExpensesYear
+          <CategoriesYear
             style={[
-              styles.expenses,
-              windowWidth < MEDIA.WIDE_MOBILE && styles.expensesMobile,
+              styles.categories,
+              windowWidth < MEDIA.WIDE_MOBILE && styles.categoriesMobile,
             ]}
             visible={visibleYear === yearNumber}
             year={yearNumber}
-            yearExpenses={expenses[yearNumber]}
-            yearTotalExpenses={expensesTotals[yearNumber]}
-            yearIncome={incomesTotals?.[yearNumber]?.total || 0}
             previousYear={yearNumber - 1}
-            previousYearTotalExpenses={incomesTotals?.[yearNumber - 1]?.total || 0}
+            yearIncome={incomesTotals?.[yearNumber]?.total || 0}
+            yearExpenses={expenses[yearNumber]}
+            yearExpensesTotal={expensesTotals[yearNumber]?.total || 0}
+            previousYearExpenses={expenses?.[yearNumber - 1]}
           />
         </ViewPortDetector>
       ));
@@ -220,7 +221,7 @@ export default function ExpensesScreen () {
       ref={animatedScrollViewRef}
     >
       <View
-        style={[styles.expensesScreen, {
+        style={[styles.categoriesScreen, {
           paddingHorizontal: overviewScreenPadding,
         }]}
       >
@@ -268,7 +269,7 @@ export default function ExpensesScreen () {
 }
 
 const styles = StyleSheet.create({
-  expensesScreen: {
+  categoriesScreen: {
     height: '100%',
     backgroundColor: COLOR.WHITE,
     flexGrow: 1,
@@ -287,10 +288,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 
-  expenses: {
-    paddingBottom: 120,
+  categories: {
+    paddingBottom: 80,
   },
-  expensesMobile: {
+  categoriesMobile: {
     paddingBottom: 80,
   },
 });
