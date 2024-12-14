@@ -47,8 +47,6 @@
     "reanimated-color-picker": "^3.0.6"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.0",
-    "@types/react": "~18.3.12",
-    "typescript": "^5.3.3"
+    "@babel/core": "^7.26.0"
   }
 }
