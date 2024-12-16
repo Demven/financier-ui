@@ -11,7 +11,7 @@ import {
   useDispatch,
 } from 'react-redux';
 import { StatusBar } from 'expo-status-bar';
-// import Toast from '../components/Toast';
+import Toast from '../components/Toast';
 import { TABS } from '../components/HeaderTabs';
 import { STORAGE_KEY, retrieveFromStorage, saveToStorage } from '../services/storage';
 import { getPathName, getTimespan } from '../services/location';
@@ -71,9 +71,6 @@ function Navigator () {
     MaterialCommunityIcons: require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf'),
   });
 
-  console.info('fontsLoaded', fontsLoaded);
-  console.info('isNavigationReady', isNavigationReady);
-
   useEffect(() => {
     if (router && !isNavigationReady) {
       redirectToTheLastVisitedPage();
@@ -109,9 +106,9 @@ function Navigator () {
 
   useEffect(() => {
     if (fontsLoaded && isNavigationReady) {
-      // SplashScreen.hideAsync();
+      SplashScreen.hideAsync();
       // to see and test the splash screen use instead timer:
-      setTimeout(SplashScreen.hideAsync, 10000);
+      // setTimeout(SplashScreen.hideAsync, 10000);
     }
   }, [fontsLoaded, isNavigationReady]);
 
@@ -151,8 +148,6 @@ function Navigator () {
   }
 
   async function redirectToTheLastVisitedPage () {
-    console.info('redirectToTheLastVisitedPage');
-
     const lastVisitedPage = await retrieveFromStorage(STORAGE_KEY.LAST_VISITED_PAGE);
     const lastVisitedTimestamp = await retrieveFromStorage(STORAGE_KEY.LAST_VISITED_TIMESTAMP);
 
@@ -251,7 +246,7 @@ function Navigator () {
 
   return (
     <View
-      style={{ flexGrow: 1 }}
+      style={{ flexGrow: 1, position: 'relative' }}
       onLayout={onLayout}
     >
       <Stack
@@ -264,7 +259,7 @@ function Navigator () {
         }}
       />
 
-      {/*<Toast {...toast} />*/}
+      <Toast {...toast} />
     </View>
   );
 }

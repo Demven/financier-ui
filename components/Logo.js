@@ -1,10 +1,9 @@
 import {
   StyleSheet,
   View,
-  Image,
-  Pressable,
+  Image, Platform,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { Link } from 'expo-router';
 import PropTypes from 'prop-types';
 
 Logo.propTypes = {
@@ -15,15 +14,13 @@ Logo.propTypes = {
 export default function Logo (props) {
   const {
     containerStyle,
-    navigateTo = 'overview'
+    navigateTo = '/overview'
   } = props;
 
-  const router = useRouter();
-
   return (
-    <Pressable
-      style={({ pressed }) => [styles.logo, pressed && styles.logoPressed]}
-      onPress={() => router.push(navigateTo)}
+    <Link
+      style={styles.logo}
+      href={navigateTo}
     >
       <View style={[styles.logoContainer, containerStyle]}>
         <Image
@@ -31,14 +28,13 @@ export default function Logo (props) {
           source={require('../assets/images/logo1x.png')}
         />
       </View>
-    </Pressable>
+    </Link>
   );
 }
 
 const styles = StyleSheet.create({
-  logo: {},
-  logoPressed: {
-    opacity: 0.8,
+  logo: {
+    marginLeft: Platform.OS === 'ios' ? 8 : 0,
   },
   logoContainer: {
     width: 96,

@@ -6,24 +6,28 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.demven.financierui",
+      "icon": "./public/images/favicons/apple-touch-icon.png"
     },
     "web": {
       "bundler": "metro",
       "favicon": "./public/images/favicons/favicon-32x32.png"
     },
+    "splash": {
+      "image": "./assets/images/splash-screen.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFFFF"
+    },
     "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/logo1x.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
-        }
-      ]
+      "expo-router"
     ],
-    "platforms": ["ios", "web"]
+    "platforms": [
+      "ios",
+      "web"
+    ],
+    "android": {
+      "package": "com.demven.financierui"
+    }
   }
 }

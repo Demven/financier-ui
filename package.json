@@ -4,16 +4,17 @@
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
-    "start": "expo start --clear",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "ios-clean": "expo run:ios --no-build-cache",
     "web": "expo start --web",
     "postinstall": "patch-package"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.4",
     "@react-native-async-storage/async-storage": "^1.24.0",
-    "@react-native-community/datetimepicker": "7.7.0",
+    "@react-native-community/datetimepicker": "8.2.0",
     "@react-navigation/bottom-tabs": "^7.0.0",
     "@react-navigation/native": "^7.0.0",
     "@react-navigation/drawer": "^7.0.20",

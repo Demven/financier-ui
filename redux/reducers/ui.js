@@ -1,8 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { Dimensions } from 'react-native';
 import { TAB } from '../../components/HeaderTabs';
-// import { TOAST_TYPE } from '../../components/Toast'; // TODO revert
 import { saveToStorage, STORAGE_KEY } from '../../services/storage';
+
+export const TOAST_TYPE = {
+  INFO: 'info',
+  WARNING: 'warning',
+  ERROR: 'error',
+};
 
 const getInitialState = () => ({
   windowWidth: Dimensions.get('window').width,

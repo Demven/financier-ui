@@ -16,7 +16,6 @@ import Input, { INPUT_TYPE } from '../../components/Input';
 import Dropdown from '../../components/Dropdown';
 import DatePicker from '../../components/DatePicker';
 import Loader from '../../components/Loader';
-import { TOAST_TYPE } from '../../components/Toast';
 import {
   addSavingAction,
   updateSavingAction,
@@ -27,7 +26,7 @@ import {
   setSavingsTotalsAction,
   setInvestmentsTotalsAction,
 } from '../../redux/reducers/savings';
-import { showToastAction } from '../../redux/reducers/ui';
+import { showToastAction, TOAST_TYPE } from '../../redux/reducers/ui';
 import { dateToDateString, getWeekNumberByDayNumber } from '../../services/date';
 import {
   fetchSavingById,
