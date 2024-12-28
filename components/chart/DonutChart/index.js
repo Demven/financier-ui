@@ -128,14 +128,14 @@ export default function DonutChart (props) {
   const circleTextFontSize = windowWidth < MEDIA.MEDIUM_DESKTOP
     ? windowWidth < MEDIA.DESKTOP
       ? windowWidth < MEDIA.TABLET
-        ? 32 // mobile
+        ? 28 // mobile
         : 42// tablet
       : 32 // desktop
     : 42; // wide desktop
   const circleTextLineHeight = windowWidth < MEDIA.MEDIUM_DESKTOP
     ? windowWidth < MEDIA.DESKTOP
       ? windowWidth < MEDIA.TABLET
-        ? 36// mobile
+        ? 32// mobile
         : 46 // tablet
       : 36 // desktop
     : 46; // wide desktop

@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     marginTop: 52,
   },
   chartMobile: {
-    marginTop: 32,
+    marginTop: 40,
   },
 
   barChartContainer: {

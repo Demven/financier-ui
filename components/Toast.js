@@ -43,6 +43,9 @@ Toast.propTypes = {
 
 const TOAST_TIMEOUT = 5000;
 
+const DEFAULT_OPACITY = 0;
+const DEFAULT_TRANSLATE_Y = 140;
+
 export default function Toast (props) {
   const {
     style,
@@ -54,8 +57,8 @@ export default function Toast (props) {
 
   const dispatch = useDispatch();
 
-  const translateY = useSharedValue(140);
-  const opacity = useSharedValue(0);
+  const opacity = useSharedValue(DEFAULT_OPACITY);
+  const translateY = useSharedValue(DEFAULT_TRANSLATE_Y);
 
   const [timeoutId, setTimeoutId] = useState();
 
@@ -77,25 +80,30 @@ export default function Toast (props) {
       setTimeoutId(undefined);
     }
 
-    opacity.value = withTiming(1, {
-      duration: 200,
-      easing: Easing.cubic,
-      reduceMotion: 'system',
-    });
-    translateY.value = withTiming(32, {
-      duration: 300,
-      easing: Easing.cubic,
-      reduceMotion: 'system',
-    });
+    opacity.value = DEFAULT_OPACITY;
+    translateY.value = DEFAULT_TRANSLATE_Y;
+
+    setTimeout(() => {
+      opacity.value = withTiming(1, {
+        duration: 200,
+        easing: Easing.cubic,
+        reduceMotion: 'system',
+      });
+      translateY.value = withTiming(32, {
+        duration: 300,
+        easing: Easing.cubic,
+        reduceMotion: 'system',
+      });
+    }, 0);
   }
 
   function onClose () {
-    opacity.value = withTiming(140, {
+    opacity.value = withTiming(DEFAULT_OPACITY, {
       duration: 200,
       easing: Easing.cubic,
       reduceMotion: 'system',
     });
-    translateY.value = withTiming(140, {
+    translateY.value = withTiming(DEFAULT_TRANSLATE_Y, {
       duration: 300,
       easing: Easing.cubic,
       reduceMotion: 'system',
