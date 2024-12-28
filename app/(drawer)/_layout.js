@@ -27,10 +27,9 @@ export default function DrawerLayout () {
           ),
           headerStyle: { backgroundColor: COLOR.WHITE },
           headerTintColor: COLOR.BLACK,
-          sceneContainerStyle: { backgroundColor: COLOR.WHITE, flexGrow: 1 },
+          sceneStyle: { backgroundColor: COLOR.WHITE, flexGrow: 1, borderRadius: 0 },
           drawerActiveTintColor: COLOR.BLACK,
           drawerInactiveTintColor: COLOR.BLACK,
-          drawerActiveBackgroundColor: COLOR.WHITE,
         })}
         drawerContent={DrawerContent}
       />

@@ -8,6 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Path } from 'react-native-svg';
 import PropTypes from 'prop-types';
+import { COLOR } from '../../../styles/colors';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
@@ -75,7 +76,7 @@ function getArcPath (
 export default function DonutChartSegment (props) {
   const {
     id,
-    getColor = (opacity) => 'black',
+    getColor = (opacity) => COLOR.BLACK,
     startAngle,
     endAngle,
     radius,

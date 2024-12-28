@@ -41,6 +41,7 @@ export default function MonthChart (props) {
   const colors = useSelector(state => state.colors);
 
   const [loading, setLoading] = useState(true);
+  const [barChartLoading, setBarChartLoading] = useState(false);
   const [barChartWidth, setBarChartWidth] = useState(0);
 
   function onBarChartLayout (event) {
@@ -120,31 +121,8 @@ export default function MonthChart (props) {
         </View>
       )}
 
-      <DonutChart
-        style={[styles.chart, windowWidth < MEDIA.TABLET && styles.chartMobile]}
-        data={chartData}
-        selectedSegmentId={selectedCategoryId}
-        onSelectSegment={onSelectCategoryId}
-      />
-
       {selectedChartSegment && (
         <View style={[styles.barChartContainer, windowWidth < MEDIA.TABLET && styles.barChartContainerMobile]}>
-          <View style={[
-            styles.selectedChartSegmentTextContainer,
-            windowWidth < MEDIA.DESKTOP && styles.selectedChartSegmentTextContainerTabletMobile,
-          ]}>
-            <Text style={[
-              styles.selectedChartSegmentText,
-              windowWidth < MEDIA.DESKTOP && styles.selectedChartSegmentTextTabletMobile,
-              {
-                fontSize: selectedSegmentTextFontSize,
-                lineHeight: selectedSegmentLineHeight,
-              },
-            ]}>
-              {selectedChartSegment.label} (by weeks)
-            </Text>
-          </View>
-
           <View
             style={[
               styles.barChartWrapper,
@@ -152,6 +130,12 @@ export default function MonthChart (props) {
             ]}
             onLayout={onBarChartLayout}
           >
+            <Loader
+              loading={barChartLoading}
+              setLoading={setBarChartLoading}
+              timeout={300}
+            />
+
             <BarChart
               style={[styles.barChart, windowWidth < MEDIA.DESKTOP && styles.barChartTabletMobile]}
               width={barChartWidth}
@@ -180,6 +164,16 @@ export default function MonthChart (props) {
           </View>
         </View>
       )}
+
+      <DonutChart
+        style={[styles.chart, windowWidth < MEDIA.TABLET && styles.chartMobile]}
+        data={chartData}
+        selectedSegmentId={selectedCategoryId}
+        onSelectSegment={(id) => {
+          setBarChartLoading(true);
+          onSelectCategoryId(id);
+        }}
+      />
     </View>
   );
 }
