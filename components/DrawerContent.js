@@ -7,7 +7,11 @@ import {
 } from 'react-native';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { useSelector } from 'react-redux';
-import { useRouter, Link } from 'expo-router';
+import {
+  useRouter,
+  usePathname,
+  Link,
+} from 'expo-router';
 import {
   FontAwesome5,
   Ionicons,
@@ -120,6 +124,7 @@ const DRAWER_ITEMS = [
 // Read more here https://reactnavigation.org/docs/drawer-navigator/#drawercontent
 export default function DrawerContent (props) {
   const router = useRouter();
+  const pathname = usePathname();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
   const selectedTab = useSelector(state => state.ui.selectedTab);
@@ -136,34 +141,40 @@ export default function DrawerContent (props) {
   return (
     <View style={styles.drawerContent}>
       <View style={styles.drawerHeader}>
-        <Logo containerStyle={styles.logo} />
+        <Logo style={styles.logo} />
       </View>
 
       <DrawerContentScrollView
         {...props}
+        style={styles.drawerScrollViewWrapper}
         contentContainerStyle={[styles.drawerScrollView, {
           marginTop: Platform.select({ ios: windowWidth < MEDIA.WIDE_MOBILE ? -54 : 0 }),
+          padding: 0,
         }]}
-        style={{ paddingTop: 16, paddingLeft: 16, backgroundColor: COLOR.WHITE }}
       >
-        {DRAWER_ITEMS.map(({ name, label, icon }) => (
-          <Link
-            key={name}
-            style={styles.drawerItem}
-            href={name === DRAWER_PAGE.SETTINGS
-              ? name
-              : `/${name}/${selectedTab}`
-            }
-          >
-            {icon(COLOR.BLACK)}
+        {DRAWER_ITEMS.map(({ name, label, icon }) => {
+          const isActiveRoute = pathname.includes(name);
 
-            <View style={styles.drawerLabelContainer}>
-              <Text style={styles.drawerLabel}>
-                {label}
-              </Text>
-            </View>
-          </Link>
-        ))}
+          return (
+            <Link
+              key={name}
+              style={[styles.drawerItem, isActiveRoute && styles.drawerItemActive]}
+              href={name === DRAWER_PAGE.SETTINGS
+                ? name
+                : `/${name}/${selectedTab}`
+              }
+              disabled={isActiveRoute}
+            >
+              {icon(COLOR.BLACK)}
+
+              <View style={styles.drawerLabelContainer}>
+                <Text style={[styles.drawerLabel, isActiveRoute && styles.drawerLabelActive]}>
+                  {label}
+                </Text>
+              </View>
+            </Link>
+          );
+        })}
       </DrawerContentScrollView>
 
       <View style={styles.drawerFooter}>
@@ -190,6 +201,7 @@ export default function DrawerContent (props) {
 const styles = StyleSheet.create({
   drawerContent: {
     flexGrow: 1,
+    backgroundColor: COLOR.WHITE,
   },
 
   drawerHeader: {
@@ -200,7 +212,14 @@ const styles = StyleSheet.create({
   },
   logo: {},
 
+  drawerScrollViewWrapper: {
+    paddingTop: 16,
+    paddingLeft: 16,
+    backgroundColor: COLOR.WHITE,
+  },
+
   drawerScrollView: {
+    paddingTop: 88,
     flexGrow: 1,
     position: 'relative',
     padding: 0,
@@ -212,19 +231,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingLeft: 22,
     paddingRight: 12,
-    paddingVertical: 8,
-    marginVertical: 4,
+    paddingVertical: 12,
+    marginVertical: Platform.OS === 'ios' ? 6 : 4,
+  },
+  drawerItemActive: {
+    cursor: 'default',
   },
 
   drawerLabelContainer: {
-    marginLeft: 32,
-    marginTop: 5,
-    marginBottom: 5,
+    margin: 0,
+    height: 32,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 32,
   },
   drawerLabel: {
     fontFamily: FONT.NOTO_SERIF.REGULAR,
-    fontSize: 18,
-    lineHeight: 36,
+    fontSize: Platform.OS === 'ios' ? 20 : 18,
+    lineHeight: 38,
+  },
+  drawerLabelActive: {
+    fontFamily: FONT.NOTO_SERIF.BOLD,
   },
 
   drawerFooter: {

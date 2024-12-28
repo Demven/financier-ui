@@ -122,7 +122,7 @@ export default function SavingsScreen () {
     return [1, 2, 3, 4].map((weekNumber, index) => {
       const previousMonthNumber = routeMonthNumber > 1
         ? routeMonthNumber - 1
-          // the last month of the previous year
+        // the last month of the previous year
         : getLastMonthNumberInYear(savingsTotals?.[selectedYear - 1] || investmentsTotals?.[selectedYear - 1]);
 
       return (
@@ -155,7 +155,7 @@ export default function SavingsScreen () {
     return months.map((monthNumber, index) => {
       const previousMonthNumber = monthNumber > 1
         ? months[index + 1] // + 1 because month numbers are sorted in ASC order
-          // the last month of the previous year
+        // the last month of the previous year
         : getLastMonthNumberInYear(savingsTotals?.[selectedYear - 1] || investmentsTotals?.[selectedYear - 1]);
 
       return (
@@ -173,7 +173,7 @@ export default function SavingsScreen () {
           yearInvestmentsTotal={investmentsTotals?.[selectedYear]?.total}
           previousMonthTotalSavingsAndInvestments={monthNumber > 1
             ? (savingsTotals?.[selectedYear]?.[previousMonthNumber]?.total || 0) + (investmentsTotals?.[selectedYear]?.[previousMonthNumber]?.total || 0)
-              // compare to the last month of the previous year
+            // compare to the last month of the previous year
             : (savingsTotals?.[selectedYear - 1]?.[previousMonthNumber]?.total || 0) + (investmentsTotals?.[selectedYear - 1]?.[previousMonthNumber]?.total || 0)
           }
           previousMonthName={MONTH_NAME[previousMonthNumber]}

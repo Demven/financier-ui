@@ -144,8 +144,8 @@ export default function CategoriesScreen () {
   function renderMonths () {
     return expensesMonths.map((monthNumber, index) => {
       const previousMonthNumber = monthNumber > 1
-       ? expensesMonths[index + 1] // + 1 because month numbers are sorted in ASC order
-       : getLastMonthNumberInYear(expensesTotals?.[selectedYear - 1]); // the last month of the previous year
+        ? expensesMonths[index + 1] // + 1 because month numbers are sorted in ASC order
+        : getLastMonthNumberInYear(expensesTotals?.[selectedYear - 1]); // the last month of the previous year
 
       const daysNumber = getDaysInMonth(selectedYear, monthNumber);
 

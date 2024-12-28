@@ -1,23 +1,22 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  Platform,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
 import PropTypes from 'prop-types';
 import CloseButton from './CloseButton';
 import Icon, { ICON_COLLECTION } from './Icon';
-import { hideToastAction } from '../redux/reducers/ui';
+import { hideToastAction, TOAST_TYPE } from '../redux/reducers/ui';
 import { FONT } from '../styles/fonts';
 import { COLOR } from '../styles/colors';
-
-export const TOAST_TYPE = {
-  INFO: 'info',
-  WARNING: 'warning',
-  ERROR: 'error',
-};
 
 const TOAST_ICON = {
   [TOAST_TYPE.INFO]: {
@@ -44,6 +43,9 @@ Toast.propTypes = {
 
 const TOAST_TIMEOUT = 5000;
 
+const DEFAULT_OPACITY = 0;
+const DEFAULT_TRANSLATE_Y = 140;
+
 export default function Toast (props) {
   const {
     style,
@@ -55,17 +57,67 @@ export default function Toast (props) {
 
   const dispatch = useDispatch();
 
+  const opacity = useSharedValue(DEFAULT_OPACITY);
+  const translateY = useSharedValue(DEFAULT_TRANSLATE_Y);
+
+  const [timeoutId, setTimeoutId] = useState();
+
   useEffect(() => {
     if (message && visible) {
+      show();
+
       if (timeout) {
-        setTimeout(onClose, timeout);
+        setTimeoutId(setTimeout(onClose, timeout));
       }
+    } else {
+      onClose();
     }
   }, [message, visible]);
 
+  function show () {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      setTimeoutId(undefined);
+    }
+
+    opacity.value = DEFAULT_OPACITY;
+    translateY.value = DEFAULT_TRANSLATE_Y;
+
+    setTimeout(() => {
+      opacity.value = withTiming(1, {
+        duration: 200,
+        easing: Easing.cubic,
+        reduceMotion: 'system',
+      });
+      translateY.value = withTiming(32, {
+        duration: 300,
+        easing: Easing.cubic,
+        reduceMotion: 'system',
+      });
+    }, 0);
+  }
+
   function onClose () {
+    opacity.value = withTiming(DEFAULT_OPACITY, {
+      duration: 200,
+      easing: Easing.cubic,
+      reduceMotion: 'system',
+    });
+    translateY.value = withTiming(DEFAULT_TRANSLATE_Y, {
+      duration: 300,
+      easing: Easing.cubic,
+      reduceMotion: 'system',
+    });
+
     dispatch(hideToastAction());
   }
+
+  const animatedTranslateYStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
+  const animatedOpacityStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
 
   const color = type === TOAST_TYPE.INFO
     ? COLOR.GREEN
@@ -74,13 +126,13 @@ export default function Toast (props) {
       : COLOR.RED;
 
   return (
-    <View style={[
-      styles.toast,
-      visible && styles.toastVisible,
-      Platform.OS === 'web' && {
-        transition: 'transform 0.15s, opacity 0.2s',
-      },
-    ]}>
+    <Animated.View
+      style={[
+        styles.toast,
+        animatedTranslateYStyle,
+        animatedOpacityStyle,
+      ]}
+    >
       <View style={[
         styles.content,
         style,
@@ -107,7 +159,7 @@ export default function Toast (props) {
           onPress={onClose}
         />
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -117,26 +169,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    position: 'fixed',
+    position: 'absolute',
     bottom: 64,
     left: 0,
-    transform: [{ translateY: 140 }],
     opacity: 0,
-  },
-  toastVisible: {
-    transform: [{ translateY: 32 }],
-    opacity: 1,
   },
 
   content: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: Platform.select({ ios: 32, web: 24 }),
+    padding: 24,
     backgroundColor: COLOR.WHITE,
-    borderRadius: Platform.select({ web: 8 }),
+    borderRadius: 8,
     shadowColor: COLOR.BLACK,
     shadowOffset: { width: 0, height: 0 },
-    shadowRadius: Platform.select({ web: 8 }),
+    shadowRadius: 8,
     shadowOpacity: 0.1,
     zIndex: 1000,
   },

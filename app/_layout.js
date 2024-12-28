@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import { useEffect } from 'react';
 import { useFonts } from 'expo-font';
@@ -71,14 +71,6 @@ function Navigator () {
     MaterialCommunityIcons: require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf'),
   });
 
-  const checkIfNeedToHideSplashScreen = useCallback(async () => {
-    if (fontsLoaded && isNavigationReady) {
-      await SplashScreen.hideAsync();
-      // to see and test the splash screen use instead timer:
-      // setTimeout(SplashScreen.hideAsync, 5000);
-    }
-  }, [fontsLoaded, isNavigationReady]);
-
   useEffect(() => {
     if (router && !isNavigationReady) {
       redirectToTheLastVisitedPage();
@@ -113,6 +105,14 @@ function Navigator () {
   }, [needToReinitialize]);
 
   useEffect(() => {
+    if (fontsLoaded && isNavigationReady) {
+      SplashScreen.hideAsync();
+      // to see and test the splash screen use instead timer:
+      // setTimeout(SplashScreen.hideAsync, 10000);
+    }
+  }, [fontsLoaded, isNavigationReady]);
+
+  useEffect(() => {
     if (reduxInitialized && basicDataFetched && selectedYear) {
       fetchOverviewData(selectedYear);
     }
@@ -144,7 +144,7 @@ function Navigator () {
 
   function saveLastVisitedPage (pathName) {
     saveToStorage(STORAGE_KEY.LAST_VISITED_PAGE, pathName);
-    saveToStorage(STORAGE_KEY.LAST_VISITED_TIMESTAMP, +(new Date()));
+    saveToStorage(STORAGE_KEY.LAST_VISITED_TIMESTAMP, String(+(new Date())));
   }
 
   async function redirectToTheLastVisitedPage () {
@@ -246,11 +246,8 @@ function Navigator () {
 
   return (
     <View
-      style={{ flexGrow: 1 }}
-      onLayout={() => {
-        checkIfNeedToHideSplashScreen();
-        onLayout();
-      }}
+      style={{ flexGrow: 1, position: 'relative' }}
+      onLayout={onLayout}
     >
       <Stack
         screenOptions={{

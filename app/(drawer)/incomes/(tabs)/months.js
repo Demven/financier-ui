@@ -142,8 +142,8 @@ export default function IncomesScreen () {
   function renderMonths () {
     return incomesMonths.map((monthNumber, index) => {
       const previousMonthNumber = monthNumber > 1
-       ? incomesMonths[index + 1] // + 1 because month numbers are sorted in ASC order
-       : getLastMonthNumberInYear(incomesTotals?.[selectedYear - 1]); // the last month of the previous year
+        ? incomesMonths[index + 1] // + 1 because month numbers are sorted in ASC order
+        : getLastMonthNumberInYear(incomesTotals?.[selectedYear - 1]); // the last month of the previous year
 
       return (
         <IncomesMonth

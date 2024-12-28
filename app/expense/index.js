@@ -17,7 +17,6 @@ import { ICON_COLLECTION } from '../../components/Icon';
 import IconButton from '../../components/IconButton';
 import DatePicker from '../../components/DatePicker';
 import CategoryDropdown, { PRESELECTED_CATEGORY } from '../../components/CategoryDropdown';
-import { TOAST_TYPE } from '../../components/Toast';
 import Loader from '../../components/Loader';
 import {
   addExpenseAction,
@@ -25,7 +24,7 @@ import {
   setExpensesTotalsAction,
   deleteExpenseAction,
 } from '../../redux/reducers/expenses';
-import { showToastAction } from '../../redux/reducers/ui';
+import { showToastAction, TOAST_TYPE } from '../../redux/reducers/ui';
 import { dateToDateString, getWeekNumberByDayNumber } from '../../services/date';
 import {
   fetchExpenseById,

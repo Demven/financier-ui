@@ -10,12 +10,12 @@ import {
   Text,
 } from 'react-native';
 import { useSelector } from 'react-redux';
-import Svg, { G } from 'react-native-svg';
+import Svg from 'react-native-svg';
 import Animated, {
   Easing,
-  useAnimatedProps,
+  useAnimatedStyle,
   useSharedValue,
-  withTiming
+  withTiming,
 } from 'react-native-reanimated';
 import PropTypes from 'prop-types';
 import DonutChartSegment from './DonutChartSegment';
@@ -23,8 +23,6 @@ import DonutChartLabel from './DonutChartLabel';
 import { COLOR } from '../../../styles/colors';
 import { FONT } from '../../../styles/fonts';
 import { MEDIA } from '../../../styles/media';
-
-const AnimatedG = Animated.createAnimatedComponent(G);
 
 DonutChart.propTypes = {
   style: PropTypes.any,
@@ -43,6 +41,7 @@ DonutChart.propTypes = {
 const DEGREES_IN_CIRCLE = 360;
 const DONUT_RADIUS = 0.46;
 const SPACE_BETWEEN = 0.8;
+const DEFAULT_SCALE = 0.9;
 
 function degreesToRadians (degrees) {
   return degrees * (Math.PI / (DEGREES_IN_CIRCLE / 2));
@@ -87,10 +86,14 @@ export default function DonutChart (props) {
   const radius = width / 2;
   const donutRadius = radius * DONUT_RADIUS;
 
-  const scale = useSharedValue(0.9);
+  const scale = useSharedValue(DEFAULT_SCALE);
 
   useEffect(() => {
-    scale.value = 0.9;
+    animate();
+  }, [selectedSegmentId]);
+
+  function animate () {
+    scale.value = DEFAULT_SCALE;
 
     setTimeout(() => {
       scale.value = withTiming(1, {
@@ -99,7 +102,7 @@ export default function DonutChart (props) {
         reduceMotion: 'system',
       });
     }, 0);
-  }, [selectedSegmentId]);
+  }
 
   function onLayout (event) {
     setWidth(event.nativeEvent.layout.width);
@@ -125,21 +128,20 @@ export default function DonutChart (props) {
   const circleTextFontSize = windowWidth < MEDIA.MEDIUM_DESKTOP
     ? windowWidth < MEDIA.DESKTOP
       ? windowWidth < MEDIA.TABLET
-        ? 32 // mobile
+        ? 28 // mobile
         : 42// tablet
       : 32 // desktop
     : 42; // wide desktop
   const circleTextLineHeight = windowWidth < MEDIA.MEDIUM_DESKTOP
     ? windowWidth < MEDIA.DESKTOP
       ? windowWidth < MEDIA.TABLET
-        ? 36// mobile
+        ? 32// mobile
         : 46 // tablet
       : 36 // desktop
     : 46; // wide desktop
 
-  const animatedProps = useAnimatedProps(() => ({
+  const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
-    transformOrigin: 'center',
   }));
 
   return (
@@ -154,13 +156,18 @@ export default function DonutChart (props) {
       ]}
       onLayout={onLayout}
     >
-      <Svg
-        height='100%'
-        width='100%'
-        viewBox={`0 0 ${width} ${width}`}
+      <View
+        style={[
+          styles.chartWrapper,
+          { transform: [{ scale: DEFAULT_SCALE }] },
+        ]}
       >
-        <G style={{ transform: [{ scale: 0.9 }], transformOrigin: 'center' }}>
-          {itemsWithAngles.map(({ id, getColor, startAngle, endAngle, value }, index) => {
+        <Svg
+          height='100%'
+          width='100%'
+          viewBox={`0 0 ${width} ${width}`}
+        >
+          {itemsWithAngles.map(({ id, getColor, textColor, startAngle, endAngle, value }, index) => {
             const adjustedValue = value - (adjustment * value / 100);
             const percentage = Math.round((adjustedValue * 100) / total);
 
@@ -190,6 +197,7 @@ export default function DonutChart (props) {
 
                 {percentage > 5 && itemsWithAngles.length > 1 && (
                   <DonutChartLabel
+                    color={textColor}
                     label={`${Math.round(((endAngle - startAngle) * 100) / DEGREES_IN_CIRCLE)}%`}
                     x={x}
                     y={y}
@@ -198,10 +206,22 @@ export default function DonutChart (props) {
               </Fragment>
             );
           })}
-        </G>
+        </Svg>
+      </View>
 
-        <AnimatedG animatedProps={animatedProps}>
-          {itemsWithAngles.map(({ id, getColor, startAngle, endAngle, value }, index) => {
+      <Animated.View
+        style={[
+          styles.chartWrapper,
+          animatedStyle,
+          { pointerEvents: 'none' },
+        ]}
+      >
+        <Svg
+          height='100%'
+          width='100%'
+          viewBox={`0 0 ${width} ${width}`}
+        >
+          {itemsWithAngles.map(({ id, getColor, textColor, startAngle, endAngle, value }, index) => {
             const adjustedValue = value - (adjustment * value / 100);
             const percentage = Math.round((adjustedValue * 100) / total);
 
@@ -235,6 +255,7 @@ export default function DonutChart (props) {
 
                 {percentage > 5 && itemsWithAngles.length > 1 && (
                   <DonutChartLabel
+                    color={textColor}
                     label={`${Math.round(((endAngle - startAngle) * 100) / DEGREES_IN_CIRCLE)}%`}
                     x={x}
                     y={y}
@@ -243,8 +264,8 @@ export default function DonutChart (props) {
               </Fragment>
             );
           })}
-        </AnimatedG>
-      </Svg>
+        </Svg>
+      </Animated.View>
 
       <View
         style={[styles.circle, {
@@ -278,6 +299,13 @@ const styles = StyleSheet.create({
     height: '100%',
     overflow: 'hidden',
     position: 'relative',
+  },
+
+  chartWrapper: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    transformOrigin: 'center',
   },
 
   segment: {

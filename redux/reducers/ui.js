@@ -1,8 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { Dimensions } from 'react-native';
 import { TAB } from '../../components/HeaderTabs';
-import { TOAST_TYPE } from '../../components/Toast';
 import { saveToStorage, STORAGE_KEY } from '../../services/storage';
+
+export const TOAST_TYPE = {
+  INFO: 'info',
+  WARNING: 'warning',
+  ERROR: 'error',
+};
 
 const getInitialState = () => ({
   windowWidth: Dimensions.get('window').width,
@@ -12,7 +17,7 @@ const getInitialState = () => ({
   selectedWeek: undefined,
   toast: {
     message: '',
-    type: TOAST_TYPE.INFO,
+    type: 'info',
     visible: false,
   },
   loading: true, // on first load, the loading state is true by default
@@ -72,7 +77,7 @@ const uiSlice = createSlice({
         ...state,
         toast: {
           message: '',
-          type: TOAST_TYPE.INFO,
+          type: 'info',
           visible: false,
         },
       };

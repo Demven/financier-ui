@@ -5,11 +5,14 @@ import Input, { INPUT_TYPE } from '../../../components/Input';
 import Dropdown from '../../../components/Dropdown';
 import Loader from '../../../components/Loader';
 import Button, { BUTTON_LOOK } from '../../../components/Button';
-import { TOAST_TYPE } from '../../../components/Toast';
 import { setAccountAction } from '../../../redux/reducers/account';
-import { showToastAction } from '../../../redux/reducers/ui';
+import { showToastAction, TOAST_TYPE } from '../../../redux/reducers/ui';
 import { updateAccount } from '../../../services/api/account';
-import { CURRENCY, CURRENCIES, CURRENCY_SYMBOL } from '../../../services/currency';
+import {
+  CURRENCY,
+  CURRENCIES,
+  CURRENCY_SYMBOL,
+} from '../../../services/currency';
 import { MEDIA } from '../../../styles/media';
 
 const LANGUAGE = {

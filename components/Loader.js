@@ -43,6 +43,9 @@ export default function Loader (props) {
 
   useEffect(() => {
     if (loading && logoLoaded) {
+      angle.value = 0;
+      opacity.value = 0;
+
       animate();
 
       if (timeout) {

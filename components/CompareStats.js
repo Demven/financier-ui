@@ -83,7 +83,14 @@ export default function CompareStats (props) {
       <View style={styles.comparisons}>
         {!!compareTo && (
           <View style={styles.circle}>
-            <Text style={[styles.circleText, { color: circleSubTextColor || changeComparedToPreviousResultColor }]}>
+            <Text style={[
+              styles.circleText,
+              {
+                color: circleSubTextColor || changeComparedToPreviousResultColor,
+                fontSize: `${compareRatio}`.length > 2 ? 23 : 28,
+                lineHeight: 28,
+              },
+            ]}>
               {compareRatio}%
             </Text>
 
@@ -184,8 +191,6 @@ const styles = StyleSheet.create({
   circleText: {
     marginTop: 4,
     fontFamily: FONT.NOTO_SERIF.BOLD,
-    fontSize: 28,
-    lineHeight: 28,
     color: COLOR.GRAY,
     userSelect: 'auto',
   },

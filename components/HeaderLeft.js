@@ -77,14 +77,12 @@ export default function HeaderLeft (props) {
   return (
     <View style={[styles.headerLeft, style]}>
       {!isDrawerOpen && (
-        <Logo containerStyle={styles.logo} />
+        <Logo style={styles.logo} />
       )}
 
       <HeaderTitle
         style={[styles.headerTitle, {
-          marginTop: windowWidth < MEDIA.TABLET
-            ? Platform.OS === 'ios' ? 8 : 4
-            : 2,
+          marginTop: windowWidth < MEDIA.TABLET ? 4 : 2,
           marginLeft: windowWidth < MEDIA.TABLET ? 16 : 41,
           fontSize: windowWidth < MEDIA.TABLET ? 18 : 20,
           lineHeight: windowWidth < MEDIA.TABLET ? 22 : 26,
@@ -119,5 +117,9 @@ const styles = StyleSheet.create({
   },
   headerDropdown: {
     marginLeft: 24,
+  },
+
+  logo: {
+    marginLeft: Platform.OS === 'ios' ? 8 : 0,
   },
 });

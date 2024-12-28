@@ -14,12 +14,11 @@ import {
 import Modal from '../../components/Modal';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import ColorPicker from '../../components/ColorPicker';
-import { TOAST_TYPE } from '../../components/Toast';
 import Loader from '../../components/Loader';
 import { PRESELECTED_CATEGORY } from '../../components/CategoryDropdown';
 import { addCategoryAction, updateCategoryAction } from '../../redux/reducers/categories';
 import { addColorAction, deleteColorAction } from '../../redux/reducers/colors';
-import { showToastAction } from '../../redux/reducers/ui';
+import { showToastAction, TOAST_TYPE } from '../../redux/reducers/ui';
 import { addColor, deleteColor } from '../../services/api/color';
 import {
   fetchCategoryById,

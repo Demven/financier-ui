@@ -116,6 +116,7 @@ export default function Input (props) {
           placeholderTextColor={COLOR.LIGHT_GRAY}
           maxLength={maxLength}
           multiline={multiline}
+          autoCapitalize='none'
           secureTextEntry={secure}
           value={value}
           onChangeText={onChange}
