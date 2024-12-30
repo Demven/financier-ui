@@ -1,10 +1,21 @@
 import { Slot } from 'expo-router';
 import { useModal } from '../../components/Modal';
+import { DeleteItemProvider, useDeleteItemAction } from "../../context/DeleteItemContext";
 
-export default function SavingLayout () {
-  useModal();
+function SavingSlot () {
+  const { onDeleteItem } = useDeleteItemAction();
+
+  useModal(onDeleteItem);
 
   return (
     <Slot/>
+  );
+}
+
+export default function SavingLayout () {
+  return (
+    <DeleteItemProvider>
+      <SavingSlot />
+    </DeleteItemProvider>
   );
 }

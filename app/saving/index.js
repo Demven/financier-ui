@@ -6,7 +6,6 @@ import {
 } from 'react-native';
 import {
   useGlobalSearchParams,
-  useNavigation,
   usePathname,
   useRouter,
 } from 'expo-router';
@@ -26,7 +25,11 @@ import {
   setSavingsTotalsAction,
   setInvestmentsTotalsAction,
 } from '../../redux/reducers/savings';
-import { showToastAction, TOAST_TYPE } from '../../redux/reducers/ui';
+import {
+  setTitleAction,
+  showToastAction,
+  TOAST_TYPE,
+} from '../../redux/reducers/ui';
 import { dateToDateString, getWeekNumberByDayNumber } from '../../services/date';
 import {
   fetchSavingById,
@@ -40,6 +43,8 @@ import {
   updateInvestment,
   deleteInvestment,
 } from '../../services/api/investment';
+import { useDeleteItemAction } from '../../context/DeleteItemContext';
+import ConfirmationDialog from "../../components/ConfirmationDialog";
 
 const TYPE = {
   SAVING: 'saving',
@@ -69,10 +74,11 @@ export default function SavingScreen () {
   const id = params?.id ? parseInt(params.id, 10) : undefined;
 
   const router = useRouter();
-  const navigation = useNavigation();
   const dispatch = useDispatch();
 
   const canGoBack = router.canGoBack();
+
+  const { registerDeleteItemAction } = useDeleteItemAction();
 
   const [loading, setLoading] = useState(false);
   const [savingToEdit, setSavingToEdit] = useState();
@@ -106,6 +112,9 @@ export default function SavingScreen () {
   const [amount, setAmount] = useState('');
   const [amountError, setAmountError] = useState('');
 
+  const [deleteSavingDialogVisible, setDeleteSavingDialogVisible] = useState(false);
+  const [deleteInvestmentDialogVisible, setDeleteInvestmentDialogVisible] = useState(false);
+
   const todayDate = new Date();
   todayDate.setHours(0);
   todayDate.setMinutes(0);
@@ -116,10 +125,8 @@ export default function SavingScreen () {
     : (savingToEdit ? 'Edit a saving' : 'Add a saving');
 
   useEffect(() => {
-    navigation.setOptions({
-      title,
-    });
-  }, [navigation, title]);
+    dispatch(setTitleAction(title));
+  }, [title]);
 
   useEffect(() => {
     if (id && typeId === TYPE.INVESTMENT) {
@@ -128,6 +135,21 @@ export default function SavingScreen () {
       fetchSaving(id);
     }
   }, [id, isInvestment]);
+
+  useEffect(() => {
+    if (savingToEdit || investmentToEdit) {
+      registerDeleteItemAction(() => {
+        if (savingToEdit) {
+          onDeleteSavingRequest();
+        } else if (investmentToEdit) {
+          onDeleteInvestmentRequest();
+        }
+      });
+    }
+
+    // Cleanup when the component unmounts
+    return () => registerDeleteItemAction(() => {});
+  }, [registerDeleteItemAction, savingToEdit, investmentToEdit]);
 
   useEffect(() => {
     if (savingToEdit && id === savingToEdit?.id) {
@@ -181,6 +203,14 @@ export default function SavingScreen () {
     setInvestmentToEdit(investmentToEdit);
 
     setLoading(false);
+  }
+
+  function onDeleteSavingRequest () {
+    setDeleteSavingDialogVisible(true);
+  }
+
+  function onDeleteInvestmentRequest () {
+    setDeleteInvestmentDialogVisible(true);
   }
 
   function validateName () {
@@ -546,136 +576,162 @@ export default function SavingScreen () {
     : investmentToEdit ? 'Edit an investment' : 'Add an investment';
 
   return (
-    <Modal
-      contentStyle={styles.savingScreen}
-      title={modalTitle}
-      disableSave={formIsInvalid}
-      onSave={onSave}
-      onDelete={typeId === TYPE.SAVING
-        ? savingToEdit ? onDeleteSaving : undefined
-        : investmentToEdit ? onDeleteInvestment : undefined
-      }
-      onCloseRequest={onClose}
-    >
-      <Loader loading={loading} />
+    <>
+      <Modal
+        contentStyle={styles.savingScreen}
+        title={modalTitle}
+        disableSave={formIsInvalid}
+        onSave={onSave}
+        onDelete={typeId === TYPE.SAVING
+          ? savingToEdit ? onDeleteSavingRequest : undefined
+          : investmentToEdit ? onDeleteInvestmentRequest : undefined
+        }
+        onCloseRequest={onClose}
+      >
+        <Loader loading={loading} />
 
-      {!savingToEdit && !investmentToEdit && (
-        <View style={{ zIndex: 20 }}>
-          <Dropdown
-            style={styles.formElement}
-            label='Type'
-            open={typeSelectOpen}
-            setOpen={setTypeSelectOpen}
-            value={typeId}
-            setValue={setTypeId}
-            items={types}
-            setItems={setTypes}
-          />
-        </View>
-      )}
-
-      <View style={styles.formRow}>
-        <Input
-          style={styles.formElement}
-          label='Name'
-          placeholder={typeId === TYPE.SAVING
-            ? 'American Express Savings'
-            : 'S&P500'
-          }
-          inputType={INPUT_TYPE.DEFAULT}
-          value={name}
-          errorText={nameError}
-          onChange={setName}
-          onBlur={validateName}
-          autoFocus
-        />
-      </View>
-
-      <View style={[styles.formRow, { zIndex: 10 }]}>
-        <View style={[styles.halfFormElement, { paddingRight: Platform.select({ web: 16, ios: 12 }) }]}>
-          <Dropdown
-            label='Date'
-            open={dateOptionsSelectOpen}
-            setOpen={setDateOptionsSelectOpen}
-            value={dateOptionId}
-            setValue={setDateOptionId}
-            items={dateOptions}
-            setItems={setDateOptions}
-          />
-        </View>
-
-        <View style={[styles.halfFormElement, { paddingLeft: Platform.select({ web: 16, ios: 12 }) }]}>
-          <DatePicker
-            label='Set Date'
-            dateString={dateString}
-            max={dateToDateString(todayDate)}
-            onChange={setDateString}
-            disabled={dateDisabled}
-          />
-        </View>
-      </View>
-
-      {typeId === TYPE.INVESTMENT && (
-        <>
-          <View style={styles.formRow}>
-            <View style={styles.tickerContainer}>
-              <Input
-                style={styles.formElement}
-                label='Ticker'
-                placeholder='SPY'
-                inputType={INPUT_TYPE.DEFAULT}
-                value={ticker}
-                onChange={(ticker) => setTicker(ticker.toUpperCase())}
-              />
-            </View>
-
-            <View style={styles.amountContainer}>
-              <Input
-                style={styles.formElement}
-                label='Total Shares'
-                placeholder='0'
-                inputType={INPUT_TYPE.QUANTITY}
-                value={shares}
-                errorText={sharesError}
-                onChange={setShares}
-                onBlur={validateShares}
-              />
-            </View>
+        {!savingToEdit && !investmentToEdit && (
+          <View style={{ zIndex: 20 }}>
+            <Dropdown
+              style={styles.formElement}
+              label='Type'
+              open={typeSelectOpen}
+              setOpen={setTypeSelectOpen}
+              value={typeId}
+              setValue={setTypeId}
+              items={types}
+              setItems={setTypes}
+            />
           </View>
+        )}
 
-          <View style={styles.formRow}>
-            <View style={styles.amountContainer}>
-              <Input
-                style={styles.formElement}
-                label='Price per share'
-                placeholder='0.01'
-                inputType={INPUT_TYPE.CURRENCY}
-                value={pricePerShare}
-                errorText={pricePerShareError}
-                onChange={setPricePerShare}
-                onBlur={validatePricePerShare}
-              />
-            </View>
-          </View>
-        </>
-      )}
-
-      {typeId === TYPE.SAVING && (
         <View style={styles.formRow}>
-          <View style={styles.amountContainer}>
-            <Input
-              label='Amount'
-              placeholder='0.01'
-              inputType={INPUT_TYPE.CURRENCY}
-              value={amount}
-              errorText={amountError}
-              onChange={setAmount}
-              onBlur={validateAmount}
+          <Input
+            style={styles.formElement}
+            label='Name'
+            placeholder={typeId === TYPE.SAVING
+              ? 'American Express Savings'
+              : 'S&P500'
+            }
+            inputType={INPUT_TYPE.DEFAULT}
+            value={name}
+            errorText={nameError}
+            onChange={setName}
+            onBlur={validateName}
+            autoFocus
+          />
+        </View>
+
+        <View style={[styles.formRow, { zIndex: 10 }]}>
+          <View style={[styles.halfFormElement, { paddingRight: Platform.select({ web: 16, ios: 12 }) }]}>
+            <Dropdown
+              label='Date'
+              open={dateOptionsSelectOpen}
+              setOpen={setDateOptionsSelectOpen}
+              value={dateOptionId}
+              setValue={setDateOptionId}
+              items={dateOptions}
+              setItems={setDateOptions}
+            />
+          </View>
+
+          <View style={[styles.halfFormElement, { paddingLeft: Platform.select({ web: 16, ios: 12 }) }]}>
+            <DatePicker
+              label='Set Date'
+              dateString={dateString}
+              max={dateToDateString(todayDate)}
+              onChange={setDateString}
+              disabled={dateDisabled}
             />
           </View>
         </View>
+
+        {typeId === TYPE.INVESTMENT && (
+          <>
+            <View style={styles.formRow}>
+              <View style={[styles.halfFormElement, { paddingRight: Platform.select({ web: 16, ios: 12 }) }]}>
+                <Input
+                  style={styles.formElement}
+                  label='Ticker'
+                  placeholder='SPY'
+                  inputType={INPUT_TYPE.DEFAULT}
+                  value={ticker}
+                  onChange={(ticker) => setTicker(ticker.toUpperCase())}
+                />
+              </View>
+
+              <View style={[styles.halfFormElement, { paddingLeft: Platform.select({ web: 16, ios: 12 }) }]}>
+                <Input
+                  style={styles.formElement}
+                  label='Total Shares'
+                  placeholder='0'
+                  inputType={INPUT_TYPE.QUANTITY}
+                  value={shares}
+                  errorText={sharesError}
+                  onChange={setShares}
+                  onBlur={validateShares}
+                />
+              </View>
+            </View>
+
+            <View style={styles.formRow}>
+              <View style={styles.amountContainer}>
+                <Input
+                  style={styles.formElement}
+                  label='Price per share'
+                  placeholder='0.01'
+                  inputType={INPUT_TYPE.CURRENCY}
+                  value={pricePerShare}
+                  errorText={pricePerShareError}
+                  onChange={setPricePerShare}
+                  onBlur={validatePricePerShare}
+                />
+              </View>
+            </View>
+          </>
+        )}
+
+        {typeId === TYPE.SAVING && (
+          <View style={styles.formRow}>
+            <View style={styles.amountContainer}>
+              <Input
+                label='Amount'
+                placeholder='0.01'
+                inputType={INPUT_TYPE.CURRENCY}
+                value={amount}
+                errorText={amountError}
+                onChange={setAmount}
+                onBlur={validateAmount}
+              />
+            </View>
+          </View>
+        )}
+      </Modal>
+
+      {deleteSavingDialogVisible && (
+        <ConfirmationDialog
+          title='Delete saving'
+          message='Are you sure you want to delete this saving?'
+          onCancel={() => setDeleteSavingDialogVisible(false)}
+          onDelete={() => {
+            onDeleteSaving();
+            onClose();
+          }}
+        />
       )}
-    </Modal>
+
+      {deleteInvestmentDialogVisible && (
+        <ConfirmationDialog
+          title='Delete investment'
+          message='Are you sure you want to delete this investment?'
+          onCancel={() => setDeleteInvestmentDialogVisible(false)}
+          onDelete={() => {
+            onDeleteInvestment();
+            onClose();
+          }}
+        />
+      )}
+    </>
   );
 }
 
@@ -699,17 +755,8 @@ const styles = StyleSheet.create({
     width: '50%',
   },
 
-  pricePerShareContainer: {
-    paddingLeft: Platform.select({ web: 16 }),
-  },
-
-  tickerContainer: {
-    width: Platform.select({ web: '50%', ios: '100%' }),
-    paddingRight: Platform.select({ web: 16 }),
-  },
-
   amountContainer: {
-    width: Platform.select({ web: '50%', ios: '100%' }),
-    paddingLeft: Platform.select({ web: 16 }),
+    width: '50%',
+    paddingLeft: 16,
   },
 });

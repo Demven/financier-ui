@@ -4,11 +4,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {
-  useNavigation,
-  useGlobalSearchParams,
-  useRouter,
-} from 'expo-router';
+import { useGlobalSearchParams, useRouter } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import Modal from '../../components/Modal';
 import Input, { INPUT_TYPE } from '../../components/Input';
@@ -21,7 +17,11 @@ import {
   setIncomesTotalsAction,
   updateIncomeAction,
 } from '../../redux/reducers/incomes';
-import { showToastAction, TOAST_TYPE } from '../../redux/reducers/ui';
+import {
+  setTitleAction,
+  showToastAction,
+  TOAST_TYPE,
+} from '../../redux/reducers/ui';
 import { dateToDateString, getWeekNumberByDayNumber } from '../../services/date';
 import {
   fetchIncomeById,
@@ -29,6 +29,8 @@ import {
   updateIncome,
   deleteIncome,
 } from '../../services/api/income';
+import { useDeleteItemAction } from '../../context/DeleteItemContext';
+import ConfirmationDialog from "../../components/ConfirmationDialog";
 
 const DATE_OPTION = {
   TODAY: 'today',
@@ -46,8 +48,9 @@ export default function IncomeScreen () {
   const incomeId = params.id ? Number(params.id) : undefined;
 
   const router = useRouter();
-  const navigation = useNavigation();
   const dispatch = useDispatch();
+
+  const { registerDeleteItemAction } = useDeleteItemAction();
 
   const canGoBack = router.canGoBack();
 
@@ -67,6 +70,8 @@ export default function IncomeScreen () {
   const [amount, setAmount] = useState('');
   const [amountError, setAmountError] = useState('');
 
+  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
+
   const todayDate = new Date();
   todayDate.setHours(0);
   todayDate.setMinutes(0);
@@ -75,16 +80,24 @@ export default function IncomeScreen () {
   const title = incomeToEdit ? 'Edit an income' : 'Add an income';
 
   useEffect(() => {
-    navigation.setOptions({
-      title,
-    });
-  }, [navigation, title]);
+    dispatch(setTitleAction(title));
+  }, [title]);
 
   useEffect(() => {
     if (incomeId && !incomeToEdit) {
       fetchIncome(incomeId);
     }
   }, [incomeId]);
+
+  useEffect(() => {
+    if (incomeToEdit) {
+      registerDeleteItemAction(() => {
+        onDeleteRequest();
+      });
+    }
+
+    return () => registerDeleteItemAction(() => {});
+  }, [registerDeleteItemAction, incomeToEdit]);
 
   useEffect(() => {
     if (incomeToEdit && incomeId === incomeToEdit?.id) {
@@ -267,6 +280,10 @@ export default function IncomeScreen () {
     }
   }
 
+  function onDeleteRequest () {
+    setDeleteDialogVisible(true);
+  }
+
   async function onDelete () {
     const {
       success,
@@ -306,65 +323,79 @@ export default function IncomeScreen () {
   const formIsInvalid = (!!nameError || !name.length) || (!!amountError || !amount.length);
 
   return (
-    <Modal
-      contentStyle={styles.incomeScreen}
-      title={title}
-      disableSave={formIsInvalid}
-      onSave={onSave}
-      onDelete={incomeToEdit ? onDelete : undefined}
-      onCloseRequest={onClose}
-    >
-      <Loader loading={loading} />
+    <>
+      <Modal
+        contentStyle={styles.incomeScreen}
+        title={title}
+        disableSave={formIsInvalid}
+        onSave={onSave}
+        onDelete={incomeToEdit ? onDeleteRequest : undefined}
+        onCloseRequest={onClose}
+      >
+        <Loader loading={loading} />
 
-      <Input
-        style={styles.formElement}
-        label='Name'
-        placeholder='Paycheck'
-        inputType={INPUT_TYPE.DEFAULT}
-        value={name}
-        errorText={nameError}
-        onChange={setName}
-        onBlur={validateName}
-      />
+        <Input
+          style={styles.formElement}
+          label='Name'
+          placeholder='Paycheck'
+          inputType={INPUT_TYPE.DEFAULT}
+          value={name}
+          errorText={nameError}
+          onChange={setName}
+          onBlur={validateName}
+        />
 
-      <View style={[styles.formRow, { zIndex: 10 }]}>
-        <View style={[styles.halfFormElement, { paddingRight: Platform.select({ web: 16, ios: 12 }) }]}>
-          <Dropdown
-            label='Date'
-            open={dateOptionsSelectOpen}
-            setOpen={setDateOptionsSelectOpen}
-            value={dateOptionId}
-            setValue={setDateOptionId}
-            items={dateOptions}
-            setItems={setDateOptions}
-          />
+        <View style={[styles.formRow, { zIndex: 10 }]}>
+          <View style={[styles.halfFormElement, { paddingRight: Platform.select({ web: 16, ios: 12 }) }]}>
+            <Dropdown
+              label='Date'
+              open={dateOptionsSelectOpen}
+              setOpen={setDateOptionsSelectOpen}
+              value={dateOptionId}
+              setValue={setDateOptionId}
+              items={dateOptions}
+              setItems={setDateOptions}
+            />
+          </View>
+
+          <View style={[styles.halfFormElement, { paddingLeft: Platform.select({ web: 16, ios: 12 }) }]}>
+            <DatePicker
+              label='Set Date'
+              dateString={dateString}
+              max={dateToDateString(todayDate)}
+              onChange={setDateString}
+              disabled={dateDisabled}
+            />
+          </View>
         </View>
 
-        <View style={[styles.halfFormElement, { paddingLeft: Platform.select({ web: 16, ios: 12 }) }]}>
-          <DatePicker
-            label='Set Date'
-            dateString={dateString}
-            max={dateToDateString(todayDate)}
-            onChange={setDateString}
-            disabled={dateDisabled}
-          />
+        <View style={styles.formRow}>
+          <View style={styles.amountContainer}>
+            <Input
+              label='Amount'
+              placeholder='0.01'
+              inputType={INPUT_TYPE.CURRENCY}
+              value={amount}
+              errorText={amountError}
+              onChange={setAmount}
+              onBlur={validateAmount}
+            />
+          </View>
         </View>
-      </View>
+      </Modal>
 
-      <View style={styles.formRow}>
-        <View style={styles.amountContainer}>
-          <Input
-            label='Amount'
-            placeholder='0.01'
-            inputType={INPUT_TYPE.CURRENCY}
-            value={amount}
-            errorText={amountError}
-            onChange={setAmount}
-            onBlur={validateAmount}
-          />
-        </View>
-      </View>
-    </Modal>
+      {deleteDialogVisible && (
+        <ConfirmationDialog
+          title='Delete income'
+          message='Are you sure you want to delete this income?'
+          onCancel={() => setDeleteDialogVisible(false)}
+          onDelete={() => {
+            onDelete();
+            onClose();
+          }}
+        />
+      )}
+    </>
   );
 }
 
