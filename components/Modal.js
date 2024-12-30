@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useNavigation, useRouter } from 'expo-router';
 import CloseButton from './CloseButton';
+import DeleteIconButton from './DeleteIconButton';
 import Button, { BUTTON_LOOK } from './Button';
 import { FONT } from '../styles/fonts';
 import { COLOR } from '../styles/colors';
@@ -23,22 +24,37 @@ Modal.propTypes = {
   children: PropTypes.any.isRequired,
   maxWidth: PropTypes.number,
   onSave: PropTypes.func,
+  onConfirm: PropTypes.func,
   onDelete: PropTypes.func,
   onCloseRequest: PropTypes.func,
   disableSave: PropTypes.bool,
 };
 
-export function useModal () {
+export function useModal (onDeleteItem) {
   const navigation = useNavigation();
 
+  const title = useSelector(state => state.ui.title);
+
+  const navigationOptions = {
+    presentation: Platform.OS === 'web' ? 'transparentModal' : 'modal',
+    headerShown: Platform.OS !== 'web',
+    contentStyle: { backgroundColor: Platform.select({ web: 'transparent' }) },
+    headerTitleStyle: styles.modalTitle,
+  };
+
+  if (title) {
+    navigationOptions.title = title;
+  }
+
+  if (typeof onDeleteItem === 'function') {
+    navigationOptions.headerRight = () => (
+      <DeleteIconButton onPress={onDeleteItem} />
+    );
+  }
+
   useEffect(() => {
-    navigation.setOptions({
-      presentation: Platform.OS === 'web' ? 'transparentModal' : 'modal',
-      headerShown: Platform.OS !== 'web',
-      contentStyle: { backgroundColor: Platform.select({ web: 'transparent' }) },
-      headerTitleStyle: styles.modalTitle,
-    });
-  }, [navigation]);
+    navigation.setOptions(navigationOptions);
+  }, [navigation, title]);
 }
 
 export default function Modal (props) {
@@ -48,7 +64,8 @@ export default function Modal (props) {
     title,
     children,
     maxWidth = 680,
-    onSave = () => {},
+    onSave,
+    onConfirm,
     onDelete,
     onCloseRequest = undefined,
     disableSave,
@@ -118,19 +135,27 @@ export default function Modal (props) {
         <View style={[styles.footer, {
           justifyContent: windowWidth < MEDIA.TABLET ? 'center' : 'flex-end',
         }]}>
-          {typeof onDelete === 'function' && (
-            <Button
-              style={[styles.deleteButton, {
-                width: windowWidth < MEDIA.MOBILE ? 120 : 150,
-              }]}
-              look={BUTTON_LOOK.TERTIARY}
-              text='Delete'
-              destructive
-              onPress={() => {
-                onDelete();
-                onPressClose();
-              }}
-            />
+          {(typeof onDelete === 'function') && (
+            <>
+              {windowWidth <= MEDIA.WIDE_MOBILE && Platform.OS === 'web' && (
+                <DeleteIconButton
+                  style={styles.deleteIconButton}
+                  onPress={onDelete}
+                />
+              )}
+
+              {windowWidth > MEDIA.WIDE_MOBILE && Platform.OS === 'web' &&  (
+                <Button
+                  style={[styles.deleteButton, {
+                    width: windowWidth < MEDIA.MOBILE ? 120 : 150,
+                  }]}
+                  look={BUTTON_LOOK.TERTIARY}
+                  text='Delete'
+                  destructive
+                  onPress={onDelete}
+                />
+              )}
+            </>
           )}
 
           <Button
@@ -147,10 +172,15 @@ export default function Modal (props) {
               width: windowWidth < MEDIA.MOBILE ? 120 : 150,
             }]}
             look={BUTTON_LOOK.PRIMARY}
-            text='Save'
+            text={onConfirm ? 'Confirm' : 'Save'}
             disabled={disableSave}
             onPress={() => {
-              onSave();
+              if (typeof onConfirm === 'function') {
+                onConfirm();
+              } else if (typeof onSave === 'function') {
+                onSave();
+              }
+
               onPressClose();
             }}
           />
@@ -185,6 +215,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowRadius: Platform.select({ web: 8 }),
     shadowOpacity: 0.1,
+    alignItems: Platform.select({ ios: 'flex-end' }),
   },
 
   header: {
@@ -208,24 +239,34 @@ const styles = StyleSheet.create({
   content: {
     paddingRight: Platform.select({ ios: 0, web: 52 }),
     zIndex: 1,
+    flexGrow: Platform.select({ ios: 0 }),
   },
 
   footer: {
+    height: Platform.select({ ios: 200 }),
+    flexGrow: Platform.select({ ios: 0 }),
+    flexShrink: Platform.select({ ios: 0 }),
     marginTop: Platform.select({ ios: 'auto' }),
     marginBottom: Platform.select({ ios: 0 }),
-    paddingTop: Platform.select({ ios: 24, web: 24 }),
+    paddingTop: 24,
     flexDirection: 'row',
     borderTopWidth: Platform.select({ web: 1 }),
     borderTopColor: COLOR.LIGHTER_GRAY,
     zIndex: 10,
     backgroundColor: COLOR.WHITE,
+    alignItems: 'center',
   },
 
+  deleteIconButton: {
+    marginRight: 'auto',
+  },
   deleteButton: {
     marginRight: 'auto',
   },
+
   cancelButton: {
     marginRight: 24,
   },
+
   saveButton: {},
 });

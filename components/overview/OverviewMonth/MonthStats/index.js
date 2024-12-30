@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, Platform } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'expo-router';
 import PropTypes from 'prop-types';
@@ -61,6 +61,7 @@ export default function MonthStats (props) {
               chartView === CHART_VIEW.INCOME && styles.statNameBold,
               windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
             ]}
+            alwaysHighlighted={Platform.OS === 'ios' || windowWidth < MEDIA.TABLET}
             onPress={() => {
               dispatch(setSelectedTabAction(TAB.MONTHS));
               dispatch(setSelectedMonthAction(monthNumber));
@@ -90,6 +91,7 @@ export default function MonthStats (props) {
               chartView === CHART_VIEW.EXPENSES && styles.statNameBold,
               windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
             ]}
+            alwaysHighlighted={Platform.OS === 'ios' || windowWidth < MEDIA.TABLET}
             onPress={() => {
               dispatch(setSelectedTabAction(TAB.MONTHS));
               dispatch(setSelectedMonthAction(monthNumber));
@@ -118,6 +120,7 @@ export default function MonthStats (props) {
               chartView === CHART_VIEW.SAVINGS && styles.statNameBold,
               windowWidth < MEDIA.DESKTOP && styles.statNameSmaller,
             ]}
+            alwaysHighlighted={Platform.OS === 'ios' || windowWidth < MEDIA.TABLET}
             onPress={() => {
               dispatch(setSelectedTabAction(TAB.MONTHS));
               dispatch(setSelectedMonthAction(monthNumber));

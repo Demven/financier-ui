@@ -15,6 +15,7 @@ const getInitialState = () => ({
   selectedYear: new Date().getFullYear(),
   selectedMonth: undefined,
   selectedWeek: undefined,
+  title: '',
   toast: {
     message: '',
     type: 'info',
@@ -66,6 +67,13 @@ const uiSlice = createSlice({
       };
     },
 
+    setTitle: (state, action) => {
+      return {
+        ...state,
+        title: action.payload,
+      };
+    },
+
     showToast: (state, action) => {
       return {
         ...state,
@@ -105,6 +113,8 @@ export const setSelectedTabAction = uiSlice.actions.setSelectedTab;
 export const setSelectedYearAction = uiSlice.actions.setSelectedYear;
 export const setSelectedMonthAction = uiSlice.actions.setSelectedMonth;
 export const setSelectedWeekAction = uiSlice.actions.setSelectedWeek;
+
+export const setTitleAction = uiSlice.actions.setTitle;
 
 export const showToastAction = uiSlice.actions.showToast;
 export const hideToastAction = uiSlice.actions.hideToast;

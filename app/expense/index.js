@@ -4,11 +4,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {
-  useNavigation,
-  useRouter,
-  useGlobalSearchParams,
-} from 'expo-router';
+import { useRouter, useGlobalSearchParams } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import Modal from '../../components/Modal';
 import Input, { INPUT_TYPE } from '../../components/Input';
@@ -17,6 +13,7 @@ import { ICON_COLLECTION } from '../../components/Icon';
 import IconButton from '../../components/IconButton';
 import DatePicker from '../../components/DatePicker';
 import CategoryDropdown, { PRESELECTED_CATEGORY } from '../../components/CategoryDropdown';
+import ConfirmationDialog from '../../components/ConfirmationDialog';
 import Loader from '../../components/Loader';
 import {
   addExpenseAction,
@@ -24,7 +21,11 @@ import {
   setExpensesTotalsAction,
   deleteExpenseAction,
 } from '../../redux/reducers/expenses';
-import { showToastAction, TOAST_TYPE } from '../../redux/reducers/ui';
+import {
+  setTitleAction,
+  showToastAction,
+  TOAST_TYPE,
+} from '../../redux/reducers/ui';
 import { dateToDateString, getWeekNumberByDayNumber } from '../../services/date';
 import {
   fetchExpenseById,
@@ -32,6 +33,7 @@ import {
   updateExpense,
   deleteExpense,
 } from '../../services/api/expense';
+import { useDeleteItemAction } from '../../context/DeleteItemContext';
 import { COLOR } from '../../styles/colors';
 
 const DATE_OPTION = {
@@ -51,8 +53,9 @@ export default function ExpenseScreen () {
   const preselectedCategory = params?.preselectedCategory || PRESELECTED_CATEGORY.FIRST;
 
   const router = useRouter();
-  const navigation = useNavigation();
   const dispatch = useDispatch();
+
+  const { registerDeleteItemAction } = useDeleteItemAction();
 
   const canGoBack = router.canGoBack();
 
@@ -74,6 +77,8 @@ export default function ExpenseScreen () {
   const [amount, setAmount] = useState('');
   const [amountError, setAmountError] = useState('');
 
+  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
+
   const todayDate = new Date();
   todayDate.setHours(0);
   todayDate.setMinutes(0);
@@ -82,16 +87,24 @@ export default function ExpenseScreen () {
   const title = expenseToEdit ? 'Edit an expense' : 'Add an expense';
 
   useEffect(() => {
-    navigation.setOptions({
-      title,
-    });
-  }, [navigation, title]);
+    dispatch(setTitleAction(title));
+  }, [title]);
 
   useEffect(() => {
     if (expenseId && !expenseToEdit) {
       fetchExpense(expenseId);
     }
   }, [expenseId]);
+
+  useEffect(() => {
+    if (expenseToEdit) {
+      registerDeleteItemAction(() => {
+        onDeleteRequest();
+      });
+    }
+
+    return () => registerDeleteItemAction(() => {});
+  }, [registerDeleteItemAction, expenseToEdit]);
 
   useEffect(() => {
     if (expenseToEdit && expenseId === expenseToEdit?.id) {
@@ -128,6 +141,10 @@ export default function ExpenseScreen () {
 
   function onAddCategory () {
     router.push('/category');
+  }
+
+  function onDeleteRequest () {
+    setDeleteDialogVisible(true);
   }
 
   function validateName () {
@@ -320,84 +337,98 @@ export default function ExpenseScreen () {
   const formIsInvalid = (!!nameError || !name.length) || (!!amountError || !amount.length);
 
   return (
-    <Modal
-      contentStyle={styles.expenseScreen}
-      title={expenseToEdit ? 'Edit an expense' : 'Add an expense' }
-      disableSave={formIsInvalid}
-      onSave={onSave}
-      onDelete={expenseToEdit ? onDelete : undefined}
-      onCloseRequest={onClose}
-    >
-      <Loader loading={loading} />
+    <>
+      <Modal
+        contentStyle={styles.expenseScreen}
+        title={expenseToEdit ? 'Edit an expense' : 'Add an expense' }
+        disableSave={formIsInvalid}
+        onSave={onSave}
+        onDelete={expenseToEdit ? onDeleteRequest : undefined}
+        onCloseRequest={onClose}
+      >
+        <Loader loading={loading} />
 
-      <Input
-        style={styles.formElement}
-        label='Name'
-        placeholder='Latte'
-        inputType={INPUT_TYPE.DEFAULT}
-        value={name}
-        errorText={nameError}
-        onChange={setName}
-        onBlur={validateName}
-        autoFocus
-      />
-
-      <View style={[styles.formRow, { zIndex: 30 }]}>
-        <CategoryDropdown
+        <Input
           style={styles.formElement}
-          categoryId={categoryId}
-          preselectedCategory={expenseToEdit ? undefined : preselectedCategory}
-          onSelect={setCategoryId}
+          label='Name'
+          placeholder='Latte'
+          inputType={INPUT_TYPE.DEFAULT}
+          value={name}
+          errorText={nameError}
+          onChange={setName}
+          onBlur={validateName}
+          autoFocus
         />
 
-        <IconButton
-          style={styles.addButton}
-          iconName='add-circle-outline'
-          iconCollection={ICON_COLLECTION.IONICONS}
-          size={32}
-          color={COLOR.BLACK}
-          onPress={onAddCategory}
+        <View style={[styles.formRow, { zIndex: 30 }]}>
+          <CategoryDropdown
+            style={styles.formElement}
+            categoryId={categoryId}
+            preselectedCategory={expenseToEdit ? undefined : preselectedCategory}
+            onSelect={setCategoryId}
+          />
+
+          <IconButton
+            style={styles.addButton}
+            iconName='add-circle-outline'
+            iconCollection={ICON_COLLECTION.IONICONS}
+            size={32}
+            color={COLOR.BLACK}
+            onPress={onAddCategory}
+          />
+        </View>
+
+        <View style={[styles.formRow, { zIndex: 10 }]}>
+          <View style={[styles.halfFormElement, { paddingRight: Platform.select({ web: 16, ios: 12 }) }]}>
+            <Dropdown
+              label='Date'
+              open={dateOptionsSelectOpen}
+              setOpen={setDateOptionsSelectOpen}
+              value={dateOptionId}
+              setValue={setDateOptionId}
+              items={dateOptions}
+              setItems={setDateOptions}
+            />
+          </View>
+
+          <View style={[styles.halfFormElement, { paddingLeft: Platform.select({ web: 16, ios: 12 }) }]}>
+            <DatePicker
+              label='Set Date'
+              dateString={dateString}
+              max={dateToDateString(todayDate)}
+              onChange={setDateString}
+              disabled={dateDisabled}
+            />
+          </View>
+        </View>
+
+        <View style={styles.formRow}>
+          <View style={styles.amountContainer}>
+            <Input
+              label='Amount'
+              placeholder='0.01'
+              inputType={INPUT_TYPE.CURRENCY}
+              value={amount}
+              errorText={amountError}
+              onChange={setAmount}
+              onBlur={validateAmount}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      {deleteDialogVisible && (
+        <ConfirmationDialog
+          title='Delete income'
+          message='Are you sure you want to delete this expense?'
+          onCancel={() => setDeleteDialogVisible(false)}
+          onDelete={() => {
+            onDelete();
+            onClose();
+          }}
         />
-      </View>
-
-      <View style={[styles.formRow, { zIndex: 10 }]}>
-        <View style={[styles.halfFormElement, { paddingRight: Platform.select({ web: 16, ios: 12 }) }]}>
-          <Dropdown
-            label='Date'
-            open={dateOptionsSelectOpen}
-            setOpen={setDateOptionsSelectOpen}
-            value={dateOptionId}
-            setValue={setDateOptionId}
-            items={dateOptions}
-            setItems={setDateOptions}
-          />
-        </View>
-
-        <View style={[styles.halfFormElement, { paddingLeft: Platform.select({ web: 16, ios: 12 }) }]}>
-          <DatePicker
-            label='Set Date'
-            dateString={dateString}
-            max={dateToDateString(todayDate)}
-            onChange={setDateString}
-            disabled={dateDisabled}
-          />
-        </View>
-      </View>
-
-      <View style={styles.formRow}>
-        <View style={styles.amountContainer}>
-          <Input
-            label='Amount'
-            placeholder='0.01'
-            inputType={INPUT_TYPE.CURRENCY}
-            value={amount}
-            errorText={amountError}
-            onChange={setAmount}
-            onBlur={validateAmount}
-          />
-        </View>
-      </View>
-    </Modal>
+      )}
+    </>
   );
 }
 
