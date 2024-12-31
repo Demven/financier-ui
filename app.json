@@ -28,6 +28,14 @@
     ],
     "android": {
       "package": "com.demven.financierui"
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "bc096fe4-114c-429b-90b9-983b2e2555b3"
+      }
     }
   }
 }
