@@ -8,7 +8,8 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.demven.financierui",
-      "icon": "./public/images/favicons/apple-touch-icon.png"
+      "icon": "./public/images/favicons/apple-touch-icon.png",
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "bundler": "metro",
@@ -36,6 +37,9 @@
       "eas": {
         "projectId": "bc096fe4-114c-429b-90b9-983b2e2555b3"
       }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/bc096fe4-114c-429b-90b9-983b2e2555b3"
     }
   }
 }
