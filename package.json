@@ -1,6 +1,6 @@
 {
   "name": "financier-ui",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
@@ -45,7 +45,8 @@
     "react-native-viewport-detector": "^1.0.6",
     "react-native-web": "~0.19.13",
     "react-redux": "^8.1.3",
-    "reanimated-color-picker": "^3.0.6"
+    "reanimated-color-picker": "^3.0.6",
+    "expo-updates": "~0.26.10"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0"
