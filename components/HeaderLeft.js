@@ -72,7 +72,10 @@ export default function HeaderLeft (props) {
 
   const title = routeSegment.split('/')[0];
 
-  const isDrawerOpen = useDrawerStatus() === 'open';
+  let isDrawerOpen = false;
+  try {
+    isDrawerOpen = useDrawerStatus() === 'open';
+  } catch (error) {}
 
   return (
     <View style={[styles.headerLeft, style]}>

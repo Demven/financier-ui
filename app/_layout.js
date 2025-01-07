@@ -13,8 +13,8 @@ import {
 import { StatusBar } from 'expo-status-bar';
 import Toast from '../components/Toast';
 import { TABS } from '../components/HeaderTabs';
-import { STORAGE_KEY, retrieveFromStorage, saveToStorage } from '../services/storage';
-import { getPathName, getTimespan } from '../services/location';
+import { STORAGE_KEY, retrieveFromStorage, saveToStorage, clearStorage } from '../services/storage';
+import { getTimespan } from '../services/location';
 import { validateToken } from '../services/api/auth';
 import { fetchBasics } from '../services/api/basics';
 import { fetchOverviewForYear } from '../services/api/overview';
@@ -31,7 +31,8 @@ import {
   setSelectedTabAction,
   setSelectedYearAction,
   setLoadingAction,
-  reinitializeAction, setWindowWidthAction,
+  reinitializeAction,
+  setWindowWidthAction,
 } from '../redux/reducers/ui';
 import { setIncomesAction, setIncomesTotalsAction } from '../redux/reducers/incomes';
 import { setColorsAction } from '../redux/reducers/colors';
@@ -44,6 +45,13 @@ SplashScreen.preventAutoHideAsync();
 
 export const CONFIRM_EMAIL_PATH = 'confirm-email';
 export const RESET_PASSWORD_PATH = 'reset-password';
+export const SUPPORT_PATH = 'support';
+
+const NO_AUTH_PAGES = [
+  CONFIRM_EMAIL_PATH,
+  RESET_PASSWORD_PATH,
+  SUPPORT_PATH,
+];
 
 function Navigator () {
   const dispatch = useDispatch();
@@ -53,6 +61,8 @@ function Navigator () {
   const selectedYear = useSelector(state => state.ui.selectedYear);
   const toast = useSelector(state => state.ui.toast);
   const needToReinitialize = useSelector(state => state.ui.reinitialize);
+
+  const accountId = useSelector(state => state.account.id);
 
   const [reduxInitialized, setReduxInitialized] = useState(false);
   const [basicDataFetched, setBasicDataFetched] = useState(false);
@@ -82,27 +92,25 @@ function Navigator () {
   }, [router, pathname, isNavigationReady]);
 
   useEffect(() => {
-    if (isNavigationReady) {
-      saveLastVisitedPage(pathname);
-    }
-  }, [pathname, isNavigationReady]);
+    const currentPagePath = pathname.slice(1); // remove starting slash '/'
 
-  useEffect(() => {
-    const currentPath = getPathName();
-
-    if (currentPath !== `/${CONFIRM_EMAIL_PATH}`&& currentPath !== `/${RESET_PASSWORD_PATH}`) {
+    if (isNavigationReady && !NO_AUTH_PAGES.includes(currentPagePath)) {
       checkIfLoggedIn()
         .then((isLoggedIn) => {
-          if (isLoggedIn) {
+          if (isLoggedIn && needToReinitialize) {
             initializeRedux();
             fetchBasicsData();
+            dispatch(reinitializeAction(false));
+          } else if (isLoggedIn && !accountId) {
+            dispatch(reinitializeAction(true));
           }
-        })
-        .finally(() => {
-          dispatch(reinitializeAction(false));
         });
     }
-  }, [needToReinitialize]);
+  }, [pathname, accountId, isNavigationReady, needToReinitialize]);
+
+  useEffect(() => {
+    saveLastVisitedPage(pathname);
+  }, [pathname])
 
   useEffect(() => {
     if (fontsLoaded && isNavigationReady) {
@@ -119,7 +127,8 @@ function Navigator () {
   }, [reduxInitialized, basicDataFetched, selectedYear]);
 
   async function checkIfLoggedIn () {
-    const navigateToSignInPage = () => {
+    const navigateToSignInPage = async () => {
+      await clearStorage();
       router.push('/sign-in');
     };
 

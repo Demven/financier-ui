@@ -11,10 +11,6 @@ export function getQueryParam (queryParameterMame) {
   return '';
 }
 
-export function getPathName () {
-  return (typeof window !== 'undefined' && window?.location?.pathname) || '';
-}
-
 export function getTimespan (pathname) {
   return pathname.includes(TAB.WEEKS)
     ? TAB.WEEKS
