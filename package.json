@@ -1,13 +1,13 @@
 {
   "name": "financier-ui",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
-    "android": "expo run:android",
     "ios": "expo run:ios",
-    "ios-clean": "expo run:ios --no-build-cache",
+    "build-ios-dev": "eas build --profile development --platform ios",
+    "build-ios-production": "eas build --profile production --platform ios",
     "web": "expo start --web",
     "postinstall": "patch-package"
   },
@@ -28,6 +28,7 @@
     "expo-router": "~4.0.11",
     "expo-splash-screen": "~0.29.18",
     "expo-status-bar": "~2.0.0",
+    "expo-updates": "~0.26.10",
     "patch-package": "^8.0.0",
     "prop-types": "^15.8.1",
     "proxy-memoize": "^3.0.1",
@@ -46,7 +47,7 @@
     "react-native-web": "~0.19.13",
     "react-redux": "^8.1.3",
     "reanimated-color-picker": "^3.0.6",
-    "expo-updates": "~0.26.10"
+    "expo-dev-client": "~5.0.9"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0"

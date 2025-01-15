@@ -1,11 +1,10 @@
 import { retrieveFromStorage, STORAGE_KEY } from '../storage';
-
-const apiUrl = process.env.EXPO_PUBLIC_API_BASE_URL;
+import { API_BASE_URL } from '../../app.config';
 
 export async function fetchIncomeById (id) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${apiUrl}/v1/income/${id}`, {
+  return fetch(`${API_BASE_URL}/v1/income/${id}`, {
     method: 'GET',
     mode: 'cors',
     cache: 'no-cache',
@@ -26,7 +25,7 @@ export async function fetchIncomeById (id) {
 export async function fetchIncomesForYear (year) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${apiUrl}/v1/income?year=${year}`, {
+  return fetch(`${API_BASE_URL}/v1/income?year=${year}`, {
     method: 'GET',
     mode: 'cors',
     cache: 'no-cache',
@@ -47,7 +46,7 @@ export async function fetchIncomesForYear (year) {
 export async function addIncome (income) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${apiUrl}/v1/income`, {
+  return fetch(`${API_BASE_URL}/v1/income`, {
     method: 'PUT',
     mode: 'cors',
     cache: 'no-cache',
@@ -70,7 +69,7 @@ export async function addIncome (income) {
 export async function updateIncome (income) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${apiUrl}/v1/income`, {
+  return fetch(`${API_BASE_URL}/v1/income`, {
     method: 'POST',
     mode: 'cors',
     cache: 'no-cache',
@@ -93,7 +92,7 @@ export async function updateIncome (income) {
 export async function deleteIncome (income) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${apiUrl}/v1/income`, {
+  return fetch(`${API_BASE_URL}/v1/income`, {
     method: 'DELETE',
     mode: 'cors',
     cache: 'no-cache',
