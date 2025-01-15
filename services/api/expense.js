@@ -1,11 +1,10 @@
 import { retrieveFromStorage, STORAGE_KEY } from '../storage';
-
-const apiUrl = process.env.EXPO_PUBLIC_API_BASE_URL;
+import { API_BASE_URL } from '../../app.config';
 
 export async function fetchExpenseById (id) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${apiUrl}/v1/expense/${id}`, {
+  return fetch(`${API_BASE_URL}/v1/expense/${id}`, {
     method: 'GET',
     mode: 'cors',
     cache: 'no-cache',
@@ -26,7 +25,7 @@ export async function fetchExpenseById (id) {
 export async function fetchExpensesForYear (year) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${apiUrl}/v1/expense?year=${year}`, {
+  return fetch(`${API_BASE_URL}/v1/expense?year=${year}`, {
     method: 'GET',
     mode: 'cors',
     cache: 'no-cache',
@@ -47,7 +46,7 @@ export async function fetchExpensesForYear (year) {
 export async function addExpense (expense) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${apiUrl}/v1/expense`, {
+  return fetch(`${API_BASE_URL}/v1/expense`, {
     method: 'PUT',
     mode: 'cors',
     cache: 'no-cache',
@@ -70,7 +69,7 @@ export async function addExpense (expense) {
 export async function updateExpense (expense) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${apiUrl}/v1/expense`, {
+  return fetch(`${API_BASE_URL}/v1/expense`, {
     method: 'POST',
     mode: 'cors',
     cache: 'no-cache',
@@ -93,7 +92,7 @@ export async function updateExpense (expense) {
 export async function deleteExpense (expense) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${apiUrl}/v1/expense`, {
+  return fetch(`${API_BASE_URL}/v1/expense`, {
     method: 'DELETE',
     mode: 'cors',
     cache: 'no-cache',

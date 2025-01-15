@@ -1,9 +1,8 @@
 import { saveToStorage, STORAGE_KEY } from '../storage';
-
-const apiUrl = process.env.EXPO_PUBLIC_API_BASE_URL;
+import { API_BASE_URL } from '../../app.config';
 
 export function signIn (email, password) {
-  return fetch(`${apiUrl}/v1/auth/sign-in`, {
+  return fetch(`${API_BASE_URL}/v1/auth/sign-in`, {
     method: 'POST',
     mode: 'cors',
     cache: 'no-cache',
@@ -17,7 +16,7 @@ export function signIn (email, password) {
         return res.json();
       }
 
-      throw new Error('Failed to get response');
+      throw new Error(API_BASE_URL + 'Failed to get response');
     })
     .then(data => data.token)
     .catch((error) => {
@@ -27,7 +26,7 @@ export function signIn (email, password) {
 }
 
 export function validateToken (token) {
-  return fetch(`${apiUrl}/v1/auth/validate-token`, {
+  return fetch(`${API_BASE_URL}/v1/auth/validate-token`, {
     method: 'POST',
     mode: 'cors',
     cache: 'no-cache',
@@ -56,7 +55,7 @@ export function validateToken (token) {
 }
 
 export function register (account) {
-  return fetch(`${apiUrl}/v1/auth/register`, {
+  return fetch(`${API_BASE_URL}/v1/auth/register`, {
     method: 'PUT',
     mode: 'cors',
     cache: 'no-cache',
@@ -83,7 +82,7 @@ export function register (account) {
 }
 
 export function confirmEmail (token) {
-  return fetch(`${apiUrl}/v1/auth/confirm-email`, {
+  return fetch(`${API_BASE_URL}/v1/auth/confirm-email`, {
     method: 'POST',
     mode: 'cors',
     cache: 'no-cache',
@@ -110,7 +109,7 @@ export function confirmEmail (token) {
 }
 
 export function resetPassword (email) {
-  return fetch(`${apiUrl}/v1/auth/reset-password`, {
+  return fetch(`${API_BASE_URL}/v1/auth/reset-password`, {
     method: 'POST',
     mode: 'cors',
     cache: 'no-cache',
@@ -137,7 +136,7 @@ export function resetPassword (email) {
 }
 
 export function setUpNewPassword (token, password) {
-  return fetch(`${apiUrl}/v1/auth/set-up-new-password`, {
+  return fetch(`${API_BASE_URL}/v1/auth/set-up-new-password`, {
     method: 'POST',
     mode: 'cors',
     cache: 'no-cache',

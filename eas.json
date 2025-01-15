@@ -8,9 +8,6 @@
       "environment": "development",
       "developmentClient": true,
       "distribution": "internal",
-      "env": {
-        "EXPO_PUBLIC_API_BASE_URL": "EXPO_PUBLIC_API_BASE_URL"
-      },
       "ios": {
         "simulator": true
       }
@@ -19,18 +16,9 @@
       "environment": "preview",
       "ios": {
         "simulator": true
-      },
-      "env": {
-        "EXPO_PUBLIC_API_BASE_URL": "EXPO_PUBLIC_API_BASE_URL"
       }
     },
-    "production": {
-      "environment": "production",
-      "autoIncrement": true,
-      "env": {
-        "EXPO_PUBLIC_API_BASE_URL": "EXPO_PUBLIC_API_BASE_URL"
-      }
-    }
+    "production": {}
   },
   "submit": {
     "production": {}

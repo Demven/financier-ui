@@ -1,4 +1,5 @@
-{
+export default {
+  API_BASE_URL: process.env.EXPO_PUBLIC_API_BASE_URL,
   "expo": {
     "name": "financier-ui",
     "slug": "financier-ui",
@@ -40,6 +41,6 @@
     },
     "updates": {
       "url": "https://u.expo.dev/bc096fe4-114c-429b-90b9-983b2e2555b3"
-    }
+    },
   }
-}
+};

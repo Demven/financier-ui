@@ -1,12 +1,11 @@
 import { retrieveFromStorage, STORAGE_KEY } from '../storage';
-
-const apiUrl = process.env.EXPO_PUBLIC_API_BASE_URL;
+import { API_BASE_URL } from '../../app.config';
 
 // { account, colors, categories }
 export async function fetchBasics () {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${apiUrl}/v1/basics`, {
+  return fetch(`${API_BASE_URL}/v1/basics`, {
     method: 'GET',
     mode: 'cors',
     cache: 'no-cache',
