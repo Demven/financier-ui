@@ -1,10 +1,12 @@
 import { retrieveFromStorage, STORAGE_KEY } from '../storage';
 import { API_BASE_URL } from '../../app.config';
 
+const apiUrl = API_BASE_URL || process.env.EXPO_PUBLIC_API_BASE_URL;
+
 export async function addColor (color) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${API_BASE_URL}/v1/color`, {
+  return fetch(`${apiUrl}/v1/color`, {
     method: 'PUT',
     mode: 'cors',
     cache: 'no-cache',
@@ -27,7 +29,7 @@ export async function addColor (color) {
 export async function updateColor (color) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${API_BASE_URL}/v1/color`, {
+  return fetch(`${apiUrl}/v1/color`, {
     method: 'POST',
     mode: 'cors',
     cache: 'no-cache',
@@ -50,7 +52,7 @@ export async function updateColor (color) {
 export async function deleteColor (color) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${API_BASE_URL}/v1/color`, {
+  return fetch(`${apiUrl}/v1/color`, {
     method: 'DELETE',
     mode: 'cors',
     cache: 'no-cache',
