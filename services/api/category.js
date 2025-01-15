@@ -1,10 +1,12 @@
 import { retrieveFromStorage, STORAGE_KEY } from '../storage';
 import { API_BASE_URL } from '../../app.config';
 
+const apiUrl = API_BASE_URL || process.env.EXPO_PUBLIC_API_BASE_URL;
+
 export async function fetchCategoryById (id) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${API_BASE_URL}/v1/category/${id}`, {
+  return fetch(`${apiUrl}/v1/category/${id}`, {
     method: 'GET',
     mode: 'cors',
     cache: 'no-cache',
@@ -25,7 +27,7 @@ export async function fetchCategoryById (id) {
 export async function addCategory (category) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${API_BASE_URL}/v1/category`, {
+  return fetch(`${apiUrl}/v1/category`, {
     method: 'PUT',
     mode: 'cors',
     cache: 'no-cache',
@@ -48,7 +50,7 @@ export async function addCategory (category) {
 export async function updateCategory (category) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${API_BASE_URL}/v1/category`, {
+  return fetch(`${apiUrl}/v1/category`, {
     method: 'POST',
     mode: 'cors',
     cache: 'no-cache',

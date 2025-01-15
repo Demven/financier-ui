@@ -1,10 +1,12 @@
 import { retrieveFromStorage, STORAGE_KEY } from '../storage';
 import { API_BASE_URL } from '../../app.config';
 
+const apiUrl = API_BASE_URL || process.env.EXPO_PUBLIC_API_BASE_URL;
+
 export async function fetchSavingById (id) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${API_BASE_URL}/v1/saving/${id}`, {
+  return fetch(`${apiUrl}/v1/saving/${id}`, {
     method: 'GET',
     mode: 'cors',
     cache: 'no-cache',
@@ -25,7 +27,7 @@ export async function fetchSavingById (id) {
 export async function fetchSavingsForYear (year) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${API_BASE_URL}/v1/saving?year=${year}`, {
+  return fetch(`${apiUrl}/v1/saving?year=${year}`, {
     method: 'GET',
     mode: 'cors',
     cache: 'no-cache',
@@ -46,7 +48,7 @@ export async function fetchSavingsForYear (year) {
 export async function addSaving (saving) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${API_BASE_URL}/v1/saving`, {
+  return fetch(`${apiUrl}/v1/saving`, {
     method: 'PUT',
     mode: 'cors',
     cache: 'no-cache',
@@ -69,7 +71,7 @@ export async function addSaving (saving) {
 export async function updateSaving (saving) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${API_BASE_URL}/v1/saving`, {
+  return fetch(`${apiUrl}/v1/saving`, {
     method: 'POST',
     mode: 'cors',
     cache: 'no-cache',
@@ -92,7 +94,7 @@ export async function updateSaving (saving) {
 export async function deleteSaving (saving) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${API_BASE_URL}/v1/saving`, {
+  return fetch(`${apiUrl}/v1/saving`, {
     method: 'DELETE',
     mode: 'cors',
     cache: 'no-cache',

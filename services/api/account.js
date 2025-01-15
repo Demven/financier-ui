@@ -1,10 +1,12 @@
 import { retrieveFromStorage, STORAGE_KEY } from '../storage';
 import { API_BASE_URL } from '../../app.config';
 
+const apiUrl = API_BASE_URL || process.env.EXPO_PUBLIC_API_BASE_URL;
+
 export async function updateAccount (account) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${API_BASE_URL}/v1/account`, {
+  return fetch(`${apiUrl}/v1/account`, {
     method: 'POST',
     mode: 'cors',
     cache: 'no-cache',

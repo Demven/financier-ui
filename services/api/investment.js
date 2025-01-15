@@ -1,10 +1,12 @@
 import { retrieveFromStorage, STORAGE_KEY } from '../storage';
 import { API_BASE_URL } from '../../app.config';
 
+const apiUrl = API_BASE_URL || process.env.EXPO_PUBLIC_API_BASE_URL;
+
 export async function fetchInvestmentById (id) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${API_BASE_URL}/v1/investment/${id}`, {
+  return fetch(`${apiUrl}/v1/investment/${id}`, {
     method: 'GET',
     mode: 'cors',
     cache: 'no-cache',
@@ -25,7 +27,7 @@ export async function fetchInvestmentById (id) {
 export async function fetchInvestmentsForYear (year) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${API_BASE_URL}/v1/investment?year=${year}`, {
+  return fetch(`${apiUrl}/v1/investment?year=${year}`, {
     method: 'GET',
     mode: 'cors',
     cache: 'no-cache',
@@ -46,7 +48,7 @@ export async function fetchInvestmentsForYear (year) {
 export async function addInvestment (investment) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${API_BASE_URL}/v1/investment`, {
+  return fetch(`${apiUrl}/v1/investment`, {
     method: 'PUT',
     mode: 'cors',
     cache: 'no-cache',
@@ -69,7 +71,7 @@ export async function addInvestment (investment) {
 export async function updateInvestment (investment) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${API_BASE_URL}/v1/investment`, {
+  return fetch(`${apiUrl}/v1/investment`, {
     method: 'POST',
     mode: 'cors',
     cache: 'no-cache',
@@ -92,7 +94,7 @@ export async function updateInvestment (investment) {
 export async function deleteInvestment (investment) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${API_BASE_URL}/v1/investment`, {
+  return fetch(`${apiUrl}/v1/investment`, {
     method: 'DELETE',
     mode: 'cors',
     cache: 'no-cache',

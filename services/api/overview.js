@@ -1,11 +1,13 @@
 import { retrieveFromStorage, STORAGE_KEY } from '../storage';
 import { API_BASE_URL } from '../../app.config';
 
+const apiUrl = API_BASE_URL || process.env.EXPO_PUBLIC_API_BASE_URL;
+
 // { expenses, expensesTotals, incomes, incomesTotals, savings, savingsTotals, investments, investmentsTotals }
 export async function fetchOverviewForYear (year) {
   const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
 
-  return fetch(`${API_BASE_URL}/v1/overview?year=${year}`, {
+  return fetch(`${apiUrl}/v1/overview?year=${year}`, {
     method: 'GET',
     mode: 'cors',
     cache: 'no-cache',
