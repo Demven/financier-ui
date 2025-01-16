@@ -46,11 +46,15 @@ SplashScreen.preventAutoHideAsync();
 export const CONFIRM_EMAIL_PATH = 'confirm-email';
 export const RESET_PASSWORD_PATH = 'reset-password';
 export const SUPPORT_PATH = 'support';
+export const COOKIE_POLICY_PATH = 'cookie-policy';
+export const PRIVACY_POLICY_PATH = 'privacy-policy';
 
 const NO_AUTH_PAGES = [
   CONFIRM_EMAIL_PATH,
   RESET_PASSWORD_PATH,
   SUPPORT_PATH,
+  COOKIE_POLICY_PATH,
+  PRIVACY_POLICY_PATH,
 ];
 
 function Navigator () {
