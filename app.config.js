@@ -2,7 +2,7 @@ export default {
   API_BASE_URL: process.env.EXPO_PUBLIC_API_BASE_URL,
   ios: {
     version: "2.6.1",
-    buildNumber: 3,
+    buildNumber: '3',
   },
   expo: {
     name: "financier-ui",
