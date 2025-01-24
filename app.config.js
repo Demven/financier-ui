@@ -1,5 +1,9 @@
 export default {
   API_BASE_URL: process.env.EXPO_PUBLIC_API_BASE_URL,
+  ios: {
+    version: "2.6.1",
+    buildNumber: 3,
+  },
   expo: {
     name: "financier-ui",
     slug: "financier-ui",
@@ -12,6 +16,7 @@ export default {
       icon: "./public/images/favicons/apple-touch-icon.png",
       runtimeVersion: "1.0.0",
       version: "2.6.1",
+      buildNumber: 3,
     },
     web: {
       bundler: "metro",
