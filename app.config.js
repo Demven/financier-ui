@@ -11,7 +11,7 @@ export default {
       bundleIdentifier: "com.demven.financierui",
       icon: "./public/images/favicons/apple-touch-icon.png",
       runtimeVersion: "1.0.0",
-      version: "2.6.0",
+      version: "2.6.1",
     },
     web: {
       bundler: "metro",
