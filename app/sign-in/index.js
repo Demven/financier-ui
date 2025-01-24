@@ -118,7 +118,7 @@ export default function SignInScreen () {
   async function onSuccess (token) {
     await saveToStorage(STORAGE_KEY.TOKEN, token);
 
-    onBackToSignIn();
+    clearForm();
 
     dispatch(reinitializeAction(true));
 
@@ -210,7 +210,7 @@ export default function SignInScreen () {
     }
   }
 
-  function onBackToSignIn () {
+  function clearForm () {
     setFirstName('');
     setFirstNameError('');
     setLastName('');
@@ -419,7 +419,7 @@ export default function SignInScreen () {
             buttonContainerStyle={styles.buttonContainer}
             look={BUTTON_LOOK.TERTIARY}
             text='Back to Sign-In'
-            onPress={onBackToSignIn}
+            onPress={clearForm}
           />
         )}
       </View>

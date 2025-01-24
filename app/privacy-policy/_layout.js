@@ -37,7 +37,7 @@ export default function PrivacyPolicyScreen () {
           <Text style={styles.text}>
             Your privacy is our number one priority. All stored Personal Data (expenses, savings, investments, incomes)
             is not shared and will never be shared with any Third-Party Actors, unless approved by you. Your Data
-            belongs ony to you and you have the right to access it any time, request to permanently delete it, and
+            belongs only to you and you have the right to access it any time, request to permanently delete it, and
             get a copy of your Data in CSV or JSON formats upon request.
           </Text>
         </View>

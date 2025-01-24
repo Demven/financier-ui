@@ -136,7 +136,8 @@ function Navigator () {
       router.push('/sign-in');
     };
 
-    const token = await retrieveFromStorage(STORAGE_KEY.TOKEN);
+    const token = await new Promise((resolve) => setTimeout(resolve, 100))
+      .then(() => retrieveFromStorage(STORAGE_KEY.TOKEN));
 
     if (!token) {
       navigateToSignInPage();
@@ -175,6 +176,8 @@ function Navigator () {
   }
 
   async function initializeRedux () {
+    setReduxInitialized(false);
+
     const selectedTab = await retrieveFromStorage(STORAGE_KEY.SELECTED_TAB);
     if (selectedTab && TABS.includes(selectedTab)) {
       dispatch(setSelectedTabAction(selectedTab));
@@ -189,6 +192,8 @@ function Navigator () {
   }
 
   async function fetchBasicsData () {
+    setBasicDataFetched(false);
+
     const {
       account,
       colors,
@@ -211,6 +216,8 @@ function Navigator () {
   }
 
   async function fetchOverviewData (year) {
+    dispatch(setLoadingAction(true));
+
     const {
       expenses,
       expensesTotals,
