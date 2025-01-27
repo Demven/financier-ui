@@ -607,7 +607,7 @@ export default function SavingScreen () {
 
         <View style={styles.formRow}>
           <Input
-            style={styles.formElement}
+            inputContainerStyle={styles.formElement}
             label='Name'
             placeholder={typeId === TYPE.SAVING
               ? 'American Express Savings'
@@ -651,7 +651,7 @@ export default function SavingScreen () {
             <View style={styles.formRow}>
               <View style={[styles.halfFormElement, { paddingRight: Platform.select({ web: 16, ios: 12 }) }]}>
                 <Input
-                  style={styles.formElement}
+                  inputContainerStyle={styles.formElement}
                   label='Ticker'
                   placeholder='SPY'
                   inputType={INPUT_TYPE.DEFAULT}
@@ -662,7 +662,7 @@ export default function SavingScreen () {
 
               <View style={[styles.halfFormElement, { paddingLeft: Platform.select({ web: 16, ios: 12 }) }]}>
                 <Input
-                  style={styles.formElement}
+                  inputContainerStyle={styles.formElement}
                   label='Total Shares'
                   placeholder='0'
                   inputType={INPUT_TYPE.QUANTITY}
@@ -677,7 +677,7 @@ export default function SavingScreen () {
             <View style={styles.formRow}>
               <View style={styles.amountContainer}>
                 <Input
-                  style={styles.formElement}
+                  inputContainerStyle={styles.formElement}
                   label='Price per share'
                   placeholder='0.01'
                   inputType={INPUT_TYPE.CURRENCY}

@@ -29,6 +29,7 @@ const KEYBOARD_TYPE = {
 
 Input.propTypes = {
   style: PropTypes.object,
+  inputContainerStyle: PropTypes.object,
   inputType: PropTypes.oneOf(Object.values(INPUT_TYPE)),
   label: PropTypes.string,
   placeholder: PropTypes.string,
@@ -50,6 +51,7 @@ Input.propTypes = {
 export default function Input (props) {
   const {
     style,
+    inputContainerStyle,
     label,
     placeholder,
     inputType,
@@ -70,14 +72,14 @@ export default function Input (props) {
   const [focused, setFocused] = useState(false);
 
   return (
-    <View style={{ flexGrow: 1 }}>
+    <View style={[styles.input, style]}>
       <View
         style={[
           styles.inputContainer,
           focused && styles.inputContainerFocused,
           disabled && styles.inputContainerDisabled,
           errorText && styles.inputContainerInvalid,
-          style,
+          inputContainerStyle,
         ]}
       >
         {label && (
@@ -101,11 +103,11 @@ export default function Input (props) {
 
         <TextInput
           style={[
-            styles.input,
+            styles.textInput,
             multiline && styles.multiline,
-            disabled && styles.inputDisabled,
-            inputType === INPUT_TYPE.NUMBER && styles.inputNumber,
-            (inputType === INPUT_TYPE.QUANTITY || inputType === INPUT_TYPE.CURRENCY) && styles.inputWithSymbol,
+            disabled && styles.textInputDisabled,
+            inputType === INPUT_TYPE.NUMBER && styles.textInputNumber,
+            (inputType === INPUT_TYPE.QUANTITY || inputType === INPUT_TYPE.CURRENCY) && styles.textInputWithSymbol,
             Platform.OS === 'web' && {
               transition: 'border 0.3s',
               outlineStyle: 'none',
@@ -138,6 +140,10 @@ export default function Input (props) {
 }
 
 const styles = StyleSheet.create({
+  input: {
+    width: '100%',
+  },
+
   inputContainer: {
     flexGrow: 1,
     borderBottomWidth: 2,
@@ -185,7 +191,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT.NOTO_SERIF.BOLD,
   },
 
-  input: {
+  textInput: {
     paddingTop: Platform.select({ web: 0, ios: 4 }),
     paddingBottom: Platform.select({ web: 4, ios: 12 }),
     paddingHorizontal: 4,
@@ -196,14 +202,14 @@ const styles = StyleSheet.create({
     lineHeight: 34,
     borderWidth: 0,
   },
-  inputDisabled: {
+  textInputDisabled: {
     color: COLOR.LIGHT_GRAY,
     pointerEvents: 'none',
   },
-  inputNumber: {
+  textInputNumber: {
     textAlign: 'right',
   },
-  inputWithSymbol: {
+  textInputWithSymbol: {
     paddingLeft: 20,
     textAlign: 'right',
   },
