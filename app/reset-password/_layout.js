@@ -161,7 +161,7 @@ export default function ResetPasswordScreen () {
         {!showSuccessMessage && (
           <>
             <Input
-              style={styles.formElement}
+              inputContainerStyle={styles.formElement}
               label='New Password'
               inputType={INPUT_TYPE.DEFAULT}
               value={password}
@@ -173,7 +173,7 @@ export default function ResetPasswordScreen () {
             />
 
             <Input
-              style={styles.formElement}
+              inputContainerStyle={styles.formElement}
               label='Repeat New Password'
               inputType={INPUT_TYPE.DEFAULT}
               value={repeatPassword}

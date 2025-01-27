@@ -349,7 +349,7 @@ export default function ExpenseScreen () {
         <Loader loading={loading} />
 
         <Input
-          style={styles.formElement}
+          inputContainerStyle={styles.formElement}
           label='Name'
           placeholder='Latte'
           inputType={INPUT_TYPE.DEFAULT}

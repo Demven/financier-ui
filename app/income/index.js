@@ -335,7 +335,7 @@ export default function IncomeScreen () {
         <Loader loading={loading} />
 
         <Input
-          style={styles.formElement}
+          inputContainerStyle={styles.formElement}
           label='Name'
           placeholder='Paycheck'
           inputType={INPUT_TYPE.DEFAULT}

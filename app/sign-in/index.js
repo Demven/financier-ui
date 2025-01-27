@@ -234,9 +234,7 @@ export default function SignInScreen () {
   const messageIsVisible = showRegistrationSuccessView || showPasswordResetSuccessView;
 
   return (
-    <View
-      style={styles.signInScreen}
-    >
+    <View style={styles.signInScreen}>
       <Image
         style={{
           width: windowWidth,
@@ -264,7 +262,7 @@ export default function SignInScreen () {
         {!createAccountFlow && !messageIsVisible && (
           <>
             <Input
-              style={styles.formElement}
+              inputContainerStyle={styles.formElement}
               label='Email'
               inputType={INPUT_TYPE.EMAIL}
               value={email}
@@ -278,7 +276,7 @@ export default function SignInScreen () {
             {!forgotPasswordFlow && (
               <>
                 <Input
-                  style={styles.formElement}
+                  inputContainerStyle={styles.formElement}
                   label='Password'
                   inputType={INPUT_TYPE.DEFAULT}
                   value={password}
@@ -305,7 +303,7 @@ export default function SignInScreen () {
         {createAccountFlow && !showRegistrationSuccessView && (
           <>
             <Input
-              style={styles.formElement}
+              inputContainerStyle={styles.formElement}
               label='First Name'
               inputType={INPUT_TYPE.DEFAULT}
               value={firstName}
@@ -317,7 +315,7 @@ export default function SignInScreen () {
             />
 
             <Input
-              style={styles.formElement}
+              inputContainerStyle={styles.formElement}
               label='Last Name'
               inputType={INPUT_TYPE.DEFAULT}
               value={lastName}

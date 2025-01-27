@@ -208,7 +208,7 @@ export default function CategoryScreen () {
         <View style={{ flexGrow: 1, paddingBottom: 100 }}>
           <View style={styles.formRow}>
             <Input
-              style={styles.formElement}
+              inputContainerStyle={styles.formElement}
               label='Name'
               placeholder='Food'
               inputType={INPUT_TYPE.DEFAULT}
@@ -222,7 +222,7 @@ export default function CategoryScreen () {
 
           <View style={styles.formRow}>
             <Input
-              style={styles.formElement}
+              inputContainerStyle={styles.formElement}
               label='Description'
               placeholder='Groceries, cafes, coffee shops, lunches, etc.'
               inputType={INPUT_TYPE.DEFAULT}
@@ -233,7 +233,7 @@ export default function CategoryScreen () {
 
           <View style={styles.formRow}>
             <ColorPicker
-              style={styles.formElement}
+              inputContainerStyle={styles.formElement}
               label='Color'
               color={color}
               errorText={colorError}

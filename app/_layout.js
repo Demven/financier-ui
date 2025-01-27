@@ -13,7 +13,12 @@ import {
 import { StatusBar } from 'expo-status-bar';
 import Toast from '../components/Toast';
 import { TABS } from '../components/HeaderTabs';
-import { STORAGE_KEY, retrieveFromStorage, saveToStorage, clearStorage } from '../services/storage';
+import {
+  STORAGE_KEY,
+  retrieveFromStorage,
+  saveToStorage,
+  clearStorage,
+} from '../services/storage';
 import { getTimespan } from '../services/location';
 import { validateToken } from '../services/api/auth';
 import { fetchBasics } from '../services/api/basics';
@@ -48,6 +53,8 @@ export const RESET_PASSWORD_PATH = 'reset-password';
 export const SUPPORT_PATH = 'support';
 export const COOKIE_POLICY_PATH = 'cookie-policy';
 export const PRIVACY_POLICY_PATH = 'privacy-policy';
+export const SIGN_IN_PATH = 'sign-in';
+export const SETTINGS_PATH = 'settings';
 
 const NO_AUTH_PAGES = [
   CONFIRM_EMAIL_PATH,
@@ -57,10 +64,17 @@ const NO_AUTH_PAGES = [
   PRIVACY_POLICY_PATH,
 ];
 
+const NO_SCROLL_PAGES = [
+  SIGN_IN_PATH,
+  SETTINGS_PATH,
+];
+
 function Navigator () {
   const dispatch = useDispatch();
   const router = useRouter();
   const pathname = usePathname();
+
+  const currentPagePath = pathname.slice(1); // remove starting slash '/'
 
   const selectedYear = useSelector(state => state.ui.selectedYear);
   const toast = useSelector(state => state.ui.toast);
@@ -96,8 +110,6 @@ function Navigator () {
   }, [router, pathname, isNavigationReady]);
 
   useEffect(() => {
-    const currentPagePath = pathname.slice(1); // remove starting slash '/'
-
     if (isNavigationReady && !NO_AUTH_PAGES.includes(currentPagePath)) {
       checkIfLoggedIn()
         .then((isLoggedIn) => {
@@ -110,7 +122,7 @@ function Navigator () {
           }
         });
     }
-  }, [pathname, accountId, isNavigationReady, needToReinitialize]);
+  }, [currentPagePath, accountId, isNavigationReady, needToReinitialize]);
 
   useEffect(() => {
     saveLastVisitedPage(pathname);
@@ -266,7 +278,13 @@ function Navigator () {
 
   return (
     <View
-      style={{ flexGrow: 1, position: 'relative' }}
+      style={[
+        {
+          flexGrow: 1,
+          position: 'relative',
+        },
+        NO_SCROLL_PAGES.includes(currentPagePath) && { overflow: 'hidden' },
+      ]}
       onLayout={onLayout}
     >
       <Stack
