@@ -31,6 +31,10 @@ export function removeFromStorage (key) {
   return AsyncStorage.removeItem(key);
 }
 
-export function clearStorage () {
-  return AsyncStorage.clear();
+export async function clearStorage () {
+  try {
+    await AsyncStorage.clear();
+  } catch (error) {
+    console.error('Failed to clear async storage', error);
+  }
 }

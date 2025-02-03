@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -37,9 +37,8 @@ export function useModal (onDeleteItem) {
 
   const navigationOptions = {
     presentation: Platform.OS === 'web' ? 'transparentModal' : 'modal',
-    headerShown: Platform.OS !== 'web',
+    headerShown: false,
     contentStyle: { backgroundColor: Platform.select({ web: 'transparent' }) },
-    headerTitleStyle: styles.modalTitle,
   };
 
   if (title) {
@@ -74,8 +73,40 @@ export default function Modal (props) {
   const router = useRouter();
 
   const windowWidth = useSelector(state => state.ui.windowWidth);
+  const windowHeight = useSelector(state => state.ui.windowHeight);
+
+  const [containerHeight, setContainerHeight] = useState(0);
+  const [headerHeight, setHeaderHeight] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [footerHeight, setFooterHeight] = useState(0);
+
+  const isIphone = Platform.OS === 'ios' && windowWidth <= MEDIA.WIDE_MOBILE;
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      preventPageScroll();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (containerHeight && headerHeight && footerHeight) {
+      setContentHeight((isIphone ? windowHeight - 160 : containerHeight) - headerHeight - footerHeight);
+    }
+  }, [containerHeight, headerHeight, footerHeight]);
+
+  function preventPageScroll () {
+    document.body.style.overflowY = 'hidden';
+  }
+
+  function enablePageScroll () {
+    document.body.style.overflowY = 'auto';
+  }
 
   function onPressClose () {
+    if (Platform.OS === 'web') {
+      enablePageScroll();
+    }
+
     if (typeof onCloseRequest === 'function') {
       onCloseRequest();
     } else {
@@ -83,12 +114,26 @@ export default function Modal (props) {
     }
   }
 
+  function onContainerLayout (event) {
+    setContainerHeight(event.nativeEvent.layout.height);
+  }
+
+  function onHeaderLayout (event) {
+    setHeaderHeight(event.nativeEvent.layout.height);
+  }
+
+  function onFooterLayout (event) {
+    setFooterHeight(event.nativeEvent.layout.height);
+  }
+
   return (
     <View style={[styles.modal, style]}>
-      <Pressable
-        style={[styles.overlay, StyleSheet.absoluteFill]}
-        onPress={onPressClose}
-      />
+      {Platform.OS === 'web' && (
+        <Pressable
+          style={[styles.overlay, StyleSheet.absoluteFill]}
+          onPress={onPressClose}
+        />
+      )}
 
       <View
         style={[styles.container, {
@@ -99,9 +144,15 @@ export default function Modal (props) {
             ? '100%'
             : maxWidth,
         }]}
+        onLayout={onContainerLayout}
       >
-        {Platform.OS === 'web' && (
-          <View style={styles.header}>
+        <View
+          style={[styles.header, {
+            maxWidth: Platform.select({ ios: maxWidth }),
+          }]}
+          onLayout={onHeaderLayout}
+        >
+          <View style={styles.headerTitle}>
             <Text
               style={[styles.title, {
                 fontSize: windowWidth < MEDIA.WIDE_MOBILE ? 26 : 30,
@@ -112,43 +163,44 @@ export default function Modal (props) {
               {title}
             </Text>
           </View>
-        )}
 
-        {Platform.OS === 'web' && (
           <CloseButton
             style={styles.closeButton}
             size={46}
             onPress={onPressClose}
           />
-        )}
+        </View>
 
         <ScrollView
           style={[styles.content, {
             paddingHorizontal: Platform.select({ ios: 0, web: windowWidth < MEDIA.WIDE_MOBILE ? 0 : 32 }),
             paddingRight: Platform.select({ ios: 0, web: windowWidth >= MEDIA.WIDE_MOBILE ? 48 : 0 }),
-            paddingVertical: Platform.select({ ios: 0, web: 32 }),
+            paddingVertical: 32,
+            height: contentHeight,
+            maxHeight: Platform.select({ ios: contentHeight }),
           }, contentStyle]}
         >
           {children}
         </ScrollView>
 
-        <View style={[styles.footer, {
-          justifyContent: windowWidth < MEDIA.TABLET ? 'center' : 'flex-end',
-        }]}>
+        <View
+          style={[styles.footer, {
+            justifyContent: windowWidth < MEDIA.TABLET ? 'center' : 'flex-end',
+          }]}
+          onLayout={onFooterLayout}
+        >
           {(typeof onDelete === 'function') && (
             <>
-              {windowWidth <= MEDIA.WIDE_MOBILE && Platform.OS === 'web' && (
+              {windowWidth <= MEDIA.WIDE_MOBILE && (
                 <DeleteIconButton
                   style={styles.deleteIconButton}
                   onPress={onDelete}
                 />
               )}
 
-              {windowWidth > MEDIA.WIDE_MOBILE && Platform.OS === 'web' &&  (
+              {windowWidth > MEDIA.WIDE_MOBILE && (
                 <Button
-                  style={[styles.deleteButton, {
-                    width: windowWidth < MEDIA.MOBILE ? 120 : 150,
-                  }]}
+                  style={styles.deleteButton}
                   look={BUTTON_LOOK.TERTIARY}
                   text='Delete'
                   destructive
@@ -160,8 +212,9 @@ export default function Modal (props) {
 
           <Button
             style={[styles.cancelButton, {
-              width: windowWidth < MEDIA.MOBILE ? 120 : 150,
+              width: windowWidth < MEDIA.WIDE_MOBILE ? 120 : 150,
             }]}
+            paddingHorizontal={isIphone ? 8 : 0}
             look={BUTTON_LOOK.SECONDARY}
             text='Cancel'
             onPress={onPressClose}
@@ -169,8 +222,9 @@ export default function Modal (props) {
 
           <Button
             style={[styles.saveButton, {
-              width: windowWidth < MEDIA.MOBILE ? 120 : 150,
+              width: windowWidth < MEDIA.WIDE_MOBILE ? 120 : 150,
             }]}
+            paddingHorizontal={isIphone ? 8 : 0}
             look={BUTTON_LOOK.PRIMARY}
             text={onConfirm ? 'Confirm' : 'Save'}
             disabled={disableSave}
@@ -197,70 +251,69 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
-  modalTitle: {
-    fontFamily: FONT.NOTO_SERIF.BOLD,
-    fontSize: 18,
-  },
-
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    flexGrow: 1,
   },
   container: {
-    flexGrow: Platform.select({ ios: 1 }),
+    width: '100%',
+    height: '100%',
+    maxHeight: Platform.select({ web: 680 }),
     position: 'relative',
     padding: Platform.select({ ios: 32, web: 24 }),
-    borderRadius: Platform.select({ web: 8 }),
+    alignItems: Platform.select({ ios: 'flex-start' }),
+    boxShadow: Platform.select({ web: 'rgba(0, 0, 0, 0.1) 0 0 12px 12px' }),
     backgroundColor: COLOR.WHITE,
-    shadowColor: COLOR.BLACK,
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: Platform.select({ web: 8 }),
-    shadowOpacity: 0.1,
-    alignItems: Platform.select({ ios: 'flex-end' }),
+    borderRadius: 8,
   },
 
   header: {
-    marginRight: Platform.select({ web: 52 }),
-    paddingBottom: Platform.select({ web: 24 }),
+    width: '100%',
     flexDirection: 'row',
-    borderBottomWidth: Platform.select({ web: 1 }),
+    position: 'relative',
+    paddingBottom: 24,
+    borderBottomWidth: 1,
     borderBottomColor: COLOR.LIGHTER_GRAY,
   },
+  headerTitle: {
+    marginRight: 52,
+  },
   title: {
-    height: 34,
     fontFamily: FONT.NOTO_SERIF.BOLD,
     color: COLOR.DARK_GRAY,
   },
+
   closeButton: {
     position: 'absolute',
-    top: 20,
-    right: 20,
+    top: -8,
+    right: 0,
   },
 
   content: {
+    width: '100%',
+    flexGrow: 1,
     paddingRight: Platform.select({ ios: 0, web: 52 }),
-    zIndex: 1,
-    flexGrow: Platform.select({ ios: 0 }),
+    flexShrink: 1,
+    zIndex: 100,
   },
 
   footer: {
-    height: Platform.select({ ios: 200 }),
-    flexGrow: Platform.select({ ios: 0 }),
-    flexShrink: Platform.select({ ios: 0 }),
-    marginTop: Platform.select({ ios: 'auto' }),
-    marginBottom: Platform.select({ ios: 0 }),
+    width: '100%',
     paddingTop: 24,
+    marginBottom: Platform.select({ ios: 0 }),
     flexDirection: 'row',
+    alignItems: 'center',
     borderTopWidth: Platform.select({ web: 1 }),
     borderTopColor: COLOR.LIGHTER_GRAY,
-    zIndex: 10,
-    backgroundColor: COLOR.WHITE,
-    alignItems: 'center',
+    zIndex: 1,
+    position: 'relative',
   },
 
   deleteIconButton: {
     marginRight: 'auto',
   },
   deleteButton: {
+    width: 150,
     marginRight: 'auto',
   },
 

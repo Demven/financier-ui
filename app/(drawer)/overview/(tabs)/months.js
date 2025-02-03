@@ -189,7 +189,11 @@ export default function OverviewScreen () {
   const overviewScreenPadding = windowWidth < (MEDIA.MEDIUM_DESKTOP + 40 * 2)
     ? windowWidth < MEDIA.TABLET ? 0 : 52
     : 40;
-  const listContainerPaddingTop = windowWidth < MEDIA.TABLET ? 24 : 40;
+  const listContainerPaddingTop = windowWidth <= MEDIA.WIDE_MOBILE
+    ? 24 // mobile
+    : windowWidth <= MEDIA.DESKTOP
+      ? 56 // TABLET
+      : 40; // DESKTOP
 
   const noDataForSelectedYear = !Object.keys(expenses[selectedYear] || {}).length
     && !Object.keys(incomes[selectedYear] || {}).length
@@ -212,7 +216,10 @@ export default function OverviewScreen () {
           paddingHorizontal: overviewScreenPadding,
         }]}
       >
-        <Loader loading={loading} />
+        <Loader
+          overlayStyle={{ left: Platform.select({ ios: overviewScreenPadding, web: 0 }) }}
+          loading={loading}
+        />
 
         {(windowWidth < MEDIA.TABLET && !hideYearSelector) && (
           <HeaderDropdown

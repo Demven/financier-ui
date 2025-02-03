@@ -38,6 +38,7 @@ import {
   setLoadingAction,
   reinitializeAction,
   setWindowWidthAction,
+  setWindowHeightAction,
 } from '../redux/reducers/ui';
 import { setIncomesAction, setIncomesTotalsAction } from '../redux/reducers/incomes';
 import { setColorsAction } from '../redux/reducers/colors';
@@ -274,6 +275,7 @@ function Navigator () {
 
   function onLayout () {
     dispatch(setWindowWidthAction(Dimensions.get('window').width));
+    dispatch(setWindowHeightAction(Dimensions.get('window').height));
   }
 
   return (

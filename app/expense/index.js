@@ -5,7 +5,7 @@ import {
   View,
 } from 'react-native';
 import { useRouter, useGlobalSearchParams } from 'expo-router';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Modal from '../../components/Modal';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import Dropdown from '../../components/Dropdown';
@@ -35,6 +35,7 @@ import {
 } from '../../services/api/expense';
 import { useDeleteItemAction } from '../../context/DeleteItemContext';
 import { COLOR } from '../../styles/colors';
+import { MEDIA } from '../../styles/media';
 
 const DATE_OPTION = {
   TODAY: 'today',
@@ -54,6 +55,8 @@ export default function ExpenseScreen () {
 
   const router = useRouter();
   const dispatch = useDispatch();
+
+  const windowWidth = useSelector(state => state.ui.windowWidth);
 
   const { registerDeleteItemAction } = useDeleteItemAction();
 
@@ -339,80 +342,88 @@ export default function ExpenseScreen () {
   return (
     <>
       <Modal
-        contentStyle={styles.expenseScreen}
+        style={[
+          { maxWidth: Platform.select({ ios: 580 }) },
+          Platform.isPad && { maxHeight: 600 },
+        ]}
         title={expenseToEdit ? 'Edit an expense' : 'Add an expense' }
         disableSave={formIsInvalid}
         onSave={onSave}
         onDelete={expenseToEdit ? onDeleteRequest : undefined}
         onCloseRequest={onClose}
       >
-        <Loader loading={loading} />
+        <View style={styles.expenseScreen}>
+          <Loader loading={loading} />
 
-        <Input
-          inputContainerStyle={styles.formElement}
-          label='Name'
-          placeholder='Latte'
-          inputType={INPUT_TYPE.DEFAULT}
-          value={name}
-          errorText={nameError}
-          onChange={setName}
-          onBlur={validateName}
-          autoFocus
-        />
-
-        <View style={[styles.formRow, { zIndex: 30 }]}>
-          <CategoryDropdown
-            style={styles.formElement}
-            categoryId={categoryId}
-            preselectedCategory={expenseToEdit ? undefined : preselectedCategory}
-            onSelect={setCategoryId}
+          <Input
+            inputContainerStyle={styles.formElement}
+            label='Name'
+            placeholder='Latte'
+            inputType={INPUT_TYPE.DEFAULT}
+            value={name}
+            errorText={nameError}
+            onChange={setName}
+            onBlur={validateName}
+            autoFocus
           />
 
-          <IconButton
-            style={styles.addButton}
-            iconName='add-circle-outline'
-            iconCollection={ICON_COLLECTION.IONICONS}
-            size={32}
-            color={COLOR.BLACK}
-            onPress={onAddCategory}
-          />
-        </View>
+          <View style={[styles.formRow, { zIndex: 30 }]}>
+            <CategoryDropdown
+              style={styles.formElement}
+              categoryId={categoryId}
+              preselectedCategory={expenseToEdit ? undefined : preselectedCategory}
+              onSelect={setCategoryId}
+            />
 
-        <View style={[styles.formRow, { zIndex: 10 }]}>
-          <View style={[styles.halfFormElement, { paddingRight: Platform.select({ web: 16, ios: 12 }) }]}>
-            <Dropdown
-              label='Date'
-              open={dateOptionsSelectOpen}
-              setOpen={setDateOptionsSelectOpen}
-              value={dateOptionId}
-              setValue={setDateOptionId}
-              items={dateOptions}
-              setItems={setDateOptions}
+            <IconButton
+              style={styles.addButton}
+              iconName='add-circle-outline'
+              iconCollection={ICON_COLLECTION.IONICONS}
+              size={32}
+              color={COLOR.BLACK}
+              onPress={onAddCategory}
             />
           </View>
 
-          <View style={[styles.halfFormElement, { paddingLeft: Platform.select({ web: 16, ios: 12 }) }]}>
-            <DatePicker
-              label='Set Date'
-              dateString={dateString}
-              max={dateToDateString(todayDate)}
-              onChange={setDateString}
-              disabled={dateDisabled}
-            />
-          </View>
-        </View>
+          <View style={[styles.formRow, { zIndex: 10 }]}>
+            <View style={[styles.halfFormElement, { paddingRight: Platform.select({ web: 16, ios: 12 }) }]}>
+              <Dropdown
+                label='Date'
+                open={dateOptionsSelectOpen}
+                setOpen={setDateOptionsSelectOpen}
+                value={dateOptionId}
+                setValue={setDateOptionId}
+                items={dateOptions}
+                setItems={setDateOptions}
+              />
+            </View>
 
-        <View style={styles.formRow}>
-          <View style={styles.amountContainer}>
-            <Input
-              label='Amount'
-              placeholder='0.01'
-              inputType={INPUT_TYPE.CURRENCY}
-              value={amount}
-              errorText={amountError}
-              onChange={setAmount}
-              onBlur={validateAmount}
-            />
+            <View style={[styles.halfFormElement, { paddingLeft: Platform.select({ web: 16, ios: 12 }) }]}>
+              <DatePicker
+                label='Set Date'
+                dateString={dateString}
+                max={dateToDateString(todayDate)}
+                onChange={setDateString}
+                disabled={dateDisabled}
+              />
+            </View>
+          </View>
+
+          <View style={styles.formRow}>
+            <View style={[styles.amountContainer, {
+              width: windowWidth <= MEDIA.WIDE_MOBILE ? '100%' : '50%',
+              paddingLeft: windowWidth <= MEDIA.WIDE_MOBILE ? 0 : 16,
+            }]}>
+              <Input
+                label='Amount'
+                placeholder='0.01'
+                inputType={INPUT_TYPE.CURRENCY}
+                value={amount}
+                errorText={amountError}
+                onChange={setAmount}
+                onBlur={validateAmount}
+              />
+            </View>
           </View>
         </View>
       </Modal>
@@ -434,8 +445,8 @@ export default function ExpenseScreen () {
 
 const styles = StyleSheet.create({
   expenseScreen: {
-    paddingTop: Platform.select({ web: 48 }),
-    paddingBottom: Platform.select({ web: 80 }),
+    paddingTop: 0,
+    paddingBottom: 80,
   },
 
   formRow: {
@@ -460,7 +471,6 @@ const styles = StyleSheet.create({
   },
 
   amountContainer: {
-    width: Platform.select({ web: '50%', ios: '100%' }),
-    paddingLeft: Platform.select({ web: 16 }),
+    paddingBottom: Platform.select({ ios: 40 }),
   },
 });

@@ -19,7 +19,7 @@ ItemGroup.propTypes = {
   title: PropTypes.string.isRequired,
   arrowIconSize: PropTypes.number,
   items: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string,
+    id: PropTypes.number,
     name: PropTypes.string,
     categoryId: PropTypes.number,
     dateString: PropTypes.string,

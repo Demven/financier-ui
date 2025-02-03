@@ -52,17 +52,26 @@ export default function BarChart (props) {
   }, [barSelected]);
 
   function getBarHeight (point) {
-    return `${Math.round(point * 100 / maxPoint)}%`;
+    const height = Math.round(point * 100 / maxPoint);
+
+    return height > 0
+      ? `${height}%`
+      : 0;
   }
 
   return (
-    <View style={[styles.barChart, {
-      width,
-      height,
-    }, style]}>
-      <View style={[styles.bars, {
-        height: height - legendHeight,
-      }]}>
+    <View
+      style={[
+        styles.barChart,
+        { width, height },
+        style,
+      ]}
+    >
+      <View
+        style={[styles.bars, {
+          height: height - legendHeight,
+        }]}
+      >
         {data.map((point, index) => {
           const highlighted = barHighlightedIndex === index;
           const focused = barFocusedIndex === index;
