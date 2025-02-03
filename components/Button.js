@@ -20,6 +20,7 @@ Button.propTypes = {
   style: PropTypes.any,
   buttonContainerStyle: PropTypes.object,
   textStyle: PropTypes.object,
+  paddingHorizontal: PropTypes.number,
   look: PropTypes.oneOf(Object.values(BUTTON_LOOK)),
   onPress: PropTypes.func,
   text: PropTypes.string.isRequired,
@@ -32,6 +33,7 @@ export default function Button (props) {
     style,
     buttonContainerStyle,
     textStyle,
+    paddingHorizontal,
     look = BUTTON_LOOK.PRIMARY,
     onPress,
     text,
@@ -69,6 +71,9 @@ export default function Button (props) {
         styles[`buttonContainer--${look}`],
         ((hover || focused) && !disabled) && styles.buttonContainerActive,
         disabled && styles.buttonContainerDisabled,
+        {
+          paddingHorizontal: paddingHorizontal || Platform.select({ ios: 36, web: 24 }),
+        },
         buttonContainerStyle,
       ]}>
         <Text style={[
@@ -101,7 +106,6 @@ const styles = StyleSheet.create({
     position: 'relative',
     height: Platform.select({ ios: 46, web: 40 }),
     paddingVertical: 8,
-    paddingHorizontal: Platform.select({ ios: 36, web: 24 }),
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,

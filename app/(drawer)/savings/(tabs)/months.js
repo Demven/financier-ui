@@ -223,7 +223,11 @@ export default function SavingsScreen () {
       ? windowWidth < MEDIA.WIDE_MOBILE ? 24 : 32 // tablet/mobile
       : 52 // desktop
     : 40; // wide desktop
-  const listContainerPaddingTop = windowWidth < MEDIA.TABLET ? 24 : 40;
+  const listContainerPaddingTop = windowWidth <= MEDIA.WIDE_MOBILE
+    ? 24 // mobile
+    : windowWidth <= MEDIA.DESKTOP
+      ? 56 // TABLET
+      : 40; // DESKTOP
 
   const noDataForSelectedYear = !Object.keys(savings[selectedYear] || {}).length
     && !Object.keys(investments[selectedYear] || {}).length;
@@ -243,7 +247,10 @@ export default function SavingsScreen () {
           paddingHorizontal: overviewScreenPadding,
         }]}
       >
-        <Loader loading={loading} />
+        <Loader
+          overlayStyle={{ left: Platform.select({ ios: overviewScreenPadding, web: 0 }) }}
+          loading={loading}
+        />
 
         {(windowWidth < MEDIA.TABLET && !hideYearSelector) && (
           <HeaderDropdown

@@ -148,7 +148,7 @@ export default function DrawerContent (props) {
         {...props}
         style={styles.drawerScrollViewWrapper}
         contentContainerStyle={[styles.drawerScrollView, {
-          marginTop: Platform.select({ ios: windowWidth < MEDIA.WIDE_MOBILE ? -54 : 0 }),
+          marginTop: Platform.select({ ios: -54 }),
           padding: 0,
         }]}
       >

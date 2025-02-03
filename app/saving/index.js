@@ -578,7 +578,10 @@ export default function SavingScreen () {
   return (
     <>
       <Modal
-        contentStyle={styles.savingScreen}
+        style={[
+          { maxWidth: Platform.select({ ios: 580 }) },
+          Platform.isPad && { maxHeight: 600 },
+        ]}
         title={modalTitle}
         disableSave={formIsInvalid}
         onSave={onSave}
@@ -588,124 +591,126 @@ export default function SavingScreen () {
         }
         onCloseRequest={onClose}
       >
-        <Loader loading={loading} />
+        <View style={styles.savingScreen}>
+          <Loader loading={loading} />
 
-        {!savingToEdit && !investmentToEdit && (
-          <View style={{ zIndex: 20 }}>
-            <Dropdown
-              style={styles.formElement}
-              label='Type'
-              open={typeSelectOpen}
-              setOpen={setTypeSelectOpen}
-              value={typeId}
-              setValue={setTypeId}
-              items={types}
-              setItems={setTypes}
-            />
-          </View>
-        )}
-
-        <View style={styles.formRow}>
-          <Input
-            inputContainerStyle={styles.formElement}
-            label='Name'
-            placeholder={typeId === TYPE.SAVING
-              ? 'American Express Savings'
-              : 'S&P500'
-            }
-            inputType={INPUT_TYPE.DEFAULT}
-            value={name}
-            errorText={nameError}
-            onChange={setName}
-            onBlur={validateName}
-            autoFocus
-          />
-        </View>
-
-        <View style={[styles.formRow, { zIndex: 10 }]}>
-          <View style={[styles.halfFormElement, { paddingRight: Platform.select({ web: 16, ios: 12 }) }]}>
-            <Dropdown
-              label='Date'
-              open={dateOptionsSelectOpen}
-              setOpen={setDateOptionsSelectOpen}
-              value={dateOptionId}
-              setValue={setDateOptionId}
-              items={dateOptions}
-              setItems={setDateOptions}
-            />
-          </View>
-
-          <View style={[styles.halfFormElement, { paddingLeft: Platform.select({ web: 16, ios: 12 }) }]}>
-            <DatePicker
-              label='Set Date'
-              dateString={dateString}
-              max={dateToDateString(todayDate)}
-              onChange={setDateString}
-              disabled={dateDisabled}
-            />
-          </View>
-        </View>
-
-        {typeId === TYPE.INVESTMENT && (
-          <>
-            <View style={styles.formRow}>
-              <View style={[styles.halfFormElement, { paddingRight: Platform.select({ web: 16, ios: 12 }) }]}>
-                <Input
-                  inputContainerStyle={styles.formElement}
-                  label='Ticker'
-                  placeholder='SPY'
-                  inputType={INPUT_TYPE.DEFAULT}
-                  value={ticker}
-                  onChange={(ticker) => setTicker(ticker.toUpperCase())}
-                />
-              </View>
-
-              <View style={[styles.halfFormElement, { paddingLeft: Platform.select({ web: 16, ios: 12 }) }]}>
-                <Input
-                  inputContainerStyle={styles.formElement}
-                  label='Total Shares'
-                  placeholder='0'
-                  inputType={INPUT_TYPE.QUANTITY}
-                  value={shares}
-                  errorText={sharesError}
-                  onChange={setShares}
-                  onBlur={validateShares}
-                />
-              </View>
+          {!savingToEdit && !investmentToEdit && (
+            <View style={{ zIndex: 20 }}>
+              <Dropdown
+                style={styles.formElement}
+                label='Type'
+                open={typeSelectOpen}
+                setOpen={setTypeSelectOpen}
+                value={typeId}
+                setValue={setTypeId}
+                items={types}
+                setItems={setTypes}
+              />
             </View>
+          )}
 
-            <View style={styles.formRow}>
-              <View style={styles.amountContainer}>
-                <Input
-                  inputContainerStyle={styles.formElement}
-                  label='Price per share'
-                  placeholder='0.01'
-                  inputType={INPUT_TYPE.CURRENCY}
-                  value={pricePerShare}
-                  errorText={pricePerShareError}
-                  onChange={setPricePerShare}
-                  onBlur={validatePricePerShare}
-                />
-              </View>
-            </View>
-          </>
-        )}
-
-        {typeId === TYPE.SAVING && (
           <View style={styles.formRow}>
-            <View style={styles.amountContainer}>
-              <Input
-                label='Amount'
-                placeholder='0.01'
-                inputType={INPUT_TYPE.CURRENCY}
-                value={amount}
-                errorText={amountError}
-                onChange={setAmount}
-                onBlur={validateAmount}
+            <Input
+              inputContainerStyle={styles.formElement}
+              label='Name'
+              placeholder={typeId === TYPE.SAVING
+                ? 'American Express Savings'
+                : 'S&P500'
+              }
+              inputType={INPUT_TYPE.DEFAULT}
+              value={name}
+              errorText={nameError}
+              onChange={setName}
+              onBlur={validateName}
+              autoFocus
+            />
+          </View>
+
+          <View style={[styles.formRow, { zIndex: 10 }]}>
+            <View style={[styles.halfFormElement, { paddingRight: Platform.select({ web: 16, ios: 12 }) }]}>
+              <Dropdown
+                label='Date'
+                open={dateOptionsSelectOpen}
+                setOpen={setDateOptionsSelectOpen}
+                value={dateOptionId}
+                setValue={setDateOptionId}
+                items={dateOptions}
+                setItems={setDateOptions}
+              />
+            </View>
+
+            <View style={[styles.halfFormElement, { paddingLeft: Platform.select({ web: 16, ios: 12 }) }]}>
+              <DatePicker
+                label='Set Date'
+                dateString={dateString}
+                max={dateToDateString(todayDate)}
+                onChange={setDateString}
+                disabled={dateDisabled}
               />
             </View>
           </View>
-        )}
+
+          {typeId === TYPE.INVESTMENT && (
+            <>
+              <View style={styles.formRow}>
+                <View style={[styles.halfFormElement, { paddingRight: Platform.select({ web: 16, ios: 12 }) }]}>
+                  <Input
+                    inputContainerStyle={styles.formElement}
+                    label='Ticker'
+                    placeholder='SPY'
+                    inputType={INPUT_TYPE.DEFAULT}
+                    value={ticker}
+                    onChange={(ticker) => setTicker(ticker.toUpperCase())}
+                  />
+                </View>
+
+                <View style={[styles.halfFormElement, { paddingLeft: Platform.select({ web: 16, ios: 12 }) }]}>
+                  <Input
+                    inputContainerStyle={styles.formElement}
+                    label='Total Shares'
+                    placeholder='0'
+                    inputType={INPUT_TYPE.QUANTITY}
+                    value={shares}
+                    errorText={sharesError}
+                    onChange={setShares}
+                    onBlur={validateShares}
+                  />
+                </View>
+              </View>
+
+              <View style={styles.formRow}>
+                <View style={styles.amountContainer}>
+                  <Input
+                    inputContainerStyle={styles.formElement}
+                    label='Price per share'
+                    placeholder='0.01'
+                    inputType={INPUT_TYPE.CURRENCY}
+                    value={pricePerShare}
+                    errorText={pricePerShareError}
+                    onChange={setPricePerShare}
+                    onBlur={validatePricePerShare}
+                  />
+                </View>
+              </View>
+            </>
+          )}
+
+          {typeId === TYPE.SAVING && (
+            <View style={styles.formRow}>
+              <View style={styles.amountContainer}>
+                <Input
+                  label='Amount'
+                  placeholder='0.01'
+                  inputType={INPUT_TYPE.CURRENCY}
+                  value={amount}
+                  errorText={amountError}
+                  onChange={setAmount}
+                  onBlur={validateAmount}
+                />
+              </View>
+            </View>
+          )}
+        </View>
       </Modal>
 
       {deleteSavingDialogVisible && (
@@ -737,8 +742,8 @@ export default function SavingScreen () {
 
 const styles = StyleSheet.create({
   savingScreen: {
-    paddingTop: Platform.select({ web: 48 }),
-    paddingBottom: Platform.select({ web: 80 }),
+    paddingTop: 16,
+    paddingBottom: 48,
   },
 
   formRow: {
@@ -758,5 +763,6 @@ const styles = StyleSheet.create({
   amountContainer: {
     width: '50%',
     paddingLeft: 16,
+    paddingBottom: Platform.select({ ios: 48 }),
   },
 });

@@ -122,9 +122,9 @@ export default function Loader (props) {
 
 const styles = StyleSheet.create({
   loader: {
-    position: 'absolute',
     width: '100%',
     height: '100%',
+    position: 'absolute',
     backgroundColor: COLOR.WHITE,
     justifyContent: 'center',
     alignItems: 'center',

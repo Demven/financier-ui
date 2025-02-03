@@ -3,7 +3,7 @@ export default {
   expo: {
     name: "financier-ui",
     slug: "financier-ui",
-    version: "2.7.0",
+    version: "2.8.0",
     scheme: "financier-ui",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
@@ -12,7 +12,7 @@ export default {
       bundleIdentifier: "com.demven.financierui",
       icon: "./public/images/favicons/apple-touch-icon.png",
       runtimeVersion: "1.0.0",
-      buildNumber: "4",
+      buildNumber: "5",
     },
     android: {
       package: "com.demven.financierui"

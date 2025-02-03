@@ -5,7 +5,7 @@ import {
   View,
 } from 'react-native';
 import { useGlobalSearchParams, useRouter } from 'expo-router';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Modal from '../../components/Modal';
 import Input, { INPUT_TYPE } from '../../components/Input';
 import Dropdown from '../../components/Dropdown';
@@ -30,7 +30,8 @@ import {
   deleteIncome,
 } from '../../services/api/income';
 import { useDeleteItemAction } from '../../context/DeleteItemContext';
-import ConfirmationDialog from "../../components/ConfirmationDialog";
+import ConfirmationDialog from '../../components/ConfirmationDialog';
+import { MEDIA } from '../../styles/media';
 
 const DATE_OPTION = {
   TODAY: 'today',
@@ -51,6 +52,8 @@ export default function IncomeScreen () {
   const dispatch = useDispatch();
 
   const { registerDeleteItemAction } = useDeleteItemAction();
+
+  const windowWidth = useSelector(state => state.ui.windowWidth);
 
   const canGoBack = router.canGoBack();
 
@@ -325,61 +328,71 @@ export default function IncomeScreen () {
   return (
     <>
       <Modal
-        contentStyle={styles.incomeScreen}
+        style={[
+          { maxWidth: Platform.select({ ios: 580 }) },
+          Platform.isPad && { maxHeight: 600 },
+        ]}
         title={title}
         disableSave={formIsInvalid}
         onSave={onSave}
         onDelete={incomeToEdit ? onDeleteRequest : undefined}
         onCloseRequest={onClose}
       >
-        <Loader loading={loading} />
+        <View style={styles.incomeScreen}>
+          <Loader loading={loading} />
 
-        <Input
-          inputContainerStyle={styles.formElement}
-          label='Name'
-          placeholder='Paycheck'
-          inputType={INPUT_TYPE.DEFAULT}
-          value={name}
-          errorText={nameError}
-          onChange={setName}
-          onBlur={validateName}
-        />
+          <Input
+            inputContainerStyle={styles.formElement}
+            label='Name'
+            placeholder='Paycheck'
+            inputType={INPUT_TYPE.DEFAULT}
+            value={name}
+            errorText={nameError}
+            onChange={setName}
+            onBlur={validateName}
+          />
 
-        <View style={[styles.formRow, { zIndex: 10 }]}>
-          <View style={[styles.halfFormElement, { paddingRight: Platform.select({ web: 16, ios: 12 }) }]}>
-            <Dropdown
-              label='Date'
-              open={dateOptionsSelectOpen}
-              setOpen={setDateOptionsSelectOpen}
-              value={dateOptionId}
-              setValue={setDateOptionId}
-              items={dateOptions}
-              setItems={setDateOptions}
-            />
+          <View style={[styles.formRow, { zIndex: 10 }]}>
+            <View style={[styles.halfFormElement, { paddingRight: Platform.select({ web: 16, ios: 12 }) }]}>
+              <Dropdown
+                label='Date'
+                open={dateOptionsSelectOpen}
+                setOpen={setDateOptionsSelectOpen}
+                value={dateOptionId}
+                setValue={setDateOptionId}
+                items={dateOptions}
+                setItems={setDateOptions}
+              />
+            </View>
+
+            <View style={[styles.halfFormElement, { paddingLeft: Platform.select({ web: 16, ios: 12 }) }]}>
+              <DatePicker
+                label='Set Date'
+                dateString={dateString}
+                max={dateToDateString(todayDate)}
+                onChange={setDateString}
+                disabled={dateDisabled}
+              />
+            </View>
           </View>
 
-          <View style={[styles.halfFormElement, { paddingLeft: Platform.select({ web: 16, ios: 12 }) }]}>
-            <DatePicker
-              label='Set Date'
-              dateString={dateString}
-              max={dateToDateString(todayDate)}
-              onChange={setDateString}
-              disabled={dateDisabled}
-            />
-          </View>
-        </View>
-
-        <View style={styles.formRow}>
-          <View style={styles.amountContainer}>
-            <Input
-              label='Amount'
-              placeholder='0.01'
-              inputType={INPUT_TYPE.CURRENCY}
-              value={amount}
-              errorText={amountError}
-              onChange={setAmount}
-              onBlur={validateAmount}
-            />
+          <View style={styles.formRow}>
+            <View
+              style={[styles.amountContainer, {
+                width: windowWidth <= MEDIA.WIDE_MOBILE ? '100%' : '50%',
+                paddingLeft: windowWidth <= MEDIA.WIDE_MOBILE ? 0 : 16,
+              }]}
+            >
+              <Input
+                label='Amount'
+                placeholder='0.01'
+                inputType={INPUT_TYPE.CURRENCY}
+                value={amount}
+                errorText={amountError}
+                onChange={setAmount}
+                onBlur={validateAmount}
+              />
+            </View>
           </View>
         </View>
       </Modal>
@@ -401,8 +414,8 @@ export default function IncomeScreen () {
 
 const styles = StyleSheet.create({
   incomeScreen: {
-    paddingTop: Platform.select({ web: 48 }),
-    paddingBottom: Platform.select({ web: 80 }),
+    paddingTop: 16,
+    paddingBottom: 48,
   },
 
   formRow: {
@@ -419,8 +432,5 @@ const styles = StyleSheet.create({
     width: '50%',
   },
 
-  amountContainer: {
-    width: Platform.select({ web: '50%', ios: '100%' }),
-    paddingLeft: Platform.select({ web: 16 }),
-  },
+  amountContainer: {},
 });

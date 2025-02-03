@@ -11,6 +11,7 @@ export const TOAST_TYPE = {
 
 const getInitialState = () => ({
   windowWidth: Dimensions.get('window').width,
+  windowHeight: Dimensions.get('window').height,
   selectedTab: TAB.MONTHS,
   selectedYear: new Date().getFullYear(),
   selectedMonth: undefined,
@@ -37,6 +38,11 @@ const uiSlice = createSlice({
       ...state,
       windowWidth: action.payload,
     }),
+    setWindowHeight: (state, action) => ({
+      ...state,
+      windowHeight: action.payload,
+    }),
+
     setSelectedTab: (state, action) => {
       saveToStorage(STORAGE_KEY.SELECTED_TAB, action.payload);
 
@@ -108,6 +114,8 @@ const uiSlice = createSlice({
 export const resetUIAction = uiSlice.actions.resetUI;
 
 export const setWindowWidthAction = uiSlice.actions.setWindowWidth;
+export const setWindowHeightAction = uiSlice.actions.setWindowHeight;
+
 export const setSelectedTabAction = uiSlice.actions.setSelectedTab;
 
 export const setSelectedYearAction = uiSlice.actions.setSelectedYear;
