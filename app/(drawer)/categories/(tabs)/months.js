@@ -174,6 +174,7 @@ export default function CategoriesScreen () {
   function renderYears () {
     return yearsToSelect
       .map(yearString => Number(yearString))
+      .sort((year1, year2) => year2 - year1) // sort desc
       .map(yearNumber => (
         <ViewPortDetector
           key={yearNumber}
