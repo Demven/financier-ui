@@ -1,6 +1,6 @@
 {
   "name": "financier-ui",
-  "version": "2.8.0",
+  "version": "2.8.1",
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
@@ -34,7 +34,6 @@
     "expo-updates": "~0.26.10",
     "patch-package": "^8.0.0",
     "prop-types": "^15.8.1",
-    "proxy-memoize": "^3.0.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-native": "0.76.5",
