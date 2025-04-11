@@ -8,7 +8,11 @@ import {
 } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import PropTypes from 'prop-types';
-import { dateToDateString, formatDateString } from '../services/date';
+import {
+  dateStringToDate,
+  dateToDateString,
+  formatDateString,
+} from '../services/date';
 import { COLOR } from '../styles/colors';
 import { FONT } from '../styles/fonts';
 
@@ -90,8 +94,8 @@ export default function DatePicker (props) {
           <DateTimePickerModal
             isVisible={pickerModalOpened}
             mode='date'
-            date={new Date(dateString)}
-            maximumDate={max ? new Date(max) : undefined}
+            date={dateStringToDate(dateString)}
+            maximumDate={max ? dateStringToDate(max) : undefined}
             onConfirm={(date) => {
               setPickerModalOpened(false);
 
