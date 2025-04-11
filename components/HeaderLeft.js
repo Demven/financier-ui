@@ -5,7 +5,6 @@ import {
   Platform,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import { memoize } from 'proxy-memoize';
 import { HeaderTitle } from '@react-navigation/elements';
 import { useDispatch, useSelector } from 'react-redux';
 import { useDrawerStatus } from '@react-navigation/drawer';
@@ -36,29 +35,23 @@ export default function HeaderLeft (props) {
   const selectedTab = useSelector(state => state.ui.selectedTab);
   const hideYearSelector = selectedTab === TAB.YEARS;
 
-  const getExpensesYears = memoize(state => Object
-    .keys(state.expenses.expensesTotals)
-    .map(Number)
-    .filter(Boolean));
-  const expensesYears = useSelector(getExpensesYears);
+  const expensesTotals = useSelector(state => state.expenses.expensesTotals);
+  const incomesTotals = useSelector(state => state.incomes.incomesTotals);
+  const savingsTotals = useSelector(state => state.savings.savingsTotals);
+  const investmentsTotals = useSelector(state => state.savings.investmentsTotals);
 
-  const getIncomesYears = memoize(state => Object
-    .keys(state.incomes.incomesTotals)
+  const expensesYears = Object.keys(expensesTotals)
     .map(Number)
-    .filter(Boolean));
-  const incomesYears = useSelector(getIncomesYears);
-
-  const getSavingsYears = memoize(state => Object
-    .keys(state.savings.savingsTotals)
+    .filter(Boolean);
+  const incomesYears = Object.keys(incomesTotals)
     .map(Number)
-    .filter(Boolean));
-  const savingsYears = useSelector(getSavingsYears);
-
-  const getInvestmentsYears = memoize(state => Object
-    .keys(state.savings.investmentsTotals)
+    .filter(Boolean);
+  const savingsYears = Object.keys(savingsTotals)
     .map(Number)
-    .filter(Boolean));
-  const investmentsYears = useSelector(getInvestmentsYears);
+    .filter(Boolean);
+  const investmentsYears = Object.keys(investmentsTotals)
+    .map(Number)
+    .filter(Boolean);
 
   const yearsToSelect = useMemo(() => {
     return Array.from(new Set([
