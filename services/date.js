@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 export const DAYS_IN_WEEK = 7;
 export const MONTHS_IN_YEAR = 12;
 export const WEEKS_IN_MONTH = 4;
@@ -17,12 +19,16 @@ export const MONTH_NAME = {
   [12]: 'December',
 };
 
+export function dateStringToDate (dateString) {
+  return new Date(moment(dateString).add(12, 'hours'));
+}
+
 export function dateToDateString (date) {
   return `${date.getFullYear()}-${`0${date.getMonth() + 1}`.slice(-2)}-${`0${date.getUTCDate()}`.slice(-2)}`;
 }
 
 export function formatDateString (dateString) {
-  return new Date(dateString).toLocaleDateString();
+  return moment(dateString).format('MMM DD yyyy');
 }
 
 export function getDaysInMonth (year, month) {
