@@ -12,6 +12,7 @@ import {
   useNavigation,
   useGlobalSearchParams,
   usePathname,
+  useRouter,
 } from 'expo-router';
 import { useSelector, useDispatch } from 'react-redux';
 import { ViewPortDetector, ViewPortDetectorProvider } from 'react-native-viewport-detector';
@@ -21,7 +22,11 @@ import Animated, {
   useSharedValue,
   useDerivedValue,
 } from 'react-native-reanimated';
-import { setSelectedTabAction, setSelectedYearAction } from '../../../../redux/reducers/ui';
+import {
+  setSelectedMonthAction,
+  setSelectedTabAction,
+  setSelectedYearAction,
+} from '../../../../redux/reducers/ui';
 import ExpensesMonth from '../../../../components/expenses/ExpensesMonth/ExpensesMonth';
 import ExpensesWeek from '../../../../components/expenses/ExpensesWeek/ExpensesWeek';
 import ExpensesYear from '../../../../components/expenses/ExpensesYear/ExpensesYear';
@@ -35,6 +40,7 @@ import { COLOR } from '../../../../styles/colors';
 import { MEDIA } from '../../../../styles/media';
 
 export default function ExpensesScreen () {
+  const router = useRouter();
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const pathname = usePathname();
@@ -75,11 +81,21 @@ export default function ExpensesScreen () {
     .keys(expenses[selectedYear] || {})
     .map(monthString => Number(monthString))
     .reverse();
-  const firstMonthNumber = expensesMonths[0];
+  const mostRecentMonthNumber = expensesMonths[0];
 
   const routeYear = parseInt(params?.year);
-  const routeMonthNumber = parseInt(params?.monthNumber, 10) || selectedMonth || firstMonthNumber;
+  const routeMonthNumber = parseInt(params?.monthNumber, 10) || selectedMonth || mostRecentMonthNumber;
   const routeWeekNumber = parseInt(params?.weekNumber, 10) || selectedWeek;
+
+  const noDataForSelectedMonth = !Object.keys(expenses?.[selectedYear]?.[routeMonthNumber] || {}).length;
+
+  // handle deleting the last and only expense in this month - switch tol teh most recently available month
+  useEffect(() => {
+    if (noDataForSelectedMonth && mostRecentMonthNumber) {
+      dispatch(setSelectedMonthAction(mostRecentMonthNumber));
+      router.setParams({ monthNumber: mostRecentMonthNumber });
+    }
+  }, [noDataForSelectedMonth, mostRecentMonthNumber]);
 
   useEffect(() => {
     if (overviewType !== selectedTab) {
@@ -215,6 +231,7 @@ export default function ExpensesScreen () {
 
   const noDataForSelectedYear = !Object.keys(expenses[selectedYear] || {}).length;
   const noDataForAnyYear = !Object.keys(expenses).length;
+  const noData = noDataForSelectedYear || noDataForAnyYear;
 
   const hideYearSelector = selectedTab === TAB.YEARS;
 
@@ -253,20 +270,22 @@ export default function ExpensesScreen () {
 
         <ViewPortDetectorProvider flex={1}>
           <View style={[styles.listContainer, { paddingTop: listContainerPaddingTop }]}>
-            {((noDataForSelectedYear && selectedTab !== TAB.YEARS)
-              || (noDataForAnyYear && selectedTab === TAB.YEARS)
-            ) && <NoDataPlaceholder />}
+            {noData && <NoDataPlaceholder />}
 
-            {!noDataForSelectedYear && selectedTab === TAB.WEEKS && (
-              renderWeeks()
-            )}
+            {!noData && (
+              <>
+                {selectedTab === TAB.WEEKS && (
+                  renderWeeks()
+                )}
 
-            {!noDataForSelectedYear && selectedTab === TAB.MONTHS && (
-              renderMonths()
-            )}
+                {selectedTab === TAB.MONTHS && (
+                  renderMonths()
+                )}
 
-            {!noDataForAnyYear && selectedTab === TAB.YEARS && (
-              renderYears()
+                {selectedTab === TAB.YEARS && (
+                  renderYears()
+                )}
+              </>
             )}
           </View>
         </ViewPortDetectorProvider>
