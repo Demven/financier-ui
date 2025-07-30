@@ -5,6 +5,7 @@ export const COLOR = {
   GRAY: '#646464',
   LIGHT_GRAY: '#818181',
   LIGHTER_GRAY: '#CFCFCF',
+  VERY_LIGHT_GRAY: '#E7E7E7',
   PALE_GRAY: '#F6F6F6',
   WHITE: '#fff',
   BROWN: '#504643',
@@ -12,6 +13,7 @@ export const COLOR = {
   ORANGE: '#CA7703',
   MEDIUM_ORANGE: '#eea74c',
   LIGHT_ORANGE: '#FFD499',
+  PALE_ORANGE: '#FFD499',
   GREEN: '#2A7128',
   RED: '#bd0101',
 };

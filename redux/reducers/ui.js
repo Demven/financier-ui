@@ -24,6 +24,7 @@ const getInitialState = () => ({
   },
   loading: true, // on first load, the loading state is true by default
   reinitialize: false,
+  dataRefreshed: +new Date(),
 });
 
 const uiSlice = createSlice({
@@ -96,16 +97,25 @@ const uiSlice = createSlice({
         },
       };
     },
+
     setLoading: (state, action) => {
       return {
         ...state,
         loading: action.payload,
       };
     },
+
     reinitialize: (state, action) => {
       return {
         ...state,
         reinitialize: action.payload === true,
+      };
+    },
+
+    setDataRefreshed: (state, action) => {
+      return {
+        ...state,
+        dataRefreshed: action.payload,
       };
     },
   },
@@ -126,7 +136,11 @@ export const setTitleAction = uiSlice.actions.setTitle;
 
 export const showToastAction = uiSlice.actions.showToast;
 export const hideToastAction = uiSlice.actions.hideToast;
+
 export const setLoadingAction = uiSlice.actions.setLoading;
+
 export const reinitializeAction = uiSlice.actions.reinitialize;
+
+export const setDataRefreshedAction = uiSlice.actions.setDataRefreshed;
 
 export default uiSlice.reducer;

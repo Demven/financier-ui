@@ -86,3 +86,7 @@ export function getWeekNumberByDayNumber (day) {
 
   return week;
 }
+
+export function getDateTimeAgoFrom (date) {
+  return moment(date).fromNow();
+}

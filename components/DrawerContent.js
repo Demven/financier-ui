@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -5,8 +6,15 @@ import {
   Pressable,
   Platform,
 } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   useRouter,
   usePathname,
@@ -20,9 +28,10 @@ import {
 } from '@expo/vector-icons';
 import Logo from './Logo';
 import { clearStorage } from '../services/storage';
+import { getDateTimeAgoFrom } from '../services/date';
+import { fetchOverviewData } from '../services/fetch-data';
 import { COLOR } from '../styles/colors';
 import { FONT } from '../styles/fonts';
-import { MEDIA } from '../styles/media';
 
 export const DRAWER_PAGE = {
   OVERVIEW: 'overview',
@@ -125,18 +134,46 @@ const DRAWER_ITEMS = [
 export default function DrawerContent (props) {
   const router = useRouter();
   const pathname = usePathname();
+  const dispatch = useDispatch();
 
-  const windowWidth = useSelector(state => state.ui.windowWidth);
+  const [refreshButtonHover, setRefreshButtonHover] = useState(false);
+
   const selectedTab = useSelector(state => state.ui.selectedTab);
+  const dataRefreshed = useSelector(state => state.ui.dataRefreshed);
+  const dataLoading = useSelector(state => state.ui.loading);
 
   const firstName = useSelector(state => state.account.firstName) || '';
   const lastName = useSelector(state => state.account.lastName) || '';
+
+  const rotation = useSharedValue(0);
+
+  useEffect(() => {
+    if (dataLoading) {
+      rotation.value = withRepeat(
+        withTiming(360, { duration: 650, easing: Easing.linear }),
+        -1, // -1 for infinite repeat
+        false // Do not reverse
+      );
+    } else {
+      rotation.value = withTiming(0, { duration: 1000 })
+    }
+  }, [dataLoading]);
+
+  async function onRefresh () {
+    fetchOverviewData(new Date().getFullYear(), dispatch, dataRefreshed);
+  }
 
   async function onLogOut () {
     await clearStorage();
 
     router.push('sign-in');
   }
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ rotateZ: `${rotation.value}deg` }],
+    };
+  });
 
   return (
     <View style={styles.drawerContent}>
@@ -177,6 +214,28 @@ export default function DrawerContent (props) {
         })}
       </DrawerContentScrollView>
 
+      <View style={styles.drawerDataRefresh}>
+        <Text style={styles.refreshDate}>
+          Synchronized {getDateTimeAgoFrom(dataRefreshed)}
+        </Text>
+
+        <Animated.View style={[styles.refreshButton, animatedStyle, refreshButtonHover && !dataLoading && styles.hovered]}>
+          <Pressable
+            style={({ pressed }) => [pressed && !dataLoading && styles.pressed]}
+            onHoverIn={() => setRefreshButtonHover(true)}
+            onHoverOut={() => setRefreshButtonHover(false)}
+            onPress={onRefresh}
+          >
+            <Ionicons
+              style={styles.refreshIcon}
+              name='refresh'
+              color={COLOR.BLACK}
+              size={24}
+            />
+          </Pressable>
+        </Animated.View>
+      </View>
+
       <View style={styles.drawerFooter}>
         <Text style={styles.userNameText}>
           {firstName} {lastName[0]}.
@@ -185,6 +244,7 @@ export default function DrawerContent (props) {
         <Pressable
           style={({ pressed }) => [pressed && styles.pressed]}
           onPress={onLogOut}
+          disabled={dataLoading}
         >
           <Ionicons
             style={styles.logOutIcon}
@@ -255,8 +315,40 @@ const styles = StyleSheet.create({
     fontFamily: FONT.NOTO_SERIF.BOLD,
   },
 
+  drawerDataRefresh: {
+    paddingTop: 12,
+    paddingRight: 12,
+    paddingBottom: 12,
+    paddingLeft: 20,
+    marginBottom: 40,
+    marginLeft: Platform.select({ ios: 32, web: 24 }),
+    marginRight: 24,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: COLOR.VERY_LIGHT_GRAY,
+    borderRadius: 4,
+  },
+  refreshButton: {
+    padding: 4,
+    borderRadius: 16,
+    overflow: 'hidden',
+    backgroundColor: COLOR.TRANSPARENT,
+  },
+  hovered: {
+    backgroundColor: COLOR.WHITE,
+  },
+  refreshDate: {
+    fontFamily: FONT.NOTO_SERIF.REGULAR,
+    paddingRight: 12,
+    fontSize: 14,
+    lineHeight: 21,
+  },
+  refreshIcon: {},
+
   drawerFooter: {
-    paddingLeft: Platform.select({ ios: 54, web: 42 }),
+    paddingLeft: Platform.select({ ios: 50, web: 42 }),
     paddingTop: 8,
     paddingBottom: 32,
     flexDirection: 'row',
