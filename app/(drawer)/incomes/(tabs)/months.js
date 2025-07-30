@@ -89,7 +89,7 @@ export default function IncomesScreen () {
 
   const noDataForSelectedMonth = !Object.keys(incomes?.[selectedYear]?.[routeMonthNumber] || {}).length;
 
-  // handle deleting the last and only expense in this month - switch tol teh most recently available month
+  // handle deleting the last and only expense in this month - switch to the most recently available month
   useEffect(() => {
     if (noDataForSelectedMonth && mostRecentMonthNumber) {
       dispatch(setSelectedMonthAction(mostRecentMonthNumber));

@@ -23,6 +23,7 @@ import { getTimespan } from '../services/location';
 import { validateToken } from '../services/api/auth';
 import { fetchBasics } from '../services/api/basics';
 import { fetchOverviewForYear } from '../services/api/overview';
+import { fetchOverviewData } from '../services/fetch-data';
 import { setAccountAction } from '../redux/reducers/account';
 import { setCategoriesAction } from '../redux/reducers/categories';
 import { setExpensesAction, setExpensesTotalsAction } from '../redux/reducers/expenses';
@@ -39,6 +40,7 @@ import {
   reinitializeAction,
   setWindowWidthAction,
   setWindowHeightAction,
+  setDataRefreshedAction,
 } from '../redux/reducers/ui';
 import { setIncomesAction, setIncomesTotalsAction } from '../redux/reducers/incomes';
 import { setColorsAction } from '../redux/reducers/colors';
@@ -82,6 +84,8 @@ function Navigator () {
   const needToReinitialize = useSelector(state => state.ui.reinitialize);
 
   const accountId = useSelector(state => state.account.id);
+
+  const dataRefreshed = useSelector(state => state.ui.dataRefreshed);
 
   const [reduxInitialized, setReduxInitialized] = useState(false);
   const [basicDataFetched, setBasicDataFetched] = useState(false);
@@ -139,7 +143,7 @@ function Navigator () {
 
   useEffect(() => {
     if (reduxInitialized && basicDataFetched && selectedYear) {
-      fetchOverviewData(selectedYear);
+      fetchOverviewData(selectedYear, dispatch, dataRefreshed);
     }
   }, [reduxInitialized, basicDataFetched, selectedYear]);
 
@@ -226,51 +230,6 @@ function Navigator () {
     }
 
     setBasicDataFetched(true);
-  }
-
-  async function fetchOverviewData (year) {
-    dispatch(setLoadingAction(true));
-
-    const {
-      expenses,
-      expensesTotals,
-      incomes,
-      incomesTotals,
-      savings,
-      savingsTotals,
-      investments,
-      investmentsTotals,
-    } = await fetchOverviewForYear(year);
-
-    if (expenses) {
-      dispatch(setExpensesAction(expenses));
-    }
-    if (expensesTotals) {
-      dispatch(setExpensesTotalsAction(expensesTotals));
-    }
-
-    if (savings) {
-      dispatch(setSavingsAction(savings));
-    }
-    if (savingsTotals) {
-      dispatch(setSavingsTotalsAction(savingsTotals));
-    }
-
-    if (investments) {
-      dispatch(setInvestmentsAction(investments));
-    }
-    if (investmentsTotals) {
-      dispatch(setInvestmentsTotalsAction(investmentsTotals));
-    }
-
-    if (incomes) {
-      dispatch(setIncomesAction(incomes));
-    }
-    if (incomesTotals) {
-      dispatch(setIncomesTotalsAction(incomesTotals));
-    }
-
-    dispatch(setLoadingAction(false));
   }
 
   function onLayout () {
