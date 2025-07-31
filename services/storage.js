@@ -33,8 +33,17 @@ export function removeFromStorage (key) {
 
 export async function clearStorage () {
   try {
-    await AsyncStorage.clear();
+    // Instead of AsyncStorage.clear(), manually remove known keys
+    const keys = Object.values(STORAGE_KEY);
+    await AsyncStorage.multiRemove(keys);
   } catch (error) {
     console.error('Failed to clear async storage', error);
+    // Fallback: try to remove keys individually
+    try {
+      const keys = Object.values(STORAGE_KEY);
+      await Promise.all(keys.map(removeFromStorage));
+    } catch (fallbackError) {
+      console.error('Failed to clear storage with fallback method', fallbackError);
+    }
   }
 }

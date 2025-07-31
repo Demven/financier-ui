@@ -14,6 +14,12 @@ import Animated, {
 import PropTypes from 'prop-types';
 import CloseButton from './CloseButton';
 import Icon, { ICON_COLLECTION } from './Icon';
+import {
+  hapticSuccess,
+  hapticWarning,
+  hapticError,
+  vibrateMedium,
+} from '../services/haptics';
 import { hideToastAction, TOAST_TYPE } from '../redux/reducers/ui';
 import { FONT } from '../styles/fonts';
 import { COLOR } from '../styles/colors';
@@ -22,20 +28,33 @@ const TOAST_ICON = {
   [TOAST_TYPE.INFO]: {
     name: 'information-circle',
     collection: ICON_COLLECTION.IONICONS,
+    color: COLOR.BLUE,
+  },
+  [TOAST_TYPE.SUCCESS]: {
+    name: 'checkmark-done',
+    collection: ICON_COLLECTION.IONICONS,
+    color: COLOR.GREEN,
   },
   [TOAST_TYPE.WARNING]: {
     name: 'warning',
     collection: ICON_COLLECTION.IONICONS,
+    color: COLOR.ORANGE,
   },
   [TOAST_TYPE.ERROR]: {
     name: 'error',
     collection: ICON_COLLECTION.MATERIAL,
+    color: COLOR.RED,
   },
 };
 
 Toast.propTypes = {
   style: PropTypes.object,
-  type: PropTypes.oneOf([TOAST_TYPE.INFO, TOAST_TYPE.WARNING, TOAST_TYPE.ERROR]).isRequired,
+  type: PropTypes.oneOf([
+    TOAST_TYPE.INFO,
+    TOAST_TYPE.SUCCESS,
+    TOAST_TYPE.WARNING,
+    TOAST_TYPE.ERROR,
+  ]).isRequired,
   message: PropTypes.string.isRequired,
   visible: PropTypes.bool.isRequired,
   timeout: PropTypes.oneOf([Number, null]),
@@ -84,6 +103,7 @@ export default function Toast (props) {
     translateY.value = DEFAULT_TRANSLATE_Y;
 
     setTimeout(() => {
+      vibrate();
       opacity.value = withTiming(1, {
         duration: 200,
         easing: Easing.cubic,
@@ -112,18 +132,24 @@ export default function Toast (props) {
     dispatch(hideToastAction());
   }
 
+  function vibrate () {
+    if (type === TOAST_TYPE.INFO) {
+      vibrateMedium();
+    } else if (type === TOAST_TYPE.SUCCESS) {
+      hapticSuccess();
+    } else if (type === TOAST_TYPE.WARNING) {
+      hapticWarning();
+    } else if (type === TOAST_TYPE.ERROR) {
+      hapticError();
+    }
+  }
+
   const animatedTranslateYStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
   }));
   const animatedOpacityStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
   }));
-
-  const color = type === TOAST_TYPE.INFO
-    ? COLOR.GREEN
-    : type === TOAST_TYPE.WARNING
-      ? COLOR.ORANGE
-      : COLOR.RED;
 
   return (
     <Animated.View
@@ -141,12 +167,11 @@ export default function Toast (props) {
           style={styles.icon}
           {...TOAST_ICON[type]}
           size={24}
-          color={color}
         />
 
         <View style={styles.messageContainer}>
           {typeof message === 'string'
-            ? <Text style={[styles.message, { color }]}>
+            ? <Text style={[styles.message, { color: TOAST_ICON[type].color }]}>
                 {message}
               </Text>
             : message
@@ -188,6 +213,9 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   contentInfo: {
+    backgroundColor: COLOR.BLUE,
+  },
+  contentSuccess: {
     backgroundColor: COLOR.GREEN,
   },
   contentWarning: {

@@ -14,6 +14,7 @@ export const COLOR = {
   MEDIUM_ORANGE: '#eea74c',
   LIGHT_ORANGE: '#FFD499',
   PALE_ORANGE: '#FFD499',
+  BLUE: '#219FDD',
   GREEN: '#2A7128',
   RED: '#bd0101',
 };

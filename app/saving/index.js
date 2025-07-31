@@ -391,7 +391,7 @@ export default function SavingScreen () {
 
       dispatch(showToastAction({
         message: 'Updated',
-        type: TOAST_TYPE.INFO,
+        type: TOAST_TYPE.SUCCESS,
       }));
     } else {
       dispatch(showToastAction({
@@ -420,7 +420,7 @@ export default function SavingScreen () {
 
       dispatch(showToastAction({
         message: 'Saved',
-        type: TOAST_TYPE.INFO,
+        type: TOAST_TYPE.SUCCESS,
       }));
     } else {
       dispatch(showToastAction({
@@ -464,7 +464,7 @@ export default function SavingScreen () {
 
       dispatch(showToastAction({
         message: 'Updated',
-        type: TOAST_TYPE.INFO,
+        type: TOAST_TYPE.SUCCESS,
       }));
     } else {
       dispatch(showToastAction({
@@ -493,7 +493,7 @@ export default function SavingScreen () {
 
       dispatch(showToastAction({
         message: 'Saved',
-        type: TOAST_TYPE.INFO,
+        type: TOAST_TYPE.SUCCESS,
       }));
     } else {
       dispatch(showToastAction({
@@ -521,7 +521,7 @@ export default function SavingScreen () {
 
       dispatch(showToastAction({
         message: 'Deleted',
-        type: TOAST_TYPE.INFO,
+        type: TOAST_TYPE.SUCCESS,
       }));
     } else {
       dispatch(showToastAction({
@@ -549,7 +549,7 @@ export default function SavingScreen () {
 
       dispatch(showToastAction({
         message: 'Deleted',
-        type: TOAST_TYPE.INFO,
+        type: TOAST_TYPE.SUCCESS,
       }));
     } else {
       dispatch(showToastAction({

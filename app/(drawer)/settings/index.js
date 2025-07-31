@@ -123,7 +123,7 @@ export default function SettingsScreen () {
         dispatch(setAccountAction(accountToSave));
         dispatch(showToastAction({
           message: 'Saved',
-          type: TOAST_TYPE.INFO,
+          type: TOAST_TYPE.SUCCESS,
         }));
       } else {
         dispatch(showToastAction({

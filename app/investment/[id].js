@@ -1,3 +1,1 @@
-import InvestmentScreen from './index';
-
-export default InvestmentScreen;
+export { default } from './index';

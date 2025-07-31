@@ -13,6 +13,7 @@ import { useNavigation, useRouter } from 'expo-router';
 import CloseButton from './CloseButton';
 import DeleteIconButton from './DeleteIconButton';
 import Button, { BUTTON_LOOK } from './Button';
+import { vibrateSoft } from '../services/haptics';
 import { FONT } from '../styles/fonts';
 import { COLOR } from '../styles/colors';
 import { MEDIA } from '../styles/media';
@@ -53,6 +54,7 @@ export function useModal (onDeleteItem) {
 
   useEffect(() => {
     navigation.setOptions(navigationOptions);
+    vibrateSoft();
   }, [navigation, title]);
 }
 

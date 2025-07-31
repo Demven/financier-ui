@@ -2,9 +2,11 @@ import { createSlice } from '@reduxjs/toolkit';
 import { Dimensions } from 'react-native';
 import { TAB } from '../../components/HeaderTabs';
 import { saveToStorage, STORAGE_KEY } from '../../services/storage';
+import { vibrateLight } from '../../services/haptics';
 
 export const TOAST_TYPE = {
   INFO: 'info',
+  SUCCESS: 'success',
   WARNING: 'warning',
   ERROR: 'error',
 };
@@ -45,6 +47,7 @@ const uiSlice = createSlice({
     }),
 
     setSelectedTab: (state, action) => {
+      vibrateLight();
       saveToStorage(STORAGE_KEY.SELECTED_TAB, action.payload);
 
       return {

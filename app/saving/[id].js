@@ -1,3 +1,1 @@
-import SavingScreen from './index';
-
-export default SavingScreen;
+export { default } from './index';
