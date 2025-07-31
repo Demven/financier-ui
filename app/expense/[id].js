@@ -1,3 +1,1 @@
-import ExpenseScreen from './index';
-
-export default ExpenseScreen;
+export { default } from './index';

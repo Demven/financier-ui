@@ -13,7 +13,7 @@ import Animated, {
   withTiming,
   Easing,
 } from 'react-native-reanimated';
-import { DrawerContentScrollView } from '@react-navigation/drawer';
+import { DrawerContentScrollView, useDrawerStatus } from '@react-navigation/drawer';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   useRouter,
@@ -30,6 +30,7 @@ import Logo from './Logo';
 import { clearStorage } from '../services/storage';
 import { getDateTimeAgoFrom } from '../services/date';
 import { fetchOverviewData } from '../services/fetch-data';
+import { vibrateRigid, vibrateSoft } from '../services/haptics';
 import { COLOR } from '../styles/colors';
 import { FONT } from '../styles/fonts';
 
@@ -147,6 +148,15 @@ export default function DrawerContent (props) {
 
   const rotation = useSharedValue(0);
 
+  let isDrawerOpen = false;
+  try {
+    isDrawerOpen = useDrawerStatus() === 'open';
+  } catch (error) {}
+
+  useEffect(() => {
+    vibrateSoft();
+  }, [isDrawerOpen]);
+
   useEffect(() => {
     if (dataLoading) {
       rotation.value = withRepeat(
@@ -160,6 +170,7 @@ export default function DrawerContent (props) {
   }, [dataLoading]);
 
   async function onRefresh () {
+    vibrateRigid();
     fetchOverviewData(new Date().getFullYear(), dispatch, dataRefreshed);
   }
 

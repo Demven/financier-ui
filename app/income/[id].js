@@ -1,3 +1,1 @@
-import IncomeScreen from './index';
-
-export default IncomeScreen;
+export { default } from './index';
