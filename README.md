@@ -2,7 +2,14 @@
 
 A React Native application, built for web and iOS devices.
 
-Node v22.3
+## Use Node v22.3
+`nvm use`
+
+## Install
+`npm i`
+
+## Development
+`npm start`
 
 ## Regenerate ios project
 1. Delete the ios folder:

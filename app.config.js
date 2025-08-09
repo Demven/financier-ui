@@ -2,8 +2,9 @@ export default {
   API_BASE_URL: process.env.EXPO_PUBLIC_API_BASE_URL,
   expo: {
     name: "financier-ui",
+    displayName: "Financier Pro",
     slug: "financier-ui",
-    version: "2.8.0",
+    version: "2.10.0",
     scheme: "financier-ui",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
@@ -11,8 +12,8 @@ export default {
       supportsTablet: true,
       bundleIdentifier: "com.demven.financierui",
       icon: "./public/images/favicons/apple-touch-icon.png",
-      runtimeVersion: "1.0.0",
-      buildNumber: "5",
+      runtimeVersion: "1.1.0",
+      buildNumber: "6",
     },
     android: {
       package: "com.demven.financierui"
